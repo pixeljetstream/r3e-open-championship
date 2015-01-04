@@ -403,7 +403,6 @@ function main()
         
         frame:Connect(wx.wxEVT_TIMER,
           function(event)
-            print "polling"
             checkUpdate()
           end)
       end
