@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
-local pollrate    = 2           -- in minutes
+local pollrate    = 1           -- in minutes
 local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {            
@@ -36,6 +36,8 @@ local function ParseTime(str)
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
   if (h and m and s) then return h*60*60 + m*60 + s end
 end
+
+local printlog = print
 
 local function GenerateStatsHTML(championship,standings)
   local numdrivers = #standings[1].slots
@@ -86,6 +88,8 @@ local function GenerateStatsHTML(championship,standings)
   -- driver | team | car | total | tracks...
   local info = standings[1].slots
   assert(info)
+  
+  printlog("Generate HTML:",championship)
   
   local f = io.open(outdir..championship..".html","wt")
   f:write([[
@@ -206,10 +210,18 @@ RaceTime=0:02:11.328
 ]]
 
   local f = io.open(filename,"rt")
+  if (not f) then 
+    printlog("Race file not openable")
+    return
+  end
+  
   local txt = f:read("*a")
   f:close()
   
-  if (not txt:find("[END]")) then return end
+  if (not txt:find("[END]")) then 
+    printlog("Race incomplete")
+    return
+  end
 
   local timestring  = txt:match("TimeString=(.-)\n")
   local tracklength = txt:match("Track Length=(.-)\n")
@@ -239,10 +251,15 @@ RaceTime=0:02:11.328
   
   
   -- discard if race was too short
-  if (mintime < 60*minracetime) then return end
+  if (mintime < 60*minracetime) then 
+    printlog("Race too short", slots[1].Vehicle)
+    return 
+  end
   
   -- key is based on slot0 Vehicle + team and hash of all drivers
   key = slots[1].Vehicle.." "..md5.sumhexa(hash)
+  
+  printlog("Race success",key, timestring)
   
   return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
 end
@@ -276,7 +293,7 @@ local function AppendStats(championship,results)
   f:close()
 end
 
-local function UpdateHistory(filename,manual)
+local function UpdateHistory(filename)
   -- parse results
   local key,res = ParseResults(filename)
   if (key and res) then
@@ -292,7 +309,6 @@ local function UpdateHistory(filename,manual)
     end
   end
 end
-
 
 require("wx")
 
@@ -310,13 +326,6 @@ local function RegenerateStatsHTML()
   end
 end
 
-if (false) then 
-  --UpdateHistory([[C:\Users\CrazyButcher\Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results\raceresults.txt]])
-  return
-end
-
-
-
 local function GetFileModTime(filename)
   local fn = wx.wxFileName(filename)
   if fn:FileExists() then
@@ -330,40 +339,60 @@ timer = nil
 function main()
   -- create the frame window
   frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship (c) by Christoph Kubisch",
-                      wx.wxDefaultPosition, wx.wxSize(400+16,180),
+                      wx.wxDefaultPosition, wx.wxSize(400+16,280),
                       wx.wxDEFAULT_FRAME_STYLE )
+
   -- show the frame window
   frame:Show(true)
   
   local resultfile = wx.wxStandardPaths.Get():GetDocumentsDir()..[[\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results\raceresults.txt]]
   local oldmod     = GetFileModTime(resultfile)
   if (not oldmod) then
-    local label = wx.wxStaticText(frame, wx.wxID_ANY, "Could not find:\n"..resultfile)
+    local label = wx.wxStaticText(win, wx.wxID_ANY, "Could not find R3E results:\n"..resultfile)
     frame.label = label
     return
   end
   
-  UpdateHistory(resultfile)
-  
-  local function checkUpdate(manual)
+  local function checkUpdate()
     local newmod = GetFileModTime(resultfile)
     if (newmod and oldmod and oldmod:IsEarlierThan(newmod)) then
       oldmod = newmod
-      UpdateHistory(resultfile,manual)
+      UpdateHistory(resultfile)
     end
   end
   
-  local label = wx.wxStaticText(frame, wx.wxID_ANY, "R3E results:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(400,50) )
-  local line  = wx.wxStaticLine(frame, wx.wxID_ANY, wx.wxPoint(0,60), wx.wxSize(400,2))
+  local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,280))
+  splitter:SetMinimumPaneSize(50) -- don't let it unsplit
+  splitter:SetSashGravity(0)
+  frame.splitter = splitter
+  
+  local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,140) )
+  frame.win = win
+  
+  local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "init complete\n",
+                  wx.wxPoint(0,140), wx.wxSize(400+16,100),
+                  wx.wxTE_MULTILINE+wx.wxTE_DONTWRAP+wx.wxTE_READONLY)
+  frame.txtlog = txtlog
+  
+  printlog = function(...)
+    local args = {...}
+    local argstring = table.concat({...},"\t")
+    txtlog:AppendText(argstring.."\n")
+  end
+  
+  splitter:SplitHorizontally(win, txtlog, 0)
+  
+  local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(400,50) )
+  local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(400-16,-1))
   local s = 70
   local bw,bh = 200,20
-  local tglpoll     = wx.wxToggleButton(frame, wx.wxID_ANY, "Toggle: Track Changes", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
-  local btncheck    = wx.wxButton(frame, wx.wxID_ANY, "Manual Check", wx.wxPoint(8+bw,s), wx.wxSize(bw-16,bh))
-  local btnrebuild  = wx.wxButton(frame, wx.wxID_ANY, "Rebuild All HTML Stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
-  local btnresult   = wx.wxButton(frame, wx.wxID_ANY, "Open Result Directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
+  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check every minute", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
+  local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now", wx.wxPoint(8+bw,s), wx.wxSize(bw-16,bh))
+  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild All HTML Stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
+  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open Result Directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
   
   tglpoll:SetValue(true)
-  tglpoll:Connect( wx.wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, function(event)
+  tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
     if (timer) then
       if (event:IsChecked ()) then
         timer:Start(1000*60*pollrate)
@@ -387,13 +416,14 @@ function main()
     wx.wxExecute('explorer /select,"'..outpath..'"', wx.wxEXEC_ASYNC)
   end)
 
+  win.label = label
+  win.line  = line
+  win.tglpoll = tglpoll
+  win.btncheck = btncheck
+  win.btnrebuild = btnrebuild
+  win.btnresult = btnresult
   
-  frame.label = label
-  frame.line  = line
-  frame.tglpoll = tglpoll
-  frame.btncheck = btncheck
-  frame.btnrebuild = btnrebuild
-  frame.btnresult = btnresult
+  UpdateHistory(resultfile)
   
   frame:Connect(wx.wxEVT_ACTIVATE,
     function(event)
