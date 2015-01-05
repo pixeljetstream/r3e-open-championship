@@ -13,6 +13,8 @@ This is a small tool that parses the raceresult file from R3E and generates a ti
 
 Run the ".exe" file, it should bring up a very simple program that you keep running while doing singleplayer races in R3E.
 
+![ui](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/ui.png)
+
 * The program tracks edits to "My Documents/My Games/SimBin... raceresults.txt" which contains the results of the last completed race (no matter what kind of race it was).
 * Based on the content of the file a unique "championship" is created (hash based on starter-field). That means if you choose always the same starter-field config (vehilce class and number of opponents) in your single player race, it shall treat it as a single championship
 * For every completed race, the results are appended to the championship file (a simple text file storing the results for every race) and a HTML file is generated with the current standings, see image above

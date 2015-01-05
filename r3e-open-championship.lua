@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
-local pollrate    = 1           -- in minutes
+local checkrate   = 1           -- in minutes
 local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {            
@@ -89,7 +89,7 @@ local function GenerateStatsHTML(championship,standings)
   local info = standings[1].slots
   assert(info)
   
-  printlog("Generate HTML:",championship)
+  printlog("generate HTML",championship)
   
   local f = io.open(outdir..championship..".html","wt")
   f:write([[
@@ -211,7 +211,7 @@ RaceTime=0:02:11.328
 
   local f = io.open(filename,"rt")
   if (not f) then 
-    printlog("Race file not openable")
+    printlog("race file not openable")
     return
   end
   
@@ -219,7 +219,7 @@ RaceTime=0:02:11.328
   f:close()
   
   if (not txt:find("[END]")) then 
-    printlog("Race incomplete")
+    printlog("race incomplete")
     return
   end
 
@@ -252,14 +252,14 @@ RaceTime=0:02:11.328
   
   -- discard if race was too short
   if (mintime < 60*minracetime) then 
-    printlog("Race too short", slots[1].Vehicle)
+    printlog("race too short", slots[1].Vehicle)
     return 
   end
   
   -- key is based on slot0 Vehicle + team and hash of all drivers
   key = slots[1].Vehicle.." "..md5.sumhexa(hash)
   
-  printlog("Race success",key, timestring)
+  printlog("race parsed",key, timestring)
   
   return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
 end
@@ -306,6 +306,8 @@ local function UpdateHistory(filename)
       
       -- rebuild html stats
       GenerateStatsHTML(key,standings)
+    else
+      printlog("race already in database")
     end
   end
 end
@@ -313,6 +315,7 @@ end
 require("wx")
 
 local function RegenerateStatsHTML()
+  printlog("rebuilding all stats")
   -- iterate lua files
   local path = wx.wxGetCwd().."/"..outdir
   local dir = wx.wxDir(path)
@@ -369,7 +372,7 @@ function main()
   local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,140) )
   frame.win = win
   
-  local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "init complete\n",
+  local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "",
                   wx.wxPoint(0,140), wx.wxSize(400+16,100),
                   wx.wxTE_MULTILINE+wx.wxTE_DONTWRAP+wx.wxTE_READONLY)
   frame.txtlog = txtlog
@@ -380,13 +383,15 @@ function main()
     txtlog:AppendText(argstring.."\n")
   end
   
+  printlog(string.format("init completed, minracetime %d mins, checkrate %d mins", minracetime, checkrate )) 
+  
   splitter:SplitHorizontally(win, txtlog, 0)
   
   local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(400,50) )
   local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(400-16,-1))
   local s = 70
   local bw,bh = 200,20
-  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check every minute", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
+  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
   local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now", wx.wxPoint(8+bw,s), wx.wxSize(bw-16,bh))
   local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild All HTML Stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
   local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open Result Directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
@@ -395,7 +400,7 @@ function main()
   tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
     if (timer) then
       if (event:IsChecked ()) then
-        timer:Start(1000*60*pollrate)
+        timer:Start(1000*60*checkrate)
       else
         timer:Stop()
       end
@@ -429,7 +434,7 @@ function main()
     function(event)
       if (not timer) then
         timer = wx.wxTimer( frame, wx.wxID_ANY )
-        timer:Start(1000*60*pollrate)
+        timer:Start(1000*60*checkrate)
         
         frame:Connect(wx.wxEVT_TIMER,
           function(event)
