@@ -28,7 +28,18 @@ local checkrate   = 1           -- in minutes
 local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {            
-  ["3434.4822"]="Lausitzring",  
+["4556.0303"]="Hockenheim", 
+["3663.8020"]="Oschersleben",
+["4359.0034"]="Hungaroring",
+["2192.3979"]="Norisring",
+["3898.8025"]="Moscow",
+["4305.5688"]="RedBullRing",
+["3609.2053"]="Nurburgring",
+["3434.4822"]="Lausitz",
+["4275.6143"]="Zandvoort",
+["1939.5625"]="BrandsHatch",
+["5915.0332"]="Slovakia",
+["3649.3059"]="Sachsenring",
 }
 local tracknamelength = 12
 
