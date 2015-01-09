@@ -31,7 +31,7 @@ local tracknamelength = 12      -- to keep track columns tight, names are cut of
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {            
 ["4556.0303"]="Hockenheim", 
-["3663.8020"]="Oschersleben",
+["3663.8022"]="Oschersleben",
 ["4359.0034"]="Hungaroring",
 ["2192.3979"]="Norisring",
 ["3898.8025"]="Moscow",
