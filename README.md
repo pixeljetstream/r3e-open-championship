@@ -9,7 +9,7 @@ This is a small tool that parses the raceresult file from R3E and generates a ti
 
 ![sample output](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/samplesm.png)
 
-As you can see at this [full sample website](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/sample.html) it generates for every race:
+As you can see at this [full sample website](http://htmlpreview.github.io/?https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/sample.html) it generates for every race:
 
 * Driver Standings
 * Team Standings
