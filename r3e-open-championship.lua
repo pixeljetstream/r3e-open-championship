@@ -26,6 +26,8 @@ local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 local checkrate   = 1           -- in minutes
 local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
+local tracknamelength = 12      -- to keep track columns tight, names are cut off, alternatively set 
+                                -- a high value here, and make use of <br> below
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {            
 ["4556.0303"]="Hockenheim", 
@@ -40,8 +42,17 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["1939.5625"]="BrandsHatch",
 ["5915.0332"]="Slovakia",
 ["3649.3059"]="Sachsenring",
+["3797.2512"]="RaceroomRaceway",
+["4623.4604"]="Portimao",
+["6191.8174"]="Barthurst",
+["3992.8533"]="Zolder",
+["4069.3682"]="Indianapolis",
+["3585.5344"]="LagunaSeca",
+["3809.4441"]="MidOhio",
+["5783.3423"]="Monza",
+["5801.7275"]="Suzuka",
 }
-local tracknamelength = 12
+
 
 local function ParseTime(str)
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
