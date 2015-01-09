@@ -21,6 +21,9 @@ table {
   border-right:1px solid #e5eff8;
   border-collapse:collapse;
 }
+caption {
+  text-align:left;
+}
 
 td {
   border-bottom:1px solid #e5eff8;

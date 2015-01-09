@@ -44,44 +44,89 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["3649.3059"]="Sachsenring",
 ["3797.2512"]="RaceroomRaceway",
 ["4623.4604"]="Portimao",
-["6191.8174"]="Barthurst",
+["6191.8174"]="Bathurst",
 ["3992.8533"]="Zolder",
 ["4069.3682"]="Indianapolis",
 ["3585.5344"]="LagunaSeca",
 ["3809.4441"]="MidOhio",
 ["5783.3423"]="Monza",
 ["5801.7275"]="Suzuka",
+["3464.6255"]="SuzukaWC",
 }
 
 
 local function ParseTime(str)
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
   if (h and m and s) then return h*60*60 + m*60 + s end
+  local m,s = str:match("(%d+):([0-9%.]+)")
+  if (m and s) then return m*60 + s end
 end
 
 local printlog = print
 
 local function GenerateStatsHTML(championship,standings)
-  local numdrivers = #standings[1].slots
+  assert(championship and standings)
+  local info = standings[1].slots
+  assert(info)
+  local numdrivers = #info
   local numraces   = #standings
   
-  -- create point table per race per slot
+  -- create team and car slots and lookup tables
+  local lkcars = {}
+  local lkteam = {}
+  local carslots = {}
+  local teamslots = {}
+  
+  local function makegen(lk,tab)
+    local function append(key)
+      table.insert(tab,{Name=key,Entries=0})
+      return #tab
+    end
+    return function(key)
+      local idx = lk[key] or append(key)
+      lk[key] = idx
+      tab[idx].Entries = tab[idx].Entries + 1
+    end
+  end
+  
+  local fncars = makegen(lkcars,carslots)
+  local fnteam = makegen(lkteam,teamslots)
+  
+  for i=1,numdrivers do
+    fncars(info[i].Vehicle)
+    fnteam(info[i].Team)
+  end
+  
+  local numteams = #teamslots
+  local numcars  = #carslots
+    
+  -- driver, team and car points
   local racepoints  = {}
-  local accumpoints = {}
+  local teamracepoints = {}
+  local carracepoints = {}
+  local lapracetimes = {}
+  
+  -- create point table per race per slot
   for r,race in ipairs(standings) do 
-    local times = {}
-    local sorted = {}
-    for i=1,numdrivers do
-      sorted[i] = i
-      times[i] = ParseTime(race.slots[i].RaceTime)
-      -- may be nil if DNF 
+    local function getSortedTimes(field)
+      local times = {}
+      local sorted = {}
+      for i=1,numdrivers do
+        sorted[i] = i
+        times[i] = ParseTime(race.slots[i][field] or "")
+        -- may be nil if DNF 
+      end
+      
+      table.sort(sorted,
+        function(a,b) 
+          return (times[a] or 1000000000) < (times[b] or 1000000000)
+        end)
+      
+      return sorted,times
     end
     
-    table.sort(sorted,
-      function(a,b) 
-        return (times[a] or 1000000000) < (times[b] or 1000000000)
-      end)
-    
+    -- get sorted and times and generate points
+    local sorted,times = getSortedTimes("RaceTime")
     local points = {}
     for i=1,math.min(numdrivers,#rulepoints) do
       -- only set points if time is valid
@@ -92,24 +137,64 @@ local function GenerateStatsHTML(championship,standings)
         -- only set non nil if had a valid time
         points[i] = times[i] and 0 
       end
-      accumpoints[i] = (accumpoints[i] or 0) + (points[i] or 0)
     end
     racepoints[r] = points
+    
+    -- distribute points on team and car
+    local carspoints = {}
+    local teampoints = {}
+    for i=1,numdrivers do
+      local tslot = lkteam[info[i].Team]
+      local cslot = lkcars[info[i].Vehicle]
+      carspoints[cslot] = (carspoints[cslot] or 0) + (points[i] or 0)
+      teampoints[tslot] = (teampoints[tslot] or 0) + (points[i] or 0)
+    end
+  
+    for i=1,numteams do
+      teampoints[i]      = teampoints[i] or 0
+    end
+    for i=1,numcars do
+      carspoints[i]      = carspoints[i] or 0
+    end
+    carracepoints[r]  = carspoints
+    teamracepoints[r] = teampoints
+    
+    -- best lap
+    local sorted,times = getSortedTimes("BestLap")
+    local laptimes = {}
+    for i=1,3 do
+      local slot = sorted[i]
+      laptimes[i] = times[slot] and { 
+        Driver=race.slots[slot].Driver, 
+        Vehicle=race.slots[slot].Vehicle,
+        BestLap=race.slots[slot].BestLap,
+        Player = (slot == 1)}
+    end
+    lapracetimes[r] = laptimes
   end
   
+  local function getaccumpoints(allpoints,num)
+    local out = {}
+    for r,race in ipairs(allpoints) do
+      for i=1,num do
+        local point = race[i]
+        out[i] = (out[i] or 0) + (point or 0)
+      end
+    end
+    return out
+  end
 
   -- sorted slots by final points
   -- FIXME would have to count higher positions if equal
-  local sortedslots = {}
-  for i=1,numdrivers do sortedslots[i]=i end
-  table.sort(sortedslots,
-    function(a,b) 
-      return accumpoints[a] > accumpoints[b]
-    end)
-  
-  -- driver | team | car | total | tracks...
-  local info = standings[1].slots
-  assert(info)
+  local function getsortedslots(points)
+    local slots = {}
+    for i=1,#points do slots[i]=i end
+    table.sort(slots,
+      function(a,b) 
+        return points[a] > points[b]
+      end)
+    return slots
+  end
   
   printlog("generate HTML",championship)
   
@@ -125,6 +210,7 @@ local function GenerateStatsHTML(championship,standings)
     <body>
     <h1>R3E Championship Standings</h1>
     <table>
+    <caption>Driver Standings</caption>
     <tr>
     <th>Pos</th>
     <th>Driver</th>
@@ -132,24 +218,29 @@ local function GenerateStatsHTML(championship,standings)
     <th>Team</th>
     <th>Points</th>
   ]])
-  -- complete header for all tracks
-  -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
-  for r=1,numraces do
-    local track = tostring(standings[r].tracklength)
-    track = tracknames[track] or track
-    local time   = standings[r].timestring:gsub("(%s)","<br>")
-    
+  
+  local function addHeaderTracks()
+    -- complete header for all tracks
+    -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
+    for r=1,numraces do
+      local track = tostring(standings[r].tracklength)
+      track = tracknames[track] or track
+      local time   = standings[r].timestring:gsub("(%s)","<br>")
+      
+      f:write([[
+        <th id="track">]]..track:sub(1,tracknamelength).."<br>"..time..[[</th>
+      ]])
+    end
     f:write([[
-      <th id="track">]]..track:sub(1,tracknamelength).."<br>"..time..[[</th>
+      </tr>
     ]])
   end
-  f:write([[
-    </tr>
-  ]])
+  addHeaderTracks()
 
--- iterate sorted drivers
-  for pos=1,numdrivers do
-    local i = sortedslots[pos]
+  -- iterate sorted drivers
+  local accumpoints = getaccumpoints(racepoints, numdrivers)
+  local sortedslots = getsortedslots(accumpoints)
+  for pos,i in ipairs(sortedslots) do
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
       <td>]]..pos..[[</td>
@@ -170,6 +261,112 @@ local function GenerateStatsHTML(championship,standings)
     ]])
   end
 
+  -- team standings
+  f:write([[
+    </table>
+    <br><br>
+    <table>
+    <caption>Team Standings</caption>
+    <tr>
+    <th>Pos</th>
+    <th>Team</th>
+    <th>Entries</th>
+    <th>Points</th>
+  ]])
+  addHeaderTracks()
+  
+  -- iterate sorted teams
+  local accumpoints = getaccumpoints(teamracepoints, numteams)
+  local sortedslots = getsortedslots(accumpoints)
+  for pos,i in ipairs(sortedslots) do
+    f:write([[
+      <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
+      <td>]]..pos..[[</td>
+      <td>]]..teamslots[i].Name..[[</td>
+      <td>]]..teamslots[i].Entries..[[</td>
+      <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
+    ]])
+    for r=1,numraces do
+      local str = teamracepoints[r][i]
+      str = str == 0 and "-" or str or "DNF"
+      f:write([[
+        <td class="points">]]..str..[[</td>
+      ]])
+    end
+    f:write([[
+      </tr>
+    ]])
+  end
+  
+  
+  
+if (numcars > 1) then
+  
+  -- car standings
+  f:write([[
+    </table>
+    <br><br>
+    <table>
+    <caption>Vehicle Standings</caption>
+    <tr>
+    <th>Pos</th>
+    <th>Vehicle</th>
+    <th>Entries</th>
+    <th>Points</th>
+  ]])
+  addHeaderTracks()
+  
+  -- iterate sorted cars
+  local accumpoints = getaccumpoints(carracepoints, numcars)
+  local sortedslots = getsortedslots(accumpoints)
+  for pos,i in ipairs(sortedslots) do
+    f:write([[
+      <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
+      <td>]]..pos..[[</td>
+      <td>]]..carslots[i].Name..[[</td>
+      <td>]]..carslots[i].Entries..[[</td>
+      <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
+    ]])
+    for r=1,numraces do
+      local str = carracepoints[r][i]
+      str = str == 0 and "-" or str or "DNF"
+      f:write([[
+        <td class="points">]]..str..[[</td>
+      ]])
+    end
+    f:write([[
+      </tr>
+    ]])
+  end
+end
+
+  -- bestlaps
+  f:write([[
+    </table>
+    <br><br>
+    <table>
+    <caption>Best Lap Times</caption>
+    <tr>
+    <th>Pos</th>
+  ]])
+  addHeaderTracks()
+  for pos=1,3 do
+    f:write([[
+      <tr]]..(pos%2 == 0 and ' class="even"' or "")..[[>
+      <td>]]..pos..[[</td>
+    ]])
+    for r=1,numraces do
+      local tab = lapracetimes[r][pos]
+      f:write([[
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..(tab and (tab.Driver.."<br>"..tab.Vehicle.."<br>"..tab.BestLap) or "")..[[</td>
+      ]])
+    end
+    f:write([[
+      </tr>
+    ]])
+  end
+  
+  
   f:write([[
     </table>
     </body>
@@ -356,6 +553,12 @@ local function GetFileModTime(filename)
   if fn:FileExists() then
     return fn:GetModificationTime()
   end
+end
+
+-- debugging
+if (false) then
+  RegenerateStatsHTML()
+  return 
 end
 
 frame = nil

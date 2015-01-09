@@ -9,6 +9,13 @@ This is a small tool that parses the raceresult file from R3E and generates a ti
 
 ![sample output](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/samplesm.png)
 
+As you can see at this [full sample website](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/sample.html) it generates for every race:
+
+* Driver Standings
+* Team Standings
+* Vehicle Standings (if more than one vehicle type)
+* Best Lap Times
+
 ### How it works
 
 Run the ".exe" file, it should bring up a very simple program that you keep running while doing singleplayer races in R3E.
