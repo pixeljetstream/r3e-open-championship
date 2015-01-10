@@ -217,12 +217,7 @@ local function GenerateStatsHTML(championship,standings)
     local laptimes = {}
     for i=1,numbestlap do
       local slot = sorted[i]
-      laptimes[i] = times[slot] and { 
-        Driver=race.slots[slot].Driver, 
-        Vehicle=race.slots[slot].Vehicle,
-        BestLap=race.slots[slot].BestLap,
-        QualTime=race.slots[slot].QualTime,
-        Player = (slot == 1)}
+      laptimes[i] = times[slot] and race.slots[slot]
     end
     lapracetimes[r] = laptimes
     
@@ -231,12 +226,7 @@ local function GenerateStatsHTML(championship,standings)
     local qualtimes = {}
     for i=1,numbestqual do
       local slot = sorted[i]
-      qualtimes[i] = times[slot] and { 
-        Driver=race.slots[slot].Driver, 
-        Vehicle=race.slots[slot].Vehicle,
-        BestLap=race.slots[slot].BestLap,
-        QualTime=race.slots[slot].QualTime,
-        Player = (slot == 1)}
+      qualtimes[i] = times[slot] and race.slots[slot]
     end
     qualracetimes[r] = qualtimes
   end
