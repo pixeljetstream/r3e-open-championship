@@ -44,8 +44,12 @@ th {
   font-weight:normal;
 }
 .points {
-  font-size:small;
   text-align:center;
+}
+.minor
+{
+  font-size:small;
+  color:#959595;
 }
 tr.even td {
   background:#3D3D3D;

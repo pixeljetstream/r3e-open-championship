@@ -26,6 +26,8 @@ local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 local checkrate   = 1           -- in minutes
 local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
+local maxbestlap  = 3
+local maxbestqual = 3
 local tracknamelength = 12      -- to keep track columns tight, names are cut off, alternatively set 
                                 -- a high value here, and make use of <br> below
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
@@ -52,14 +54,48 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["5783.3423"]="Monza",
 ["5801.7275"]="Suzuka",
 ["3464.6255"]="SuzukaWC",
+["2234.5293"]="SuzukaEC",
+["3823.2102"]="MidOhioFull",
+["2880.1135"]="MidOhioShort",
+["2416.6360"]="MonzaJR",
+["3684.3110"]="HockenheimNational",
+["2585.4141"]="HockenheimShort",
+["2887.9546"]="ZandvoortNational",
+["2510.1907"]="ZandvoortClub",
 }
 
 
 local function ParseTime(str)
+  if (not str) then return end
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
   if (h and m and s) then return h*60*60 + m*60 + s end
   local m,s = str:match("(%d+):([0-9%.]+)")
   if (m and s) then return m*60 + s end
+end
+
+local function DiffTime(stra, strb)
+  local ta = ParseTime(stra)
+  local tb = ParseTime(strb)
+  if (not (ta and tb)) then return end
+  local diff = tb-ta
+  local absdiff = math.abs(diff)
+  
+  local h = math.floor(absdiff/3600)
+  absdiff = absdiff - h * 3600
+  local m = math.floor(absdiff/60)
+  absdiff = absdiff - m * 60
+  local s = absdiff
+  
+  local sign = (diff >= 0 and "+" or "-")
+  
+  if (h > 0) then
+    return sign..string.format(" %2d:%2d:%.3f", h,m,s)
+  elseif (m > 0) then
+    return sign.. string.format(" %2d:%.3f", m, s)
+  else
+    return sign.. string.format(" %.3f", s)
+  end
+  
 end
 
 local printlog = print
@@ -70,6 +106,8 @@ local function GenerateStatsHTML(championship,standings)
   assert(info)
   local numdrivers = #info
   local numraces   = #standings
+  local numbestlap = math.min(maxbestlap,numdrivers)
+  local numbestqual= math.min(maxbestqual,numdrivers)
   
   -- create team and car slots and lookup tables
   local lkcars = {}
@@ -101,10 +139,13 @@ local function GenerateStatsHTML(championship,standings)
   local numcars  = #carslots
     
   -- driver, team and car points
-  local racepoints  = {}
-  local teamracepoints = {}
-  local carracepoints = {}
-  local lapracetimes = {}
+  local raceresults     = {}
+  local racepositions   = {}
+  local racepoints      = {}
+  local teamracepoints  = {}
+  local carracepoints   = {}
+  local lapracetimes    = {}
+  local qualracetimes   = {}
   
   -- create point table per race per slot
   for r,race in ipairs(standings) do 
@@ -128,17 +169,29 @@ local function GenerateStatsHTML(championship,standings)
     -- get sorted and times and generate points
     local sorted,times = getSortedTimes("RaceTime")
     local points = {}
+    local results = {}
     for i=1,math.min(numdrivers,#rulepoints) do
       -- only set points if time is valid
       points[sorted[i]] = times[sorted[i]] and rulepoints[i]
     end
     for i=1,numdrivers do
+      results[i] = race.slots[sorted[i]]
+      results[i].Player = sorted[i] == 1
+      
       if (not points[i]) then
         -- only set non nil if had a valid time
         points[i] = times[i] and 0 
       end
     end
-    racepoints[r] = points
+    raceresults[r]    = results
+    racepoints[r]     = points
+    
+    local positions = {}
+    for i=1,numdrivers do
+      -- only set if time was valid
+      positions[sorted[i]] = times[sorted[i]] and i
+    end
+    racepositions[r]  = positions
     
     -- distribute points on team and car
     local carspoints = {}
@@ -162,15 +215,30 @@ local function GenerateStatsHTML(championship,standings)
     -- best lap
     local sorted,times = getSortedTimes("BestLap")
     local laptimes = {}
-    for i=1,3 do
+    for i=1,numbestlap do
       local slot = sorted[i]
       laptimes[i] = times[slot] and { 
         Driver=race.slots[slot].Driver, 
         Vehicle=race.slots[slot].Vehicle,
         BestLap=race.slots[slot].BestLap,
+        QualTime=race.slots[slot].QualTime,
         Player = (slot == 1)}
     end
     lapracetimes[r] = laptimes
+    
+    -- best qual
+    local sorted,times = getSortedTimes("QualTime")
+    local qualtimes = {}
+    for i=1,numbestqual do
+      local slot = sorted[i]
+      qualtimes[i] = times[slot] and { 
+        Driver=race.slots[slot].Driver, 
+        Vehicle=race.slots[slot].Vehicle,
+        BestLap=race.slots[slot].BestLap,
+        QualTime=race.slots[slot].QualTime,
+        Player = (slot == 1)}
+    end
+    qualracetimes[r] = qualtimes
   end
   
   local function getaccumpoints(allpoints,num)
@@ -250,8 +318,11 @@ local function GenerateStatsHTML(championship,standings)
       <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
     ]])
     for r=1,numraces do
-      local str = racepoints[r][i]
-      str = str == 0 and "-" or str or "DNF"
+      local str = racepoints[r][i] or "DNF"
+      str = (str == 0 and "-" or str)
+      local rpos = racepositions[r][i]
+      str = str..(rpos and '<br><span class="points minor">'..rpos..".</span>" or "")
+      
       f:write([[
         <td class="points">]]..str..[[</td>
       ]])
@@ -345,20 +416,24 @@ end
     </table>
     <br><br>
     <table>
-    <caption>Best Lap Times</caption>
+    <caption>Best Race Lap Times</caption>
     <tr>
     <th>Pos</th>
   ]])
   addHeaderTracks()
-  for pos=1,3 do
+  for pos=1,numbestlap do
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..[[>
       <td>]]..pos..[[</td>
     ]])
     for r=1,numraces do
       local tab = lapracetimes[r][pos]
+      local driver  = tab and tab.Driver or ""
+      local vehicle = tab and '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
+      local time    = tab and '<br>'..tab.BestLap or ""
+      
       f:write([[
-        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..(tab and (tab.Driver.."<br>"..tab.Vehicle.."<br>"..tab.BestLap) or "")..[[</td>
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..[[</td>
       ]])
     end
     f:write([[
@@ -366,6 +441,76 @@ end
     ]])
   end
   
+  -- bestqual
+  f:write([[
+    </table>
+    <br><br>
+    <table>
+    <caption>Best Qualification Times</caption>
+    <tr>
+    <th>Pos</th>
+  ]])
+  addHeaderTracks()
+  for pos=1,numbestqual do
+    f:write([[
+      <tr]]..(pos%2 == 0 and ' class="even"' or "")..[[>
+      <td>]]..pos..[[</td>
+    ]])
+    for r=1,numraces do
+      local tab = qualracetimes[r][pos]
+      local driver  = tab and tab.Driver or ""
+      local vehicle = tab and '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
+      local time    = tab and '<br>'..tab.QualTime or ""
+      
+      f:write([[
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..[[</td>
+      ]])
+    end
+    f:write([[
+      </tr>
+    ]])
+  end
+  
+  -- results
+  f:write([[
+    </table>
+    <br><br>
+    <table>
+    <caption>Race Results</caption>
+    <tr>
+    <th>Pos</th>
+  ]])
+  addHeaderTracks()
+  for pos=1,numdrivers do
+    f:write([[
+      <tr]]..(pos%2 == 0 and ' class="even"' or "")..[[>
+      <td>]]..pos..[[</td>
+    ]])
+    for r=1,numraces do
+      local tab  = raceresults[r][pos]
+      local time = '<br>'..tab.RaceTime
+      local gap  = ""
+      
+      if (pos > 1) then
+        -- to winner
+        time = DiffTime( raceresults[r][1].RaceTime,      tab.RaceTime )
+        time = time and '<br>'..time or ""
+        -- to previous driver
+        gap  = DiffTime( raceresults[r][pos-1].RaceTime,  tab.RaceTime )
+        gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
+      end
+      
+      local driver  = tab.Driver
+      local vehicle = '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
+      
+      f:write([[
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..gap..[[</td>
+      ]])
+    end
+    f:write([[
+      </tr>
+    ]])
+  end
   
   f:write([[
     </table>

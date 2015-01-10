@@ -14,7 +14,9 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 * Driver Standings
 * Team Standings
 * Vehicle Standings (if more than one vehicle type)
-* Best Lap Times
+* Best Race Lap Times
+* Best Qualification Times
+* Race Results
 
 ### How it works
 
