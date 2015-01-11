@@ -33,9 +33,11 @@ It is an "open" championship, as none of the settings are really frozen (AI...),
 ### A few caveats
 
 Simply do not run the app if you do races you don't want to track. If something is accidentally added somewhere you can always manually delete or edit the files and remove the last entry.
-Since the tracknames are not stored in the result file (only track lengths), there needs to a mapping, which is currently incomplete.
+Since the tracknames are not stored in the result file (only track lengths), there needs to a mapping, which may be incomplete. Please send in tracklength-name pairings if you recgonize some are missing (then only the tracklength is printed).
 
 ### Third Party
+
+Special thanks to "tAz-07" and "heppsan" from steam community on feedback and providing most of the track mappings.
 
 The exe was created via wxLuaFreeze and upx and automatically executes the r3e-open-championship.lua file.
 
