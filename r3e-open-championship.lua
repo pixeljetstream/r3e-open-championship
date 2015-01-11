@@ -31,14 +31,14 @@ local maxbestqual = 3
 local tracknamelength = 12      -- to keep track columns tight, names are cut off, alternatively set 
                                 -- a high value here, and make use of <br> below
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
-{            
+{
 ["4556.0303"]="Hockenheim", 
 ["3663.8022"]="Oschersleben",
 ["4359.0034"]="Hungaroring",
 ["2192.3979"]="Norisring",
 ["3898.8025"]="Moscow",
 ["4305.5688"]="RedBullRing",
-["3609.2053"]="Nurburgring",
+["3609.2053"]="Nürburgring",
 ["3434.4822"]="Lausitz",
 ["4275.6143"]="Zandvoort",
 ["1939.5625"]="BrandsHatch",
@@ -62,6 +62,19 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["2585.4141"]="HockenheimShort",
 ["2887.9546"]="ZandvoortNational",
 ["2510.1907"]="ZandvoortClub",
+["4193.3374"]="IndianapolisMoto",
+["3407.2373"]="LausitzAuto",
+["5123.2192"]="NürburgringGP",
+["3597.9592"]="NürburgringShort",
+["4148.3921"]="PortimaoNational",
+["3885.0781"]="PortimaoClub",
+["3880.8940"]="PortimaoChicane",
+["2512.9583"]="MoscowSprint",
+["3924.9500"]="MoscowFull",
+["3356.2083"]="RaceroomBridge",
+["3840.5679"]="RaceroomClassic",
+["3628.0947"]="RaceroomClassicSprint",
+["3604.7246"]="RaceroomNational",
 }
 
 
@@ -624,22 +637,27 @@ local function LoadStats(championship)
   local f = io.open(outdir..championship..".lua","rt")
   if (not f) then return standings end
   
-  local txt = "return {\n"..f:read("*a").."\n}\n"
+  local str = f:read("*a")
   f:close()
+  local txt = "return {\n"..str.."\n}\n"
   
-  local fn = loadstring(txt)
+  local fn,err = loadstring(txt)
+  if (not fn) then
+    printlog("load failed",championship, err)
+    return standings
+  end
+  
   standings = fn()
-  
   return standings
 end
 
 local function AppendStats(championship,results)
   local f = io.open(outdir..championship..".lua","at")
-  f:write("{ tracklength = "..results.tracklength..", scene='"..results.scene.."', timestring='"..results.timestring.."', slots = {\n")
+  f:write('{ tracklength = "'..results.tracklength..'", scene="'..results.scene..'", timestring="'..results.timestring..'", slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
     for k,v in pairs(s) do
-      f:write(k.."='"..v.."', ")
+      f:write(k..'="'..v..'", ')
     end
     f:write("  },\n")
   end
