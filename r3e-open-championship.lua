@@ -591,15 +591,32 @@ RaceTime=0:02:11.328
     return
   end
 
-  local timestring  = txt:match("TimeString=(.-)\n")
-  local tracklength = txt:match("Track Length=(.-)\n")
-  local scene       = txt:match("Scene=(.-)\n")
+  local race = txt:match("%[Race%](.-\n\n)")
+  if (not (race)) then
+    printlog("race info not found")
+    return
+  end
+  
+  local timestring  = race:match("TimeString=(.-)\n")
+  local tracklength = race:match("Track Length=(.-)\n")
+  local scene       = race:match("Scene=(.-)\n")
+  local mode        = race:match("RaceMode=(.-)\n")
+  
+  if (not (tracklength and tracklength and scene)) then
+    printlog("race details not found")
+    return
+  end
+  
+  if (mode == "3") then
+    printlog("race was replay")
+    return
+  end
 
   local key
   local hash = ""
   local slots = {}
   
-  local mintime = 100000000
+  local mintime
   
   for slot,info in txt:gmatch("%[Slot(%d+)%](.-\n\n)") do
     slot = tonumber(slot) + 1
@@ -613,11 +630,15 @@ RaceTime=0:02:11.328
       hash = hash..tab.Team..tab.Driver
       
       local time = ParseTime(tab.RaceTime)
-      if (time) then mintime = math.min(mintime,time) end
+      if (time) then mintime = math.min(mintime or 10000000,time) end
     end
   end
   
-  
+  -- discard if no valid time found
+  if (not mintime) then
+    printlog("race without results", slots[1].Vehicle)
+    return
+  end
   -- discard if race was too short
   if (mintime < 60*minracetime) then 
     printlog("race too short", slots[1].Vehicle)
