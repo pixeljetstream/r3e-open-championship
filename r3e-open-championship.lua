@@ -590,6 +590,14 @@ RaceTime=0:02:11.328
     printlog("race incomplete")
     return
   end
+  
+  local header = txt:match("%[Header%](.-\n\n)")
+  if (not (header)) then
+    printlog("race header not found")
+    return
+  end
+  
+  local timestring  = header:match("TimeString=(.-)\n")
 
   local race = txt:match("%[Race%](.-\n\n)")
   if (not (race)) then
@@ -597,12 +605,11 @@ RaceTime=0:02:11.328
     return
   end
   
-  local timestring  = race:match("TimeString=(.-)\n")
   local tracklength = race:match("Track Length=(.-)\n")
   local scene       = race:match("Scene=(.-)\n")
   local mode        = race:match("RaceMode=(.-)\n")
   
-  if (not (tracklength and tracklength and scene)) then
+  if (not (timestring and tracklength and scene and mode)) then
     printlog("race details not found")
     return
   end
