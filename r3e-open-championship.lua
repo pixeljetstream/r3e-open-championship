@@ -763,9 +763,9 @@ function main()
     return
   end
   
-  local function checkUpdate()
+  local function checkUpdate(force)
     local newmod = GetFileModTime(resultfile)
-    if (newmod and oldmod and oldmod:IsEarlierThan(newmod)) then
+    if (force or (newmod and oldmod and oldmod:IsEarlierThan(newmod))) then
       oldmod = newmod
       UpdateHistory(resultfile)
     end
@@ -834,8 +834,6 @@ function main()
   win.btncheck = btncheck
   win.btnrebuild = btnrebuild
   win.btnresult = btnresult
-  
-  UpdateHistory(resultfile)
   
   frame:Connect(wx.wxEVT_ACTIVATE,
     function(event)
