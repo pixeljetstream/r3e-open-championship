@@ -6,6 +6,7 @@
     <style type="text/css">
 <!--
 
+
 html, body {
   background-color:#4D4D4D;
 }
@@ -50,20 +51,24 @@ th {
   font-size:smaller;
   font-weight:normal;
 }
+#player {
+  color:#E5A500;
+}
 .points {
   text-align:center;
 }
 .minor
 {
-  font-size:small;
+  font-size:smaller;
   color:#959595;
 }
 tr.even td {
   background:#3D3D3D;
 }
-#player {
-  color:#E5A500;
+td.pointcolumn {
+  border-right:1px hidden #767B7F;
 }
+
 
 -->
     </style>
@@ -78,207 +83,207 @@ tr.even td {
     <th>Vehicle</th>
     <th>Team</th>
     <th>Points</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track" colspan=2 >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track" colspan=2 >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
           <tr>
       <td>1</td>
-      <td>Gerd Ruch</td>
-      <td>Ford Mustang GT DTM</td>
-      <td>Ruch Motorsport</td>
+      <td>Kurt Thiim</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>Zakspeed</td>
       <td class="points">40</td>
-            <td class="points">25<br><span class="points minor">1.</span></td>
-              <td class="points">15<br><span class="points minor">3.</span></td>
-            </tr>
+              <td class="points pointcolumn">25</td><td class="points minor">1.</td>
+                  <td class="points pointcolumn">15</td><td class="points minor">3.</td>
+              </tr>
           <tr class="even">
       <td>2</td>
-      <td>Frank Biela</td>
-      <td>Audi V8 DTM</td>
-      <td>Audi Zentrum Reutlingen</td>
+      <td>Bernd Schneider</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>AMG-Mercedes</td>
       <td class="points">36</td>
-            <td class="points">18<br><span class="points minor">2.</span></td>
-              <td class="points">18<br><span class="points minor">2.</span></td>
-            </tr>
-          <tr>
+              <td class="points pointcolumn">18</td><td class="points minor">2.</td>
+                  <td class="points pointcolumn">18</td><td class="points minor">2.</td>
+              </tr>
+          <tr id="player">
       <td>3</td>
+      <td>Test Driver</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>AMG-Mercedes</td>
+      <td class="points">25</td>
+              <td class="points pointcolumn">-</td><td class="points minor">13.</td>
+                  <td class="points pointcolumn">25</td><td class="points minor">1.</td>
+              </tr>
+          <tr class="even">
+      <td>4</td>
+      <td>Keke Rosberg</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>AMG-Mercedes</td>
+      <td class="points">20</td>
+              <td class="points pointcolumn">12</td><td class="points minor">4.</td>
+                  <td class="points pointcolumn">8</td><td class="points minor">6.</td>
+              </tr>
+          <tr>
+      <td>5</td>
+      <td>Roland Asch</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>Zakspeed</td>
+      <td class="points">17</td>
+              <td class="points pointcolumn">15</td><td class="points minor">3.</td>
+                  <td class="points pointcolumn">2</td><td class="points minor">9.</td>
+              </tr>
+          <tr class="even">
+      <td>6</td>
       <td>Hans Joachim Stuck</td>
       <td>Audi V8 DTM</td>
       <td>Schmidt Motorsport Technik</td>
-      <td class="points">27</td>
-            <td class="points">15<br><span class="points minor">3.</span></td>
-              <td class="points">12<br><span class="points minor">4.</span></td>
-            </tr>
-          <tr class="even" id="player">
-      <td>4</td>
-      <td>Test Driver</td>
-      <td>Opel Omega 3000 Evo500</td>
-      <td>Irmscher Motorsport</td>
-      <td class="points">25</td>
-            <td class="points">DNF</td>
-              <td class="points">25<br><span class="points minor">1.</span></td>
-            </tr>
-          <tr>
-      <td>5</td>
-      <td>Robert Ravaglia</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>BMW M Team Schnitzer</td>
-      <td class="points">22</td>
-            <td class="points">12<br><span class="points minor">4.</span></td>
-              <td class="points">10<br><span class="points minor">5.</span></td>
-            </tr>
-          <tr class="even">
-      <td>6</td>
-      <td>Kris Nissen</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>Unitron Computer Isert</td>
-      <td class="points">18</td>
-            <td class="points">10<br><span class="points minor">5.</span></td>
-              <td class="points">8<br><span class="points minor">6.</span></td>
-            </tr>
+      <td class="points">16</td>
+              <td class="points pointcolumn">10</td><td class="points minor">5.</td>
+                  <td class="points pointcolumn">6</td><td class="points minor">7.</td>
+              </tr>
           <tr>
       <td>7</td>
+      <td>Frank Biela</td>
+      <td>Audi V8 DTM</td>
+      <td>Audi Zentrum Reutlingen</td>
+      <td class="points">16</td>
+              <td class="points pointcolumn">6</td><td class="points minor">7.</td>
+                  <td class="points pointcolumn">10</td><td class="points minor">5.</td>
+              </tr>
+          <tr class="even">
+      <td>8</td>
+      <td>Johnny Cecotto</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>Fina Motorsport</td>
+      <td class="points">16</td>
+              <td class="points pointcolumn">4</td><td class="points minor">8.</td>
+                  <td class="points pointcolumn">12</td><td class="points minor">4.</td>
+              </tr>
+          <tr>
+      <td>9</td>
+      <td>Joachim Winkelhock</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>BMW M Team Schnitzer</td>
+      <td class="points">9</td>
+              <td class="points pointcolumn">8</td><td class="points minor">6.</td>
+                  <td class="points pointcolumn">1</td><td class="points minor">10.</td>
+              </tr>
+          <tr class="even">
+      <td>10</td>
       <td>Jörg van Ommen</td>
       <td>Mercedes 190E Evo II DTM</td>
       <td>Mass-Schons</td>
-      <td class="points">14</td>
-            <td class="points">8<br><span class="points minor">6.</span></td>
-              <td class="points">6<br><span class="points minor">7.</span></td>
-            </tr>
-          <tr class="even">
-      <td>8</td>
-      <td>Frank Jelinski</td>
-      <td>Audi V8 DTM</td>
-      <td>Audi Zentrum Reutlingen</td>
-      <td class="points">10</td>
-            <td class="points">6<br><span class="points minor">7.</span></td>
-              <td class="points">4<br><span class="points minor">8.</span></td>
-            </tr>
-          <tr>
-      <td>9</td>
-      <td>Altfrid Heger</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>BMW M Team Schnitzer</td>
       <td class="points">6</td>
-            <td class="points">4<br><span class="points minor">8.</span></td>
-              <td class="points">2<br><span class="points minor">9.</span></td>
-            </tr>
-          <tr class="even">
-      <td>10</td>
-      <td>Ellen Lohr</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>AMG-Mercedes</td>
-      <td class="points">3</td>
-            <td class="points">2<br><span class="points minor">9.</span></td>
-              <td class="points">1<br><span class="points minor">10.</span></td>
-            </tr>
+              <td class="points pointcolumn">2</td><td class="points minor">9.</td>
+                  <td class="points pointcolumn">4</td><td class="points minor">8.</td>
+              </tr>
           <tr>
       <td>11</td>
-      <td>Hubert Haubt</td>
-      <td>Audi V8 DTM</td>
-      <td>Schmidt Motorsport Technik</td>
+      <td>Steve Soper</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>BMW M Team Bigazzi</td>
       <td class="points">1</td>
-            <td class="points">1<br><span class="points minor">10.</span></td>
-              <td class="points">-<br><span class="points minor">11.</span></td>
-            </tr>
+              <td class="points pointcolumn">1</td><td class="points minor">10.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">14.</td>
+              </tr>
           <tr class="even">
       <td>12</td>
+      <td>Gerd Ruch</td>
+      <td>Ford Mustang GT DTM</td>
+      <td>Ruch Motorsport</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">22.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">19.</td>
+              </tr>
+          <tr>
+      <td>13</td>
       <td>Jürgen Feucht</td>
       <td>Ford Mustang GT DTM</td>
       <td>Ruch Motorsport</td>
       <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">16.</span></td>
-              <td class="points">-<br><span class="points minor">17.</span></td>
-            </tr>
-          <tr>
-      <td>13</td>
-      <td>Klaus Ludwig</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>AMG-Mercedes</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">13.</span></td>
-              <td class="points">-<br><span class="points minor">14.</span></td>
-            </tr>
+              <td class="points pointcolumn">-</td><td class="points minor">19.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">21.</td>
+              </tr>
           <tr class="even">
       <td>14</td>
-      <td>Steve Soper</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>BMW M Team Bigazzi</td>
+      <td>Jacques Laffite</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>Mass-Schons</td>
       <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">19.</span></td>
-              <td class="points">-<br><span class="points minor">20.</span></td>
-            </tr>
+              <td class="points pointcolumn">-</td><td class="points minor">20.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">12.</td>
+              </tr>
           <tr>
       <td>15</td>
-      <td>Emanuelle Pirro</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>BMW M Team Bigazzi</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">20.</span></td>
-              <td class="points">-<br><span class="points minor">21.</span></td>
-            </tr>
-          <tr class="even">
-      <td>16</td>
-      <td>Johnny Cecotto</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>Fina Motorsport</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">15.</span></td>
-              <td class="points">-<br><span class="points minor">16.</span></td>
-            </tr>
-          <tr>
-      <td>17</td>
-      <td>Bernd Schneider</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>AMG-Mercedes</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">14.</span></td>
-              <td class="points">-<br><span class="points minor">15.</span></td>
-            </tr>
-          <tr class="even">
-      <td>18</td>
-      <td>Franz Engstler</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>Vailer</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">11.</span></td>
-              <td class="points">-<br><span class="points minor">12.</span></td>
-            </tr>
-          <tr>
-      <td>19</td>
-      <td>Kurt Thiim</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>Zakspeed</td>
-      <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">17.</span></td>
-              <td class="points">-<br><span class="points minor">18.</span></td>
-            </tr>
-          <tr class="even">
-      <td>20</td>
       <td>Leopold von Bayern</td>
       <td>BMW M3 Sport Evolution</td>
       <td>Isert</td>
       <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">12.</span></td>
-              <td class="points">-<br><span class="points minor">13.</span></td>
-            </tr>
+              <td class="points pointcolumn">-</td><td class="points minor">18.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">15.</td>
+              </tr>
+          <tr class="even">
+      <td>16</td>
+      <td>Hubert Haubt</td>
+      <td>Audi V8 DTM</td>
+      <td>Schmidt Motorsport Technik</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">17.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">20.</td>
+              </tr>
+          <tr>
+      <td>17</td>
+      <td>Ellen Lohr</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>AMG-Mercedes</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">15.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">17.</td>
+              </tr>
+          <tr class="even">
+      <td>18</td>
+      <td>Robert Ravaglia</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>BMW M Team Schnitzer</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">11.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">11.</td>
+              </tr>
+          <tr>
+      <td>19</td>
+      <td>Frank Jelinski</td>
+      <td>Audi V8 DTM</td>
+      <td>Audi Zentrum Reutlingen</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">12.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">22.</td>
+              </tr>
+          <tr class="even">
+      <td>20</td>
+      <td>Volker Strycek</td>
+      <td>Opel Omega 3000 Evo500</td>
+      <td>Irmscher Motorsport</td>
+      <td class="points">-</td>
+              <td class="points pointcolumn">-</td><td class="points minor">14.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">18.</td>
+              </tr>
           <tr>
       <td>21</td>
-      <td>Roland Asch</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>Zakspeed</td>
+      <td>Kris Nissen</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>Unitron Computer Isert</td>
       <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">18.</span></td>
-              <td class="points">-<br><span class="points minor">19.</span></td>
-            </tr>
+              <td class="points pointcolumn">-</td><td class="points minor">21.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">13.</td>
+              </tr>
           <tr class="even">
       <td>22</td>
-      <td>Fritz Kreutzpointner</td>
+      <td>Altfrid Heger</td>
       <td>BMW M3 Sport Evolution</td>
-      <td>MM Motorsport</td>
+      <td>BMW M Team Schnitzer</td>
       <td class="points">-</td>
-            <td class="points">-<br><span class="points minor">21.</span></td>
-              <td class="points">-<br><span class="points minor">22.</span></td>
-            </tr>
+              <td class="points pointcolumn">-</td><td class="points minor">16.</td>
+                  <td class="points pointcolumn">-</td><td class="points minor">16.</td>
+              </tr>
         </table>
     <br><br>
     <table>
@@ -288,84 +293,84 @@ tr.even td {
     <th>Team</th>
     <th>Entries</th>
     <th>Points</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track"  >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track"  >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
-          <tr>
+          <tr id="player">
       <td>1</td>
-      <td>Audi Zentrum Reutlingen</td>
-      <td>2</td>
-      <td class="points">46</td>
-            <td class="points">24</td>
-              <td class="points">22</td>
+      <td>AMG-Mercedes</td>
+      <td>4</td>
+      <td class="points">81</td>
+            <td class="points">30</td>
+              <td class="points">51</td>
             </tr>
           <tr class="even">
       <td>2</td>
-      <td>Ruch Motorsport</td>
+      <td>Zakspeed</td>
       <td>2</td>
-      <td class="points">40</td>
-            <td class="points">25</td>
-              <td class="points">15</td>
+      <td class="points">57</td>
+            <td class="points">40</td>
+              <td class="points">17</td>
             </tr>
           <tr>
       <td>3</td>
-      <td>BMW M Team Schnitzer</td>
+      <td>Schmidt Motorsport Technik</td>
       <td>2</td>
-      <td class="points">28</td>
-            <td class="points">16</td>
-              <td class="points">12</td>
+      <td class="points">16</td>
+            <td class="points">10</td>
+              <td class="points">6</td>
             </tr>
           <tr class="even">
       <td>4</td>
-      <td>Schmidt Motorsport Technik</td>
+      <td>Audi Zentrum Reutlingen</td>
       <td>2</td>
-      <td class="points">28</td>
-            <td class="points">16</td>
-              <td class="points">12</td>
+      <td class="points">16</td>
+            <td class="points">6</td>
+              <td class="points">10</td>
             </tr>
-          <tr id="player">
+          <tr>
       <td>5</td>
-      <td>Irmscher Motorsport</td>
+      <td>Fina Motorsport</td>
       <td>1</td>
-      <td class="points">25</td>
-            <td class="points">-</td>
-              <td class="points">25</td>
+      <td class="points">16</td>
+            <td class="points">4</td>
+              <td class="points">12</td>
             </tr>
           <tr class="even">
       <td>6</td>
-      <td>Unitron Computer Isert</td>
-      <td>1</td>
-      <td class="points">18</td>
-            <td class="points">10</td>
-              <td class="points">8</td>
+      <td>BMW M Team Schnitzer</td>
+      <td>3</td>
+      <td class="points">9</td>
+            <td class="points">8</td>
+              <td class="points">1</td>
             </tr>
           <tr>
       <td>7</td>
       <td>Mass-Schons</td>
-      <td>1</td>
-      <td class="points">14</td>
-            <td class="points">8</td>
-              <td class="points">6</td>
+      <td>2</td>
+      <td class="points">6</td>
+            <td class="points">2</td>
+              <td class="points">4</td>
             </tr>
           <tr class="even">
       <td>8</td>
-      <td>AMG-Mercedes</td>
-      <td>3</td>
-      <td class="points">3</td>
-            <td class="points">2</td>
-              <td class="points">1</td>
+      <td>BMW M Team Bigazzi</td>
+      <td>1</td>
+      <td class="points">1</td>
+            <td class="points">1</td>
+              <td class="points">-</td>
             </tr>
           <tr>
       <td>9</td>
-      <td>BMW M Team Bigazzi</td>
-      <td>2</td>
+      <td>Unitron Computer Isert</td>
+      <td>1</td>
       <td class="points">-</td>
             <td class="points">-</td>
               <td class="points">-</td>
             </tr>
           <tr class="even">
       <td>10</td>
-      <td>Fina Motorsport</td>
+      <td>Irmscher Motorsport</td>
       <td>1</td>
       <td class="points">-</td>
             <td class="points">-</td>
@@ -381,24 +386,8 @@ tr.even td {
             </tr>
           <tr class="even">
       <td>12</td>
-      <td>Zakspeed</td>
+      <td>Ruch Motorsport</td>
       <td>2</td>
-      <td class="points">-</td>
-            <td class="points">-</td>
-              <td class="points">-</td>
-            </tr>
-          <tr>
-      <td>13</td>
-      <td>Vailer</td>
-      <td>1</td>
-      <td class="points">-</td>
-            <td class="points">-</td>
-              <td class="points">-</td>
-            </tr>
-          <tr class="even">
-      <td>14</td>
-      <td>MM Motorsport</td>
-      <td>1</td>
       <td class="points">-</td>
             <td class="points">-</td>
               <td class="points">-</td>
@@ -412,48 +401,48 @@ tr.even td {
     <th>Vehicle</th>
     <th>Entries</th>
     <th>Points</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track"  >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track"  >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
-          <tr>
+          <tr id="player">
       <td>1</td>
-      <td>Audi V8 DTM</td>
-      <td>4</td>
-      <td class="points">74</td>
-            <td class="points">40</td>
-              <td class="points">34</td>
+      <td>Mercedes 190E Evo II DTM</td>
+      <td>8</td>
+      <td class="points">144</td>
+            <td class="points">72</td>
+              <td class="points">72</td>
             </tr>
           <tr class="even">
       <td>2</td>
-      <td>BMW M3 Sport Evolution</td>
-      <td>9</td>
-      <td class="points">46</td>
-            <td class="points">26</td>
-              <td class="points">20</td>
+      <td>Audi V8 DTM</td>
+      <td>4</td>
+      <td class="points">32</td>
+            <td class="points">16</td>
+              <td class="points">16</td>
             </tr>
           <tr>
       <td>3</td>
+      <td>BMW M3 Sport Evolution</td>
+      <td>7</td>
+      <td class="points">26</td>
+            <td class="points">13</td>
+              <td class="points">13</td>
+            </tr>
+          <tr class="even">
+      <td>4</td>
       <td>Ford Mustang GT DTM</td>
       <td>2</td>
-      <td class="points">40</td>
-            <td class="points">25</td>
-              <td class="points">15</td>
-            </tr>
-          <tr class="even" id="player">
-      <td>4</td>
-      <td>Opel Omega 3000 Evo500</td>
-      <td>1</td>
-      <td class="points">25</td>
+      <td class="points">-</td>
             <td class="points">-</td>
-              <td class="points">25</td>
+              <td class="points">-</td>
             </tr>
           <tr>
       <td>5</td>
-      <td>Mercedes 190E Evo II DTM</td>
-      <td>6</td>
-      <td class="points">17</td>
-            <td class="points">10</td>
-              <td class="points">7</td>
+      <td>Opel Omega 3000 Evo500</td>
+      <td>1</td>
+      <td class="points">-</td>
+            <td class="points">-</td>
+              <td class="points">-</td>
             </tr>
         </table>
     <br><br>
@@ -461,23 +450,23 @@ tr.even td {
     <caption>Best Race Lap Times</caption>
     <tr>
     <th>Pos</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track"  >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track"  >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
           <tr>
       <td>1</td>
-            <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>1:59.644</td>
-              <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>1:59.644</td>
+            <td id="player">Test Driver<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:49.242</td>
+              <td id="player">Test Driver<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:48.837</td>
             </tr>
           <tr class="even">
       <td>2</td>
-            <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>1:59.772</td>
-              <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>1:59.772</td>
+            <td>Jörg van Ommen<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:49.257</td>
+              <td>Bernd Schneider<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:49.306</td>
             </tr>
           <tr>
       <td>3</td>
-            <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>1:59.927</td>
-              <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>1:59.927</td>
+            <td>Johnny Cecotto<br><span class="minor">BMW M3 Sport Evolution</span><br>0:49.426</td>
+              <td>Keke Rosberg<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:49.359</td>
             </tr>
         </table>
     <br><br>
@@ -485,23 +474,23 @@ tr.even td {
     <caption>Best Qualification Times</caption>
     <tr>
     <th>Pos</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track"  >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track"  >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
           <tr>
       <td>1</td>
-            <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>1:58.644</td>
-              <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>1:58.644</td>
+            <td></td>
+              <td></td>
             </tr>
           <tr class="even">
       <td>2</td>
-            <td>Emanuelle Pirro<br><span class="minor">BMW M3 Sport Evolution</span><br>1:58.677</td>
-              <td>Emanuelle Pirro<br><span class="minor">BMW M3 Sport Evolution</span><br>1:58.677</td>
+            <td></td>
+              <td></td>
             </tr>
           <tr>
       <td>3</td>
-            <td>Fritz Kreutzpointner<br><span class="minor">BMW M3 Sport Evolution</span><br>1:58.738</td>
-              <td>Fritz Kreutzpointner<br><span class="minor">BMW M3 Sport Evolution</span><br>1:58.738</td>
+            <td></td>
+              <td></td>
             </tr>
         </table>
     <br><br>
@@ -509,118 +498,118 @@ tr.even td {
     <caption>Race Results</caption>
     <tr>
     <th>Pos</th>
-          <th id="track">Lausitz<br>2015/01/04<br>10:17:50</th>
-              <th id="track">Lausitz<br>2015/01/04<br>10:21:50</th>
+          <th id="track"  >BrandsHatch<br>2015/01/11<br>20:11:54</th>
+              <th id="track"  >BrandsHatch<br>2015/01/11<br>20:39:48</th>
             </tr>
           <tr>
       <td>1</td>
-            <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>0:02:07.960</td>
-              <td id="player">Test Driver<br><span class="minor">Opel Omega 3000 Evo500</span><br>0:02:06.97</td>
+            <td>Kurt Thiim<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:15:14.031</td>
+              <td id="player">Test Driver<br><span class="minor">Mercedes 190E Evo II DTM</span><br>0:15:08.249</td>
             </tr>
           <tr class="even">
       <td>2</td>
-            <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>+ 1.048<br><span class="minor">+ 1.048</span></td>
-              <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>+ 0.038<br><span class="minor">+ 0.038</span></td>
+            <td>Bernd Schneider<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 0.415<br><span class="minor">+ 0.415</span></td>
+              <td>Bernd Schneider<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 0.479<br><span class="minor">+ 0.479</span></td>
             </tr>
           <tr>
       <td>3</td>
-            <td>Hans Joachim Stuck<br><span class="minor">Audi V8 DTM</span><br>+ 2.560<br><span class="minor">+ 1.512</span></td>
-              <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>+ 0.990<br><span class="minor">+ 0.952</span></td>
+            <td>Roland Asch<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 0.735<br><span class="minor">+ 0.320</span></td>
+              <td>Kurt Thiim<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 0.561<br><span class="minor">+ 0.082</span></td>
             </tr>
           <tr class="even">
       <td>4</td>
-            <td>Robert Ravaglia<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 2.860<br><span class="minor">+ 0.300</span></td>
-              <td>Hans Joachim Stuck<br><span class="minor">Audi V8 DTM</span><br>+ 3.550<br><span class="minor">+ 2.560</span></td>
+            <td>Keke Rosberg<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 1.095<br><span class="minor">+ 0.360</span></td>
+              <td>Johnny Cecotto<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 0.922<br><span class="minor">+ 0.361</span></td>
             </tr>
           <tr>
       <td>5</td>
-            <td>Kris Nissen<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 3.180<br><span class="minor">+ 0.320</span></td>
-              <td>Robert Ravaglia<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 3.850<br><span class="minor">+ 0.300</span></td>
+            <td>Hans Joachim Stuck<br><span class="minor">Audi V8 DTM</span><br>+ 1.893<br><span class="minor">+ 0.798</span></td>
+              <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>+ 3.845<br><span class="minor">+ 2.923</span></td>
             </tr>
           <tr class="even">
       <td>6</td>
-            <td>Jörg van Ommen<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 3.247<br><span class="minor">+ 0.067</span></td>
-              <td>Kris Nissen<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 4.170<br><span class="minor">+ 0.320</span></td>
+            <td>Joachim Winkelhock<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 2.710<br><span class="minor">+ 0.817</span></td>
+              <td>Keke Rosberg<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 4.801<br><span class="minor">+ 0.956</span></td>
             </tr>
           <tr>
       <td>7</td>
-            <td>Frank Jelinski<br><span class="minor">Audi V8 DTM</span><br>+ 3.368<br><span class="minor">+ 0.121</span></td>
-              <td>Jörg van Ommen<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 4.237<br><span class="minor">+ 0.067</span></td>
+            <td>Frank Biela<br><span class="minor">Audi V8 DTM</span><br>+ 4.412<br><span class="minor">+ 1.702</span></td>
+              <td>Hans Joachim Stuck<br><span class="minor">Audi V8 DTM</span><br>+ 10.078<br><span class="minor">+ 5.277</span></td>
             </tr>
           <tr class="even">
       <td>8</td>
-            <td>Altfrid Heger<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 4.891<br><span class="minor">+ 1.523</span></td>
-              <td>Frank Jelinski<br><span class="minor">Audi V8 DTM</span><br>+ 4.358<br><span class="minor">+ 0.121</span></td>
+            <td>Johnny Cecotto<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 5.584<br><span class="minor">+ 1.172</span></td>
+              <td>Jörg van Ommen<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 10.751<br><span class="minor">+ 0.673</span></td>
             </tr>
           <tr>
       <td>9</td>
-            <td>Ellen Lohr<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 4.938<br><span class="minor">+ 0.047</span></td>
-              <td>Altfrid Heger<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 5.881<br><span class="minor">+ 1.523</span></td>
+            <td>Jörg van Ommen<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 6.075<br><span class="minor">+ 0.491</span></td>
+              <td>Roland Asch<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 11.206<br><span class="minor">+ 0.455</span></td>
             </tr>
           <tr class="even">
       <td>10</td>
-            <td>Hubert Haubt<br><span class="minor">Audi V8 DTM</span><br>+ 5.232<br><span class="minor">+ 0.294</span></td>
-              <td>Ellen Lohr<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 5.928<br><span class="minor">+ 0.047</span></td>
+            <td>Steve Soper<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 8.630<br><span class="minor">+ 2.555</span></td>
+              <td>Joachim Winkelhock<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 11.432<br><span class="minor">+ 0.226</span></td>
             </tr>
           <tr>
       <td>11</td>
-            <td>Franz Engstler<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 5.250<br><span class="minor">+ 0.018</span></td>
-              <td>Hubert Haubt<br><span class="minor">Audi V8 DTM</span><br>+ 6.222<br><span class="minor">+ 0.294</span></td>
+            <td>Robert Ravaglia<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 12.441<br><span class="minor">+ 3.811</span></td>
+              <td>Robert Ravaglia<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 12.180<br><span class="minor">+ 0.748</span></td>
             </tr>
           <tr class="even">
       <td>12</td>
-            <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 5.814<br><span class="minor">+ 0.564</span></td>
-              <td>Franz Engstler<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 6.240<br><span class="minor">+ 0.018</span></td>
+            <td>Frank Jelinski<br><span class="minor">Audi V8 DTM</span><br>+ 20.549<br><span class="minor">+ 8.108</span></td>
+              <td>Jacques Laffite<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 15.763<br><span class="minor">+ 3.583</span></td>
             </tr>
           <tr>
       <td>13</td>
-            <td>Klaus Ludwig<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 6.043<br><span class="minor">+ 0.229</span></td>
-              <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 6.804<br><span class="minor">+ 0.564</span></td>
+            <td id="player">Test Driver<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 20.944<br><span class="minor">+ 0.395</span></td>
+              <td>Kris Nissen<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 16.555<br><span class="minor">+ 0.792</span></td>
             </tr>
           <tr class="even">
       <td>14</td>
-            <td>Bernd Schneider<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 6.917<br><span class="minor">+ 0.874</span></td>
-              <td>Klaus Ludwig<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 7.033<br><span class="minor">+ 0.229</span></td>
+            <td>Volker Strycek<br><span class="minor">Opel Omega 3000 Evo500</span><br>+ 21.527<br><span class="minor">+ 0.583</span></td>
+              <td>Steve Soper<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 17.079<br><span class="minor">+ 0.524</span></td>
             </tr>
           <tr>
       <td>15</td>
-            <td>Johnny Cecotto<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 7.032<br><span class="minor">+ 0.115</span></td>
-              <td>Bernd Schneider<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 7.907<br><span class="minor">+ 0.874</span></td>
+            <td>Ellen Lohr<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 22.965<br><span class="minor">+ 1.438</span></td>
+              <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 17.327<br><span class="minor">+ 0.248</span></td>
             </tr>
           <tr class="even">
       <td>16</td>
-            <td>Jürgen Feucht<br><span class="minor">Ford Mustang GT DTM</span><br>+ 7.485<br><span class="minor">+ 0.453</span></td>
-              <td>Johnny Cecotto<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 8.022<br><span class="minor">+ 0.115</span></td>
+            <td>Altfrid Heger<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 28.603<br><span class="minor">+ 5.638</span></td>
+              <td>Altfrid Heger<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 18.241<br><span class="minor">+ 0.914</span></td>
             </tr>
           <tr>
       <td>17</td>
-            <td>Kurt Thiim<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 8.452<br><span class="minor">+ 0.967</span></td>
-              <td>Jürgen Feucht<br><span class="minor">Ford Mustang GT DTM</span><br>+ 8.475<br><span class="minor">+ 0.453</span></td>
+            <td>Hubert Haubt<br><span class="minor">Audi V8 DTM</span><br>+ 29.288<br><span class="minor">+ 0.685</span></td>
+              <td>Ellen Lohr<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 19.080<br><span class="minor">+ 0.839</span></td>
             </tr>
           <tr class="even">
       <td>18</td>
-            <td>Roland Asch<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 9.159<br><span class="minor">+ 0.707</span></td>
-              <td>Kurt Thiim<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 9.442<br><span class="minor">+ 0.967</span></td>
+            <td>Leopold von Bayern<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 29.798<br><span class="minor">+ 0.510</span></td>
+              <td>Volker Strycek<br><span class="minor">Opel Omega 3000 Evo500</span><br>+ 23.548<br><span class="minor">+ 4.468</span></td>
             </tr>
           <tr>
       <td>19</td>
-            <td>Steve Soper<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 9.345<br><span class="minor">+ 0.186</span></td>
-              <td>Roland Asch<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 10.149<br><span class="minor">+ 0.707</span></td>
+            <td>Jürgen Feucht<br><span class="minor">Ford Mustang GT DTM</span><br>+ 31.401<br><span class="minor">+ 1.603</span></td>
+              <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>+ 26.447<br><span class="minor">+ 2.899</span></td>
             </tr>
           <tr class="even">
       <td>20</td>
-            <td>Emanuelle Pirro<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 42.670<br><span class="minor">+ 33.325</span></td>
-              <td>Steve Soper<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 10.335<br><span class="minor">+ 0.186</span></td>
+            <td>Jacques Laffite<br><span class="minor">Mercedes 190E Evo II DTM</span><br>+ 31.931<br><span class="minor">+ 0.530</span></td>
+              <td>Hubert Haubt<br><span class="minor">Audi V8 DTM</span><br>+ 31.629<br><span class="minor">+ 5.182</span></td>
             </tr>
           <tr>
       <td>21</td>
-            <td>Fritz Kreutzpointner<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 43.049<br><span class="minor">+ 0.379</span></td>
-              <td>Emanuelle Pirro<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 43.660<br><span class="minor">+ 33.325</span></td>
+            <td>Kris Nissen<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 32.153<br><span class="minor">+ 0.222</span></td>
+              <td>Jürgen Feucht<br><span class="minor">Ford Mustang GT DTM</span><br>+ 33.702<br><span class="minor">+ 2.073</span></td>
             </tr>
           <tr class="even">
       <td>22</td>
-            <td id="player">Test Driver<br><span class="minor">Opel Omega 3000 Evo500</span></td>
-              <td>Fritz Kreutzpointner<br><span class="minor">BMW M3 Sport Evolution</span><br>+ 44.039<br><span class="minor">+ 0.379</span></td>
+            <td>Gerd Ruch<br><span class="minor">Ford Mustang GT DTM</span><br>+ 34.215<br><span class="minor">+ 2.062</span></td>
+              <td>Frank Jelinski<br><span class="minor">Audi V8 DTM</span><br>+ 33.950<br><span class="minor">+ 0.248</span></td>
             </tr>
         </table>
     </body>

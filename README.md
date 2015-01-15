@@ -2,6 +2,7 @@ r3e-open-championship
 =====================
 
 Open Championship Statistics for [R3E](http://game.raceroom.com)
+© 2015 by Christoph Kubisch
 
 ### About
 
@@ -37,7 +38,7 @@ Since the tracknames are not stored in the result file (only track lengths), the
 
 ### Third Party
 
-Special thanks to "tAz-07" and "heppsan" from steam community on feedback and providing most of the track mappings.
+Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings.
 
 The exe was created via wxLuaFreeze and upx and automatically executes the r3e-open-championship.lua file.
 

@@ -43,17 +43,20 @@ th {
   font-size:smaller;
   font-weight:normal;
 }
+#player {
+  color:#E5A500;
+}
 .points {
   text-align:center;
 }
 .minor
 {
-  font-size:small;
+  font-size:smaller;
   color:#959595;
 }
 tr.even td {
   background:#3D3D3D;
 }
-#player {
-  color:#E5A500;
+td.pointcolumn {
+  border-right:1px hidden #767B7F;
 }

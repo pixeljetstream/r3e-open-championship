@@ -291,7 +291,7 @@ local function GenerateStatsHTML(championship,standings)
     <th>Points</th>
   ]])
   
-  local function addHeaderTracks()
+  local function addHeaderTracks(attr)
     -- complete header for all tracks
     -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
     for r=1,numraces do
@@ -300,14 +300,14 @@ local function GenerateStatsHTML(championship,standings)
       local time   = standings[r].timestring:gsub("(%s)","<br>")
       
       f:write([[
-        <th id="track">]]..track:sub(1,tracknamelength).."<br>"..time..[[</th>
+        <th id="track" ]]..(attr or "").." >"..track:sub(1,tracknamelength).."<br>"..time..[[</th>
       ]])
     end
     f:write([[
       </tr>
     ]])
   end
-  addHeaderTracks()
+  addHeaderTracks("colspan=2")
 
   -- iterate sorted drivers
   local accumpoints = getaccumpoints(racepoints, numdrivers)
@@ -322,14 +322,19 @@ local function GenerateStatsHTML(championship,standings)
       <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
     ]])
     for r=1,numraces do
-      local str = racepoints[r][i] or "DNF"
-      str = (str == 0 and "-" or str)
-      local rpos = racepositions[r][i]
-      str = str..(rpos and '<br><span class="points minor">'..rpos..".</span>" or "")
+      local str = racepoints[r][i]
       
-      f:write([[
-        <td class="points">]]..str..[[</td>
-      ]])
+      if (not str) then
+        f:write([[
+          <td class="points" colspan=2>DNF</td>
+        ]])
+      else
+        str = (str == 0 and "-" or str)
+        local rpos = racepositions[r][i]
+        f:write([[
+          <td class="points pointcolumn">]]..str..[[</td><td class="points minor">]]..rpos..[[.</td>
+        ]])
+      end
     end
     f:write([[
       </tr>
