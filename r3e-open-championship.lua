@@ -77,7 +77,8 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["3628.0947"]="RaceroomClassicSprint",
 ["3604.7246"]="RaceroomNational",
 }
-
+local descrdummy = "optionally added to a newly created season file"
+local newdescr = ""
 
 local function ParseTime(str)
   if (not str) then return end
@@ -271,6 +272,11 @@ local function GenerateStatsHTML(championship,standings)
   printlog("generate HTML",championship)
   
   local f = io.open(outdir..championship..".html","wt")
+ 
+  local descr = standings.description ~= "" and standings.description
+  descr = descr and "<h3>"..descr.."</h3>\n" or ""
+  
+  
   f:write([[
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -281,6 +287,7 @@ local function GenerateStatsHTML(championship,standings)
     </head>
     <body>
     <h1>R3E Championship Standings</h1>
+    ]]..descr..[[
     <table>
     <caption>Driver Standings</caption>
     <tr>
@@ -666,7 +673,7 @@ RaceTime=0:02:11.328
 end
 
 local function LoadStats(championship)
-  local standings = {}
+  local standings = { description = newdescr }
   
   local f = io.open(outdir..championship..".lua","rt")
   if (not f) then return standings end
@@ -685,8 +692,12 @@ local function LoadStats(championship)
   return standings
 end
 
-local function AppendStats(championship,results)
+local function AppendStats(championship,results,descr)
   local f = io.open(outdir..championship..".lua","at")
+  if (descr) then
+    f:write('description = [['..descr..']],\n\n')
+  end
+  
   f:write('{ tracklength = "'..results.tracklength..'", scene="'..results.scene..'", timestring="'..results.timestring..'", slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
@@ -707,7 +718,7 @@ local function UpdateHistory(filename)
     local standings = LoadStats(key)
     local numraces = #standings
     if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
-      AppendStats(key, res)
+      AppendStats(key, res, numraces == 0 and standings.description)
       table.insert(standings,res)
       
       -- rebuild html stats
@@ -754,7 +765,7 @@ timer = nil
 function main()
   -- create the frame window
   frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship (c) by Christoph Kubisch",
-                      wx.wxDefaultPosition, wx.wxSize(400+16,280),
+                      wx.wxDefaultPosition, wx.wxSize(400+16,340),
                       wx.wxDEFAULT_FRAME_STYLE )
 
   -- show the frame window
@@ -776,28 +787,31 @@ function main()
     end
   end
   
-  local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,280))
-  splitter:SetMinimumPaneSize(50) -- don't let it unsplit
+  local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,340))
+  splitter:SetMinimumPaneSize(200) -- don't let it unsplit
   splitter:SetSashGravity(0)
   frame.splitter = splitter
   
-  local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,140) )
+  local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,200) )
   frame.win = win
   
   local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "",
-                  wx.wxPoint(0,140), wx.wxSize(400+16,100),
+                  wx.wxPoint(0,0), wx.wxSize(400+16,100),
                   wx.wxTE_MULTILINE+wx.wxTE_DONTWRAP+wx.wxTE_READONLY)
   frame.txtlog = txtlog
   
   printlog = function(...)
-    local args = {...}
-    local argstring = table.concat({...},"\t")
+    local args = {}
+    for i,v in ipairs({...}) do
+      args[i] = tostring(v)
+    end
+    local argstring = table.concat(args,"\t")
     txtlog:AppendText(argstring.."\n")
   end
   
   printlog(string.format("init completed, minracetime %d mins, checkrate %d mins", minracetime, checkrate )) 
   
-  splitter:SplitHorizontally(win, txtlog, 0)
+  splitter:SplitHorizontally(win, txtlog, 200)
   
   local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(400,50) )
   local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(400-16,-1))
@@ -805,8 +819,11 @@ function main()
   local bw,bh = 200,20
   local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
   local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now", wx.wxPoint(8+bw,s), wx.wxSize(bw-16,bh))
-  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild All HTML Stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
-  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open Result Directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
+  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
+  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open result directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
+  local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description:", wx.wxPoint(8,s+60), wx.wxSize(200,16) )
+  local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, descrdummy,             wx.wxPoint(8,s+80), wx.wxSize(400-16,30), 0)
+  local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:", wx.wxPoint(8,s+114), wx.wxSize(60,16) )
   
   tglpoll:SetValue(true)
   tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
@@ -833,12 +850,19 @@ function main()
     wx.wxExecute('explorer /select,"'..outpath..'"', wx.wxEXEC_ASYNC)
   end)
 
+  txtdescr:Connect( wx.wxEVT_COMMAND_TEXT_UPDATED, function(event)
+    newdescr = event:GetString()
+  end)
+
   win.label = label
   win.line  = line
   win.tglpoll = tglpoll
   win.btncheck = btncheck
   win.btnrebuild = btnrebuild
   win.btnresult = btnresult
+  win.labeldescr = labeldescr
+  win.txtdescr  = txtdescr
+  win.labellog = labellog
   
   frame:Connect(wx.wxEVT_ACTIVATE,
     function(event)
