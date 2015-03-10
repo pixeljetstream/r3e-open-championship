@@ -76,6 +76,10 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["3840.5679"]="RaceroomClassic",
 ["3628.0947"]="RaceroomClassicSprint",
 ["3604.7246"]="RaceroomNational",
+["3208.6384"]="SonomaSprint",
+["4101.1851"]="SonomaWTCC",
+["3706.5615"]="SonomaIRL",
+["4046.4993"]="SonomaLong",
 }
 local descrdummy = "optionally added to a newly created season file"
 local newdescr = ""
