@@ -31,6 +31,16 @@ Run the ".exe" file, it should bring up a very simple program that you keep runn
 
 It is an "open" championship, as none of the settings are really frozen (AI...), you can keep going and mix tracks however you want, a pseudo championship based on your single player races. Simply delete the appropriate database lua file in the "results" directory to start fresh again.
 
+### History
+
+Time-line for major features
+
+* 13.6.2015 - added icons for tracks and vehicles
+* 16.1.2015 - added optional description string for a championship
+* 10.1.2015 - added qual times, race results and driver standings with positions
+*  9.1.2015 - added team and car standings, as well as best laptimes
+*  4.1.2015 - first release, track multiple championship, html report for driver standings
+
 ### A few caveats
 
 Simply do not run the app if you do races you don't want to track. If something is accidentally added somewhere you can always manually delete or edit the files and remove the last entry.
@@ -39,6 +49,8 @@ Since the tracknames are not stored in the result file (only track lengths), the
 ### Third Party
 
 Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings.
+
+The icons are directly linked to the official game website.
 
 The exe was created via wxLuaFreeze and upx and automatically executes the r3e-open-championship.lua file.
 

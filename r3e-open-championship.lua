@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 
+local useicons    = true
+local onlyicons   = false
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 local checkrate   = 1           -- in minutes
@@ -32,54 +34,56 @@ local tracknamelength = 12      -- to keep track columns tight, names are cut of
                                 -- a high value here, and make use of <br> below
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {
-["4556.0303"]="Hockenheim", 
-["3663.8022"]="Oschersleben",
-["3663.8020"]="Oschersleben",
-["4359.0034"]="Hungaroring",
-["2192.3979"]="Norisring",
-["3898.8025"]="Moscow",
-["4305.5688"]="RedBullRing",
-["3609.2053"]="Nürburgring",
-["3434.4822"]="Lausitz",
-["4275.6143"]="Zandvoort",
-["1939.5625"]="BrandsHatch",
-["5915.0332"]="Slovakia",
-["3649.3059"]="Sachsenring",
-["3797.2512"]="RaceroomRaceway",
-["4623.4604"]="Portimao",
-["6191.8174"]="Bathurst",
-["3992.8533"]="Zolder",
-["4069.3682"]="Indianapolis",
-["3585.5344"]="LagunaSeca",
-["3809.4441"]="MidOhio",
-["5783.3423"]="Monza",
-["5801.7275"]="Suzuka",
-["3464.6255"]="SuzukaWC",
-["2234.5293"]="SuzukaEC",
-["3823.2102"]="MidOhioFull",
-["2880.1135"]="MidOhioShort",
-["2416.6360"]="MonzaJR",
-["3684.3110"]="HockenheimNational",
-["2585.4141"]="HockenheimShort",
-["2887.9546"]="ZandvoortNational",
-["2510.1907"]="ZandvoortClub",
-["4193.3374"]="IndianapolisMoto",
-["3407.2373"]="LausitzAuto",
-["5123.2192"]="NürburgringGP",
-["3597.9592"]="NürburgringShort",
-["4148.3921"]="PortimaoNational",
-["3885.0781"]="PortimaoClub",
-["3880.8940"]="PortimaoChicane",
-["2512.9583"]="MoscowSprint",
-["3924.9500"]="MoscowFull",
-["3356.2083"]="RaceroomBridge",
-["3840.5679"]="RaceroomClassic",
-["3628.0947"]="RaceroomClassicSprint",
-["3604.7246"]="RaceroomNational",
-["3208.6384"]="SonomaSprint",
-["4101.1851"]="SonomaWTCC",
-["3706.5615"]="SonomaIRL",
-["4046.4993"]="SonomaLong",
+--tracklength={shortname,           official asset name}
+["6191.8174"]={"Bathurst",          "Bathurst Circuit - Mount Panorama"},
+["1939.5625"]={"BrandsHatch",       "Brands Hatch - Indy"},
+["4275.6143"]={"Zandvoort",         "Circuit Park Zandvoort - Grand Prix"},
+["2887.9546"]={"ZandvoortNational", "Circuit Park Zandvoort - National"},
+["2510.1907"]={"ZandvoortClub",     "Circuit Park Zandvoort - Club"},
+["3992.8533"]={"Zolder",            "Circuit Zolder - Grand Prix"},
+["3407.2373"]={"LausitzAuto",       "EuroSpeedway Lausitz - Automobilsport"},
+["3434.4822"]={"Lausitz",           "EuroSpeedway Lausitz - Grand Prix"},
+["4556.0303"]={"Hockenheim",        "Hockenheimring - Grand Prix"},
+["3684.3110"]={"HockenheimNational","Hockenheimring - National"},
+["2585.4141"]={"HockenheimShort",   "Hockenheimring - Short"},
+["4359.0034"]={"Hungaroring",       "Hungaroring - Grand Prix"},
+["4069.3682"]={"Indianapolis",      "Indianapolis - Grand Prix"},
+["4193.3374"]={"IndianapolisMoto",  "Indianapolis - Moto"},
+["3585.5344"]={"LagunaSeca",        "Mazda Laguna Seca - Grand Prix"},
+["3809.4441"]={"MidOhio",           "Mid Ohio - Chicane"},
+["3823.2102"]={"MidOhioFull",       "Mid Ohio - Full"},
+["2880.1135"]={"MidOhioShort",      "Mid Ohio - Short"},
+["5783.3423"]={"Monza",             "Monza Circuit - Grand Prix"},
+["2416.6360"]={"MonzaJR",           "Monza Circuit - Junior"},
+["3898.8025"]={"Moscow",            "Moscow Raceway - FIM"},
+["2512.9583"]={"MoscowSprint",      "Moscow Raceway - Sprint"},
+["3924.9500"]={"MoscowFull",        "Moscow Raceway - Full"},
+["3663.8022"]={"Oschersleben",      "Motorsport Arena Oschersleben - Grand Prix"},
+["3663.8020"]={"Oschersleben",      "Motorsport Arena Oschersleben - Grand Prix"},
+["2192.3979"]={"Norisring",         "Norisring - Grand Prix"},
+["3609.2053"]={"NürburgringSprint", "Nürburgring - Sprint"},
+["5123.2192"]={"Nürburgring",       "Nürburgring - Grand Prix"},
+["3597.9592"]={"NürburgringShort",  "Nürburgring - Short"},
+["3885.0781"]={"PortimaoClub",      "Portimao Circuit - Club"},
+["3880.8940"]={"PortimaoChicane",   "Portimao Circuit - Club Chicane"},
+["4623.4604"]={"Portimao",          "Portimao Circuit - Grand Prix"},
+["4148.3921"]={"PortimaoNational",  "Portimao Circuit - National"},
+["3797.2512"]={"RaceroomGP",        "RaceRoom Raceway - Grand Prix"},
+["3356.2083"]={"RaceroomBridge",    "RaceRoom Raceway - Bridge"},
+["3840.5679"]={"RaceroomClassic",   "RaceRoom Raceway - Classic"},
+["3628.0947"]={"RaceroomClassicSprint","RaceRoom Raceway - Classic Sprint"},
+["3604.7246"]={"RaceroomNational",  "RaceRoom Raceway - National"},
+["3208.6384"]={"SonomaSprint",      "Sonoma Raceway - Sprint"},
+["4101.1851"]={"SonomaWTCC",        "Sonoma Raceway - WTCC"},
+["3706.5615"]={"SonomaIRL",         "Sonoma Raceway - IRL"},
+["4046.4993"]={"SonomaLong",        "Sonoma Raceway - Long"},
+["4305.5688"]={"RedBullRing",       "Red Bull Ring Spielberg - Grand Prix"},
+["3649.3059"]={"Sachsenring",       "Sachsenring - Grand Prix"},
+--["3649.3323"]={"Salzburgring",      "Salzburgring - Grand Prix"},
+["5915.0332"]={"Slovakia",          "Slovakia Ring - Grand Prix"},
+["2234.5293"]={"SuzukaEast",        "Suzuka Circuit - East Course"},
+["5801.7275"]={"SuzukaGP",          "Suzuka Circuit - Grand Prix"},
+["3464.6255"]={"SuzukaWest",        "Suzuka Circuit - West Course"},
 }
 local descrdummy = "optionally added to a newly created season file"
 local newdescr = ""
@@ -118,6 +122,27 @@ local function DiffTime(stra, strb)
 end
 
 local printlog = print
+
+local function parseAssetIcons(filename)
+  local f = io.open(filename,"rt")
+  local str = f:read("*a")
+  f:close()
+
+  local icons = {}
+  for url,key in str:gmatch('image="(.-)">%s*(.-)<') do
+    icons[key] = url
+  end
+  
+  for i,v in pairs(tracknames) do
+    assert(icons[v[2]], v[2].." icon not found")
+  end
+  return icons
+end
+local function makeIcon(url,name,style)
+  return '<img src="'..url..'" alt="'..name..'" title="'..name..'" style="vertical-align:middle;'..(style or "")..'" >'
+end
+
+local icons = parseAssetIcons("assets.txt")
 
 local function GenerateStatsHTML(championship,standings)
   assert(championship and standings)
@@ -290,6 +315,7 @@ local function GenerateStatsHTML(championship,standings)
     <link rel="stylesheet" href="_style.css">
     </head>
     <body>
+    <span class="minor">Icons are linked directly from the game's official website</span>
     <h1>R3E Championship Standings</h1>
     ]]..descr..[[
     <table>
@@ -307,11 +333,16 @@ local function GenerateStatsHTML(championship,standings)
     -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
     for r=1,numraces do
       local track = tostring(standings[r].tracklength)
-      track = tracknames[track] or track
+      local tinfo = tracknames[track]
+      if (tinfo) then
+        local icon  = icons[tinfo[2]]
+        icon  = useicons and makeIcon(icon,tinfo[2]) or ""
+        track = onlyicons and icon or icon.."<br>"..tinfo[1]:sub(1,tracknamelength)
+      end
       local time   = standings[r].timestring:gsub("(%s)","<br>")
       
       f:write([[
-        <th id="track" ]]..(attr or "").." >"..track:sub(1,tracknamelength).."<br>"..time..[[</th>
+        <th id="track" ]]..(attr or "").." >"..track.."<br>"..time..[[</th>
       ]])
     end
     f:write([[
@@ -324,11 +355,18 @@ local function GenerateStatsHTML(championship,standings)
   local accumpoints = getaccumpoints(racepoints, numdrivers)
   local sortedslots = getsortedslots(accumpoints)
   for pos,i in ipairs(sortedslots) do
+    local vehicle = info[i].Vehicle
+    local icon = icons[vehicle]
+    if (icon and useicons) then
+      icon = makeIcon(icon,vehicle)
+      vehicle = onlyicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
+    end
+    
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
       <td>]]..pos..[[</td>
       <td>]]..info[i].Driver..[[</td>
-      <td>]]..info[i].Vehicle..[[</td>
+      <td>]]..vehicle..[[</td>
       <td>]]..info[i].Team..[[</td>
       <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
     ]])
@@ -411,10 +449,17 @@ if (numcars > 1) then
   local accumpoints = getaccumpoints(carracepoints, numcars)
   local sortedslots = getsortedslots(accumpoints)
   for pos,i in ipairs(sortedslots) do
+    local carname = carslots[i].Name
+    local icon = icons[carname]
+    if (icon and useicons) then
+      icon = makeIcon(icon,carname)
+      carname = icon..carname
+    end
+    
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
       <td>]]..pos..[[</td>
-      <td>]]..carslots[i].Name..[[</td>
+      <td>]]..carname..[[</td>
       <td>]]..carslots[i].Entries..[[</td>
       <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
     ]])
@@ -448,8 +493,15 @@ end
     ]])
     for r=1,numraces do
       local tab = lapracetimes[r][pos]
+      local vehicle = tab.Vehicle
+      local icon = icons[vehicle]
+      if (icon and useicons) then
+        icon = makeIcon(icon,vehicle)
+        vehicle = onlyicons and icon or icon.."<br>"..vehicle
+      end
+      
       local driver  = tab and tab.Driver or ""
-      local vehicle = tab and '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
+      local vehicle = tab and '<br><span class="minor">'..vehicle.."</span>" or ""
       local time    = tab and '<br>'..tab.BestLap or ""
       
       f:write([[
@@ -478,12 +530,22 @@ end
     ]])
     for r=1,numraces do
       local tab = qualracetimes[r][pos]
-      local driver  = tab and tab.Driver or ""
-      local vehicle = tab and '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
-      local time    = tab and '<br>'..tab.QualTime or ""
+      local str = ""
+      if (tab) then
+        local vehicle = tab.Vehicle
+        local icon = icons[vehicle]
+        if (icon and useicons) then
+          icon = makeIcon(icon,vehicle)
+          vehicle = onlyicons and icon or icon.."<br>"..vehicle
+        end
+        local driver  = tab.Driver or ""
+        local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
+        local time    = '<br>'..tab.QualTime or ""
+        str = driver..vehicle..time
+      end
       
       f:write([[
-        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..[[</td>
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..str..[[</td>
       ]])
     end
     f:write([[
@@ -520,8 +582,17 @@ end
         gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
       end
       
+      local vehicle = tab.Vehicle
+      local icon = icons[vehicle]
+      if (icon and useicons and onlyicons) then
+        icon = makeIcon(icon,vehicle,"opacity:0.6;height:1.7em;")
+        vehicle = icon
+      else
+        vehicle = '<span class="minor">'..tab.Vehicle..'</span>'
+      end
+    
       local driver  = tab.Driver
-      local vehicle = '<br><span class="minor">'..tab.Vehicle.."</span>" or ""
+      local vehicle = '<br>'..vehicle
       
       f:write([[
         <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..gap..[[</td>
@@ -638,8 +709,8 @@ RaceTime=0:02:11.328
   local key
   local hash = ""
   local slots = {}
-  
   local mintime
+  local drivers = {}
   
   for slot,info in txt:gmatch("%[Slot(%d+)%](.-\n\n)") do
     slot = tonumber(slot) + 1
@@ -651,6 +722,7 @@ RaceTime=0:02:11.328
       slots[slot] = tab
       
       hash = hash..tab.Team..tab.Driver
+      table.insert(drivers,tab.Driver)
       
       local time = ParseTime(tab.RaceTime)
       if (time) then mintime = math.min(mintime or 10000000,time) end
@@ -813,7 +885,8 @@ function main()
     txtlog:AppendText(argstring.."\n")
   end
   
-  printlog(string.format("init completed, minracetime %d mins, checkrate %d mins", minracetime, checkrate )) 
+  printlog("init completed")
+  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", minracetime, checkrate, useicons, onlyicons )) 
   
   splitter:SplitHorizontally(win, txtlog, 200)
   
