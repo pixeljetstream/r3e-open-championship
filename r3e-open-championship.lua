@@ -886,7 +886,7 @@ function main()
   end
   
   printlog("init completed")
-  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", minracetime, checkrate, useicons, onlyicons )) 
+  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", minracetime, checkrate, tostring(useicons), tostring(onlyicons) )) 
   
   splitter:SplitHorizontally(win, txtlog, 200)
   
