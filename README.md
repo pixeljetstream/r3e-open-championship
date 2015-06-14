@@ -33,8 +33,9 @@ It is an "open" championship, as none of the settings are really frozen (AI...),
 
 ### History
 
-Time-line for major features
+Time-line for some distinct features
 
+* 14.6.2015 - modified css styles a bit, allow position-based color-coding
 * 13.6.2015 - added icons for tracks and vehicles
 * 16.1.2015 - added optional description string for a championship
 * 10.1.2015 - added qual times, race results and driver standings with positions

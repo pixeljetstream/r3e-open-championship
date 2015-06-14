@@ -22,8 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 
+local REGENONLY   = false
+
 local useicons    = true
 local onlyicons   = false
+local maxmergedrivers = 5       -- number of drivers that can be different to first race of season 
+                                -- meant for merging multiplayer races where drivers may be missing
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 local checkrate   = 1           -- in minutes
@@ -36,7 +40,7 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 {
 --tracklength={shortname,           official asset name}
 ["6191.8174"]={"Bathurst",          "Bathurst Circuit - Mount Panorama"},
-["1939.5625"]={"BrandsHatch",       "Brands Hatch - Indy"},
+["1939.5625"]={"BrandsHatchIndy",   "Brands Hatch - Indy"},
 ["4275.6143"]={"Zandvoort",         "Circuit Park Zandvoort - Grand Prix"},
 ["2887.9546"]={"ZandvoortNational", "Circuit Park Zandvoort - National"},
 ["2510.1907"]={"ZandvoortClub",     "Circuit Park Zandvoort - Club"},
@@ -50,7 +54,7 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["4069.3682"]={"Indianapolis",      "Indianapolis - Grand Prix"},
 ["4193.3374"]={"IndianapolisMoto",  "Indianapolis - Moto"},
 ["3585.5344"]={"LagunaSeca",        "Mazda Laguna Seca - Grand Prix"},
-["3809.4441"]={"MidOhio",           "Mid Ohio - Chicane"},
+["3809.4441"]={"MidOhioChicane",    "Mid Ohio - Chicane"},
 ["3823.2102"]={"MidOhioFull",       "Mid Ohio - Full"},
 ["2880.1135"]={"MidOhioShort",      "Mid Ohio - Short"},
 ["5783.3423"]={"Monza",             "Monza Circuit - Grand Prix"},
@@ -68,7 +72,7 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["3880.8940"]={"PortimaoChicane",   "Portimao Circuit - Club Chicane"},
 ["4623.4604"]={"Portimao",          "Portimao Circuit - Grand Prix"},
 ["4148.3921"]={"PortimaoNational",  "Portimao Circuit - National"},
-["3797.2512"]={"RaceroomGP",        "RaceRoom Raceway - Grand Prix"},
+["3797.2512"]={"Raceroom",          "RaceRoom Raceway - Grand Prix"},
 ["3356.2083"]={"RaceroomBridge",    "RaceRoom Raceway - Bridge"},
 ["3840.5679"]={"RaceroomClassic",   "RaceRoom Raceway - Classic"},
 ["3628.0947"]={"RaceroomClassicSprint","RaceRoom Raceway - Classic Sprint"},
@@ -80,9 +84,12 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["4305.5688"]={"RedBullRing",       "Red Bull Ring Spielberg - Grand Prix"},
 ["3649.3059"]={"Sachsenring",       "Sachsenring - Grand Prix"},
 --["3649.3323"]={"Salzburgring",      "Salzburgring - Grand Prix"},
+--["12234.5293"]={"Shanghai",         "Shanghai Circuit - East Course"},
+--["15801.7275"]={"ShanghaiWTCC",     "Shanghai Circuit - Intermediate (WTCC)"},
+--["13464.6255"]={"ShanghaiWest",     "Shanghai Circuit - West Long"},
 ["5915.0332"]={"Slovakia",          "Slovakia Ring - Grand Prix"},
 ["2234.5293"]={"SuzukaEast",        "Suzuka Circuit - East Course"},
-["5801.7275"]={"SuzukaGP",          "Suzuka Circuit - Grand Prix"},
+["5801.7275"]={"Suzuka",            "Suzuka Circuit - Grand Prix"},
 ["3464.6255"]={"SuzukaWest",        "Suzuka Circuit - West Course"},
 }
 local descrdummy = "optionally added to a newly created season file"
@@ -373,17 +380,17 @@ local function GenerateStatsHTML(championship,standings)
     for r=1,numraces do
       local str = racepoints[r][i]
       
+      f:write([[
+          <span class="points">]])
       if (not str) then
-        f:write([[
-          <td class="points" colspan=2>DNF</td>
-        ]])
+        f:write([[<td colspan=2>DNF</td>]])
       else
         str = (str == 0 and "-" or str)
         local rpos = racepositions[r][i]
-        f:write([[
-          <td class="points pointcolumn">]]..str..[[</td><td class="points minor">]]..rpos..[[.</td>
-        ]])
+        f:write([[<td class="pointcolumn">]]..str..[[</td><td class="poscolumn pos]]..rpos..[[">]]..rpos..[[.</td>]])
       end
+      f:write([[</span>
+          ]])
     end
     f:write([[
       </tr>
@@ -711,6 +718,8 @@ RaceTime=0:02:11.328
   local slots = {}
   local mintime
   local drivers = {}
+  local lkdrivers = {}
+  local uniquedrivers = true
   
   for slot,info in txt:gmatch("%[Slot(%d+)%](.-\n\n)") do
     slot = tonumber(slot) + 1
@@ -723,11 +732,17 @@ RaceTime=0:02:11.328
       
       hash = hash..tab.Team..tab.Driver
       table.insert(drivers,tab.Driver)
+      if (lkdrivers[tab.Driver]) then
+        uniquedrivers = false
+      end
+      lkdrivers[tab.Driver] = true
       
       local time = ParseTime(tab.RaceTime)
       if (time) then mintime = math.min(mintime or 10000000,time) end
     end
   end
+  
+  table.sort(drivers)
   
   -- discard if no valid time found
   if (not mintime) then
@@ -745,7 +760,7 @@ RaceTime=0:02:11.328
   
   printlog("race parsed",key, timestring)
   
-  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
+  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}, uniquedrivers and drivers
 end
 
 local function LoadStats(championship)
@@ -788,10 +803,10 @@ end
 
 local function UpdateHistory(filename)
   -- parse results
-  local key,res = ParseResults(filename)
+  local key,res,drivers = ParseResults(filename)
   if (key and res) then
     -- append to proper statistics file
-    local standings = LoadStats(key)
+    local standings = LoadStats(key,drivers)
     local numraces = #standings
     if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
       AppendStats(key, res, numraces == 0 and standings.description)
@@ -830,7 +845,7 @@ local function GetFileModTime(filename)
 end
 
 -- debugging
-if (false) then
+if (REGENONLY) then
   RegenerateStatsHTML()
   return 
 end
