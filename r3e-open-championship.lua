@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
-
+local arg = arg
 local REGENONLY   = false
 
 local useicons    = true
@@ -95,6 +95,36 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 local descrdummy = "optionally added to a newly created season file"
 local newdescr = ""
 
+-------------------------------------------------------------------------------------
+--
+
+local printlog = print
+
+local function tableFlatCopy(tab,fields)
+  local tout = {}
+  
+  if (fields) then
+    for i,v in pairs(fields) do
+      tout[v] = tab[v]
+    end
+  else
+    for i,v in pairs(tab) do
+      tout[i] = v
+    end
+  end
+  return tout
+end
+
+local function tableLayerCopy(tab,fields)
+  local tout = {}
+  
+  for i,v in pairs(tab) do
+    tout[i] = tableFlatCopy(v,fields)
+  end
+  
+  return tout
+end
+
 local function ParseTime(str)
   if (not str) then return end
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
@@ -128,8 +158,6 @@ local function DiffTime(stra, strb)
   
 end
 
-local printlog = print
-
 local function parseAssetIcons(filename)
   local f = io.open(filename,"rt")
   local str = f:read("*a")
@@ -155,7 +183,52 @@ local function GenerateStatsHTML(championship,standings)
   assert(championship and standings)
   local info = standings[1].slots
   assert(info)
+  
+  printlog("generate HTML",championship)
+  
+  -- check if we have unique names, then operate based on
+  -- names and not slotindices
+  local uniquedrivers = true
+  local lkdrivers = {}
+  for i,v in ipairs(info) do
+    if (lkdrivers[v.Driver]) then
+      uniquedrivers = false
+    end
+    lkdrivers[v.Driver] = i
+  end
+  
+  if (uniquedrivers) then
+    printlog "uniquedrivers used"
+    -- make info a copy to avoid messing with "standings"
+    info = tableLayerCopy(info,{"Driver","Team","Vehicle"})
+    
+    -- if we have unique names, append new drivers of later races
+    for r,race in ipairs(standings) do 
+      for i,v in ipairs(race.slots) do
+        if (not lkdrivers[v.Driver]) then
+          local vnew = tableFlatCopy(v,{"Driver","Team","Vehicle"})
+          table.insert(info,vnew)
+          lkdrivers[v.Driver] = #info
+        end
+      end
+    end
+    
+    -- start reshuffling all results based on info, and add dummy entries
+    for r,race in ipairs(standings) do
+      -- fill in the dummy info first
+      local newslots = tableFlatCopy(info)
+      -- overwrite with real info
+      for i,v in ipairs(race.slots) do
+        newslots[ lkdrivers[v.Driver] ] = v
+      end
+      race.slots = newslots
+    end
+  end
+  
+  
   local numdrivers = #info
+  
+  
   local numraces   = #standings
   local numbestlap = math.min(maxbestlap,numdrivers)
   local numbestqual= math.min(maxbestqual,numdrivers)
@@ -190,12 +263,19 @@ local function GenerateStatsHTML(championship,standings)
   local numcars  = #carslots
     
   -- driver, team and car points
+  -- [numraces][numdrivers]
   local raceresults     = {}
   local racepositions   = {}
   local racepoints      = {}
+  
+  -- [numraces][numteams]
   local teamracepoints  = {}
+  -- [numraces][numcars]
   local carracepoints   = {}
+  
+  -- [numraces][numbestlap]
   local lapracetimes    = {}
+  -- [numraces][numbestqual]
   local qualracetimes   = {}
   
   -- create point table per race per slot
@@ -205,6 +285,7 @@ local function GenerateStatsHTML(championship,standings)
       local sorted = {}
       for i=1,numdrivers do
         sorted[i] = i
+        assert(race.slots[i], string.format("%d %d",r,i))
         times[i] = ParseTime(race.slots[i][field] or "")
         -- may be nil if DNF 
       end
@@ -305,8 +386,6 @@ local function GenerateStatsHTML(championship,standings)
     return slots
   end
   
-  printlog("generate HTML",championship)
-  
   local f = io.open(outdir..championship..".html","wt")
  
   local descr = standings.description ~= "" and standings.description
@@ -379,11 +458,12 @@ local function GenerateStatsHTML(championship,standings)
     ]])
     for r=1,numraces do
       local str = racepoints[r][i]
+      local didrace = standings[r].slots[i].RaceTime
       
       f:write([[
           <span class="points">]])
       if (not str) then
-        f:write([[<td colspan=2>DNF</td>]])
+        f:write([[<td colspan=2 class="minor">]]..(didrace and "DNF" or "non-starter")..[[</td>]])
       else
         str = (str == 0 and "-" or str)
         local rpos = racepositions[r][i]
@@ -577,13 +657,14 @@ end
     ]])
     for r=1,numraces do
       local tab  = raceresults[r][pos]
-      local time = '<br>'..tab.RaceTime
+      local didrace = tab.RaceTime
+      local time = '<br>'..(tab.RaceTime or "non-starter")
       local gap  = ""
       
       if (pos > 1) then
         -- to winner
         time = DiffTime( raceresults[r][1].RaceTime,      tab.RaceTime )
-        time = time and '<br>'..time or ""
+        time = time and '<br>'..time or (didrace and "<br>DNF" or "<br>non-starter")
         -- to previous driver
         gap  = DiffTime( raceresults[r][pos-1].RaceTime,  tab.RaceTime )
         gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
@@ -847,8 +928,9 @@ end
 -- debugging
 if (REGENONLY) then
   RegenerateStatsHTML()
-  return 
+  return
 end
+
 
 frame = nil
 timer = nil
