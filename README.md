@@ -6,7 +6,7 @@ Open Championship Statistics for [R3E](http://game.raceroom.com)
 
 ### About
 
-This is a small tool that parses the raceresult file from R3E and generates a tiny database and a html report for a championship based on multiple single race events. It is not supported nor in anyway endorsed by the creators of R3E.
+This is a small tool that parses the raceresult file from R3E and generates a tiny database and a html report for a championship based on multiple single race events (single- or multiplayer). It is not supported nor in anyway endorsed by the creators of R3E.
 
 ![sample output](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/samplesm.png)
 
@@ -17,7 +17,7 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 * Vehicle Standings (if more than one vehicle type)
 * Best Race Lap Times
 * Best Qualification Times
-* Race Results
+* Detailed Race Results
 
 ### How it works
 
@@ -26,15 +26,34 @@ Run the ".exe" file, it should bring up a very simple program that you keep runn
 ![ui](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/ui.png)
 
 * The program tracks edits to "My Documents/My Games/SimBin... raceresults.txt" which contains the results of the last completed race (no matter what kind of race it was).
-* Based on the content of the file a unique "championship" is created (hash based on starter-field). That means if you choose always the same starter-field config (vehilce class and number of opponents) in your single player race, it shall treat it as a single championship
+* Based on the content of the file a unique "championship" is created (hash based on starter-field). That means if you choose always the same starter-field config (vehicle class and number of opponents) in your single player race, it shall treat it as a single championship
 * For every completed race, the results are appended to the championship file (a simple text file storing the results for every race) and a HTML file is generated with the current standings, see image above
 
 It is an "open" championship, as none of the settings are really frozen (AI...), you can keep going and mix tracks however you want, a pseudo championship based on your single player races. Simply delete the appropriate database lua file in the "results" directory to start fresh again.
+
+* Edit the override database key to collect multiplayer races into a custom season database, just enter a filename compatible text here. There
+is no compatibility check when a race is appended, so keep organized :)
+
+### Commandline mode
+
+In commandline mode, the ui is not started and core functionality is exposed.
+
+* `-addrace dataBaseFile raceresultsFile`
+  Appends the race to the provided database file (no error checking whether it 
+  contains drivers from the race or not).
+
+* `-makehtml dataBaseFile htmlFile`
+  Generates html results for the provided database file
+  
+For example:
+
+`r3-open-championship.exe -addrace season1.lua raceresults.txt -makehtml season1.lua season1.html`
 
 ### History
 
 Time-line for some distinct features
 
+* 20.6.2015 - multiplayer-friendly commandline options, and database override
 * 14.6.2015 - modified css styles a bit, allow position-based color-coding
 * 13.6.2015 - added icons for tracks and vehicles
 * 16.1.2015 - added optional description string for a championship

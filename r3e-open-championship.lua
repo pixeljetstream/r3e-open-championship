@@ -21,13 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
-local arg = arg
+local cmdlineargs = arg or {...}
 local REGENONLY   = false
 
 local useicons    = true
 local onlyicons   = false
-local maxmergedrivers = 5       -- number of drivers that can be different to first race of season 
-                                -- meant for merging multiplayer races where drivers may be missing
+
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 local checkrate   = 1           -- in minutes
@@ -53,6 +52,7 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["4359.0034"]={"Hungaroring",       "Hungaroring - Grand Prix"},
 ["4069.3682"]={"Indianapolis",      "Indianapolis - Grand Prix"},
 ["4193.3374"]={"IndianapolisMoto",  "Indianapolis - Moto"},
+--["4134.2123"]={"Macau",             "Macau - Grand Prix"},
 ["3585.5344"]={"LagunaSeca",        "Mazda Laguna Seca - Grand Prix"},
 ["3809.4441"]={"MidOhioChicane",    "Mid Ohio - Chicane"},
 ["3823.2102"]={"MidOhioFull",       "Mid Ohio - Full"},
@@ -92,9 +92,8 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["5801.7275"]={"Suzuka",            "Suzuka Circuit - Grand Prix"},
 ["3464.6255"]={"SuzukaWest",        "Suzuka Circuit - West Course"},
 }
-local descrdummy = "optionally added to a newly created season file"
 local newdescr = ""
-
+local forcedkey = ""
 -------------------------------------------------------------------------------------
 --
 
@@ -179,12 +178,12 @@ end
 
 local icons = parseAssetIcons("assets.txt")
 
-local function GenerateStatsHTML(championship,standings)
-  assert(championship and standings)
+local function GenerateStatsHTML(outfilename,standings)
+  assert(outfilename and standings)
   local info = standings[1].slots
   assert(info)
   
-  printlog("generate HTML",championship)
+  printlog("generate HTML",outfilename)
   
   -- check if we have unique names, then operate based on
   -- names and not slotindices
@@ -386,7 +385,7 @@ local function GenerateStatsHTML(championship,standings)
     return slots
   end
   
-  local f = io.open(outdir..championship..".html","wt")
+  local f = io.open(outfilename,"wt")
  
   local descr = standings.description ~= "" and standings.description
   descr = descr and "<h3>"..descr.."</h3>\n" or ""
@@ -841,13 +840,12 @@ RaceTime=0:02:11.328
   
   printlog("race parsed",key, timestring)
   
-  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}, uniquedrivers and drivers
+  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
 end
 
-local function LoadStats(championship)
+local function LoadStats(outfilename)
   local standings = { description = newdescr }
-  
-  local f = io.open(outdir..championship..".lua","rt")
+  local f = io.open(outfilename,"rt")
   if (not f) then return standings end
   
   local str = f:read("*a")
@@ -856,7 +854,7 @@ local function LoadStats(championship)
   
   local fn,err = loadstring(txt)
   if (not fn) then
-    printlog("load failed",championship, err)
+    printlog("load failed",outfilename, err)
     return standings
   end
   
@@ -864,11 +862,12 @@ local function LoadStats(championship)
   return standings
 end
 
-local function AppendStats(championship,results,descr)
-  local f = io.open(outdir..championship..".lua","at")
+local function AppendStats(outfilename,results,descr)
+  local f = io.open(outfilename,"at")
   if (descr) then
     f:write('description = [['..descr..']],\n\n')
   end
+  printlog("appendrace",outfilename)
   
   f:write('{ tracklength = "'..results.tracklength..'", scene="'..results.scene..'", timestring="'..results.timestring..'", slots = {\n')
   for i,s in ipairs(results.slots) do
@@ -882,22 +881,58 @@ local function AppendStats(championship,results,descr)
   f:close()
 end
 
-local function UpdateHistory(filename)
+local function UpdateHistory(filename, outfilename)
   -- parse results
-  local key,res,drivers = ParseResults(filename)
+  local key,res = ParseResults(filename)
   if (key and res) then
+    -- override key
+    local key = forcedkey ~= "" and forcedkey or key
     -- append to proper statistics file
-    local standings = LoadStats(key,drivers)
+    local outfilename = outfilename or outdir..key..".lua"
+    local standings = LoadStats(outfilename)
     local numraces = #standings
     if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
-      AppendStats(key, res, numraces == 0 and standings.description)
+      AppendStats(outfilename, res, numraces == 0 and standings.description)
       table.insert(standings,res)
       
-      -- rebuild html stats
-      GenerateStatsHTML(key,standings)
+      return key,standings
     else
       printlog("race already in database")
     end
+  end
+end
+
+do
+  -- commandline
+  local i = 1
+  local argcnt = #cmdlineargs
+
+  while (i <= argcnt) do
+    local arg = cmdlineargs[i]
+    if (arg == "-addrace") then
+      if (i + 2 > argcnt) then print("error: two arguments required: database-file raceresults-file"); os.exit(1); end
+      local outfile = cmdlineargs[i+1]
+      local infile  = cmdlineargs[i+2]
+      
+      UpdateHistory(infile,outfile)
+      
+      i = i + 2
+    elseif ( arg == "-makehtml") then
+      if (i + 2 > argcnt) then print("error: two arguments required: database-file html-file"); os.exit(1); end
+      
+      local infile  = cmdlineargs[i+1]
+      local outfile = cmdlineargs[i+2]
+      
+      local standings = LoadStats(infile)
+      GenerateStatsHTML(outfile,standings) 
+      
+      i = i + 1
+    end
+    
+    i = i + 1
+  end
+  if (argcnt > 1) then 
+    return 
   end
 end
 
@@ -910,9 +945,9 @@ local function RegenerateStatsHTML()
   local dir = wx.wxDir(path)
   local found, file = dir:GetFirst("*.lua", wx.wxDIR_FILES)
   while found do
-    local key   = file:sub(1,-5)
-    local standings = LoadStats(key)
-    GenerateStatsHTML(key,standings)
+    local key   = file:sub(1,-5) 
+    local standings = LoadStats(outdir..key..".lua")
+    GenerateStatsHTML(outdir..key..".html",standings)
     
     found, file = dir:GetNext()
   end
@@ -937,8 +972,12 @@ timer = nil
 
 function main()
   -- create the frame window
+  local ww = 400
+  local wh = 390
+  local sh = 250
+  
   frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship (c) by Christoph Kubisch",
-                      wx.wxDefaultPosition, wx.wxSize(400+16,340),
+                      wx.wxDefaultPosition, wx.wxSize(ww+16, wh),
                       wx.wxDEFAULT_FRAME_STYLE )
 
   -- show the frame window
@@ -956,20 +995,23 @@ function main()
     local newmod = GetFileModTime(resultfile)
     if (force or (newmod and oldmod and oldmod:IsEarlierThan(newmod))) then
       oldmod = newmod
-      UpdateHistory(resultfile)
+      local key, standings = UpdateHistory(resultfile)
+      if (key and standings) then
+        GenerateStatsHTML(outdir..key..".html",standings)
+      end
     end
   end
   
-  local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,340))
-  splitter:SetMinimumPaneSize(200) -- don't let it unsplit
+  local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(ww+16,wh))
+  splitter:SetMinimumPaneSize(sh) -- don't let it unsplit
   splitter:SetSashGravity(0)
   frame.splitter = splitter
   
-  local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(400+16,200) )
+  local win = wx.wxWindow(splitter, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(440+16,200) )
   frame.win = win
   
   local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "",
-                  wx.wxPoint(0,0), wx.wxSize(400+16,100),
+                  wx.wxPoint(0,0), wx.wxSize(440+16,100),
                   wx.wxTE_MULTILINE+wx.wxTE_DONTWRAP+wx.wxTE_READONLY)
   frame.txtlog = txtlog
   
@@ -985,19 +1027,21 @@ function main()
   printlog("init completed")
   printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", minracetime, checkrate, tostring(useicons), tostring(onlyicons) )) 
   
-  splitter:SplitHorizontally(win, txtlog, 200)
+  splitter:SplitHorizontally(win, txtlog, sh)
   
-  local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(400,50) )
-  local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(400-16,-1))
+  local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(ww,50) )
+  local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(ww-16,-1))
   local s = 70
   local bw,bh = 200,20
-  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically", wx.wxPoint(8,s), wx.wxSize(bw-16,bh))
-  local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now", wx.wxPoint(8+bw,s), wx.wxSize(bw-16,bh))
-  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats", wx.wxPoint(8,s+30), wx.wxSize(bw-16,bh))
-  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open result directory", wx.wxPoint(8+bw,s+30), wx.wxSize(bw-16,bh))
-  local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description:", wx.wxPoint(8,s+60), wx.wxSize(200,16) )
-  local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, descrdummy,             wx.wxPoint(8,s+80), wx.wxSize(400-16,30), 0)
-  local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:", wx.wxPoint(8,s+114), wx.wxSize(60,16) )
+  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically",      wx.wxPoint(8,s),        wx.wxSize(bw-16,bh))
+  local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now",                  wx.wxPoint(8+bw,s),     wx.wxSize(bw-16,bh))
+  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats",     wx.wxPoint(8,s+30),     wx.wxSize(bw-16,bh))
+  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open result directory",      wx.wxPoint(8+bw,s+30),  wx.wxSize(bw-16,bh))
+  local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description (optional):",wx.wxPoint(8,s+60),     wx.wxSize(300,16) )
+  local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, "",                 wx.wxPoint(8,s+80),     wx.wxSize(400-16,30), 0)
+  local labelkey    = wx.wxStaticText(win, wx.wxID_ANY, "Override database filename (optional):", wx.wxPoint(8,s+110),    wx.wxSize(300,16) )
+  local txtkey      = wx.wxTextCtrl(win, wx.wxID_ANY, "",                   wx.wxPoint(8,s+130),    wx.wxSize(400-16,30), 0)
+  local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:",                   wx.wxPoint(8,s+164),    wx.wxSize(60,16) )
   
   tglpoll:SetValue(true)
   tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
@@ -1026,6 +1070,10 @@ function main()
 
   txtdescr:Connect( wx.wxEVT_COMMAND_TEXT_UPDATED, function(event)
     newdescr = event:GetString()
+  end)
+
+  txtkey:Connect( wx.wxEVT_COMMAND_TEXT_UPDATED, function(event)
+    forcedkey = event:GetString()
   end)
 
   win.label = label

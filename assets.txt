@@ -302,6 +302,10 @@ Lakeview Hillclimb - Full Run</option>
 <option value="2181" data-image="http://game.raceroom.com/assets/content/tracklayout/lakeview-hillclimb-reverse-2181-image-thumb.webp">
 Lakeview Hillclimb - Reverse</option>
 </optgroup>
+<optgroup label="Macau">
+<option value="2123" data-image="http://game.raceroom.com/assets/content/tracklayout/macau-grand-prix-2123-image-thumb.webp">
+Macau - Grand Prix</option>
+</optgroup>
 <optgroup label="Mazda Laguna Seca">
 <option value="1856" data-image="http://game.raceroom.com/assets/content/tracklayout/mazda-laguna-seca-grand-prix-1856-image-thumb.webp">
 Mazda Laguna Seca - Grand Prix</option>
