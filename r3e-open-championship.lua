@@ -21,9 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
-local cmdlineargs = arg or {...}
+local cmdlineargs = {...}
 local REGENONLY   = false
 
+local jsonDriverName = "FullName" -- alternatively use "Username"
 local useicons    = true
 local onlyicons   = false
 
@@ -52,8 +53,8 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["4359.0034"]={"Hungaroring",       "Hungaroring - Grand Prix"},
 ["4069.3682"]={"Indianapolis",      "Indianapolis - Grand Prix"},
 ["4193.3374"]={"IndianapolisMoto",  "Indianapolis - Moto"},
---["4134.2123"]={"Macau",             "Macau - Grand Prix"},
 ["3585.5344"]={"LagunaSeca",        "Mazda Laguna Seca - Grand Prix"},
+--["4134.2123"]={"Macau",             "Macau - Grand Prix"},
 ["3809.4441"]={"MidOhioChicane",    "Mid Ohio - Chicane"},
 ["3823.2102"]={"MidOhioFull",       "Mid Ohio - Full"},
 ["2880.1135"]={"MidOhioShort",      "Mid Ohio - Short"},
@@ -77,6 +78,9 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["3840.5679"]={"RaceroomClassic",   "RaceRoom Raceway - Classic"},
 ["3628.0947"]={"RaceroomClassicSprint","RaceRoom Raceway - Classic Sprint"},
 ["3604.7246"]={"RaceroomNational",  "RaceRoom Raceway - National"},
+--["3208.6384"]={"SpaClassic",        "Spa-Francorchamps - Classic"},
+--["4101.1851"]={"SpaCombined",       "Spa-Francorchamps - Combined"},
+--["3706.5615"]={"Spa",               "Spa-Francorchamps - Grand Prix"},
 ["3208.6384"]={"SonomaSprint",      "Sonoma Raceway - Sprint"},
 ["4101.1851"]={"SonomaWTCC",        "Sonoma Raceway - WTCC"},
 ["3706.5615"]={"SonomaIRL",         "Sonoma Raceway - IRL"},
@@ -124,12 +128,26 @@ local function tableLayerCopy(tab,fields)
   return tout
 end
 
+local function quote(str)
+  return str and '"'..tostring(str)..'"' or "nil"
+end
+
 local function ParseTime(str)
   if (not str) then return end
   local h,m,s = str:match("(%d+):(%d+):([0-9%.]+)")
   if (h and m and s) then return h*60*60 + m*60 + s end
   local m,s = str:match("(%d+):([0-9%.]+)")
   if (m and s) then return m*60 + s end
+end
+
+local function MakeTime(millis)
+  local s = millis/1000
+  local h = math.floor(s/3600)
+  s = s - h*3600
+  local m = math.floor(s/60)
+  s = s - m*60
+  
+  return (h > 0 and tostring(h)..":" or "")..tostring(m)..":"..tostring(s)
 end
 
 local function DiffTime(stra, strb)
@@ -417,12 +435,15 @@ local function GenerateStatsHTML(outfilename,standings)
     -- complete header for all tracks
     -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
     for r=1,numraces do
-      local track = tostring(standings[r].tracklength)
+      
+      local track = standings[r].tracklength and tostring(standings[r].tracklength) or standings[r].trackname
       local tinfo = tracknames[track]
-      if (tinfo) then
-        local icon  = icons[tinfo[2]]
-        icon  = useicons and makeIcon(icon,tinfo[2]) or ""
-        track = onlyicons and icon or icon.."<br>"..tinfo[1]:sub(1,tracknamelength)
+      local tname = tinfo and tinfo[1] or track
+      local ticon = tinfo and tinfo[2] or track
+      local icon  = icons[ticon]
+      if (icon) then
+        icon  = useicons and makeIcon(icon,ticon) or ""
+        track = onlyicons and icon or icon.."<br>"..tname
       end
       local time   = standings[r].timestring:gsub("(%s)","<br>")
       
@@ -477,6 +498,7 @@ local function GenerateStatsHTML(outfilename,standings)
   end
 
   -- team standings
+if (numteams > 1) then
   f:write([[
     </table>
     <br><br>
@@ -512,7 +534,7 @@ local function GenerateStatsHTML(outfilename,standings)
       </tr>
     ]])
   end
-  
+end
   
   
 if (numcars > 1) then
@@ -702,8 +724,118 @@ end
 -- Internals
 
 local md5 = dofile("md5.lua")
+local cjson = require "cjson"
 
-local function ParseResults(filename)
+local function ParseResultsJSON(filename)
+  local f = io.open(filename,"rt")
+  if (not f) then 
+    printlog("race file not openable")
+    return
+  end
+  
+  local txt = f:read("*a")
+  f:close()
+  
+  local json = cjson.decode(txt)
+  
+  if (not json) then 
+    printlog("could not decode")
+    return
+  end
+  
+  local date = os.date("*t",math.floor(tonumber(json.Time:match("(%d+)"))/1000))
+  local timestring  = string.format("%d/%d/%d %d:%d:%d",date.year,date.month,date.day, date.hour, date.min, date.sec)
+  
+  local trackname   = json.Track
+  local scene       = "Unknown"
+  local mode        = "1"
+  
+  if (not (timestring and trackname and scene and mode)) then
+    printlog("race details not found")
+    return
+  end
+
+  local key
+  local hash = ""
+  local slots = {}
+  local mintime
+  local drivers = {}
+  local lkdrivers = {}
+  local uniquedrivers = true
+  
+  -- find race and qualify sessions
+  -- only track people who raced
+  
+  local sessqualify
+  local sessrace
+  
+  for i,sess in ipairs(json.Sessions) do
+    if sess.Type == "Qualify" then sessqualify  = sess end
+    if sess.Type == "Race"    then sessrace     = sess end
+  end
+  
+  if (not sessrace) then 
+    printlog("race not found")
+    return 
+  end
+  
+  for i,player in ipairs(sessrace.Players) do
+    local slot = i
+    if (not slots[slot]) then 
+      local tab = {}
+      tab.Driver    = player[jsonDriverName]
+      tab.Vehicle   = player.Car
+      tab.Team      = "-"
+      tab.RaceTime  = player.TotalTime < 0 and "DNF" or MakeTime(player.TotalTime)
+      tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
+      tab.Laps      = #player.RaceSessionLaps
+      slots[slot]   = tab
+      
+      hash = hash..tab.Team..tab.Driver
+      table.insert(drivers,tab.Driver)
+      if (lkdrivers[tab.Driver]) then
+        uniquedrivers = false
+      end
+      lkdrivers[tab.Driver] = tab
+      
+      local time = player.TotalTime > 0 and player.TotalTime/1000
+      if (time) then mintime = math.min(mintime or 10000000,time) end
+    end
+  end
+  
+  for i,player in ipairs(sessqualify.Players) do
+    local name = player[jsonDriverName]
+    local tab = lkdrivers[name]
+    
+    if (player.BestLapTime > 0 and tab) then
+      tab.QualTime = MakeTime(player.BestLapTime)
+    end
+  end
+  
+  table.sort(drivers)
+  
+  -- discard if no valid time found
+  if (not mintime) then
+    printlog("race without results", slots[1].Vehicle)
+    return
+  end
+  -- discard if race was too short
+  if (mintime < 60*minracetime) then 
+    printlog("race too short", slots[1].Vehicle)
+    return 
+  end
+  
+  -- key is based on slot0 Vehicle + team and hash of all drivers
+  key = slots[1].Vehicle.." "..md5.sumhexa(hash)
+  
+  printlog("race parsed",key, timestring)
+  
+  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots}
+end
+
+local function ParseResultsTXT(filename)
+
+
   
 local txt = [[
 [Header]
@@ -843,6 +975,19 @@ RaceTime=0:02:11.328
   return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
 end
 
+local function ParseResults(filename)
+  assert(filename)
+  local parserRegistry = {
+    txt  = ParseResultsTXT,
+    json = ParseResultsJSON,
+  }
+  
+  local ext = filename:lower():match("%.(.-)$")
+  local parser = parserRegistry[ext or ""]
+  assert(parser)
+  return parser(filename)
+end
+
 local function LoadStats(outfilename)
   local standings = { description = newdescr }
   local f = io.open(outfilename,"rt")
@@ -869,15 +1014,16 @@ local function AppendStats(outfilename,results,descr)
   end
   printlog("appendrace",outfilename)
   
-  f:write('{ tracklength = "'..results.tracklength..'", scene="'..results.scene..'", timestring="'..results.timestring..'", slots = {\n')
+  f:write('{ trackname = '..quote(results.trackname)..', tracklength = '..quote(results.tracklength)..', scene='..quote(results.scene)..', timestring='..quote(results.timestring)..', slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
     for k,v in pairs(s) do
-      f:write(k..'="'..v..'", ')
+      f:write(k..'='..quote(v)..', ')
     end
     f:write("  },\n")
   end
   f:write("},},\n")
+  f:flush()
   f:close()
 end
 
@@ -976,7 +1122,7 @@ function main()
   local wh = 390
   local sh = 250
   
-  frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship (c) by Christoph Kubisch",
+  frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship",
                       wx.wxDefaultPosition, wx.wxSize(ww+16, wh),
                       wx.wxDEFAULT_FRAME_STYLE )
 
