@@ -1,8 +1,4 @@
-<div data-type="car_class" title="" class="car_class has-filter ">
-<div class="text">
-<div class="arrow">
-</div>
-Wagen/Klasse</div>
+<div data-type="car_class" title="" class="car_class has-filter "><div class="text"><div class="arrow"></div>Wagen/Klasse</div>
 <select name="car_class">
 <optgroup label="ADAC GT Masters 2013">
 <option value="class-2922">
@@ -49,6 +45,12 @@ Ford Mustang GT3</option>
 Alle Aquila CR1 Cup-Wagen</option>
 <option value="252" data-image="http://game.raceroom.com/de/assets/content/carlivery/no-regrets-racing-1-257-image-thumb.webp">
 Aquila CR1 Sports GT</option>
+</optgroup>
+<optgroup label="Audi Sport TT Cup 2015">
+<option value="class-4680">
+Alle Audi Sport TT Cup 2015-Wagen</option>
+<option value="4681" data-image="http://game.raceroom.com/de/assets/content/carlivery/audi-sport-89-4767-image-thumb.webp">
+Audi TT cup</option>
 </optgroup>
 <optgroup label="Chevrolet Daytona Prototype">
 <option value="class-2337">
@@ -100,6 +102,12 @@ BMW M4 DTM 2015</option>
 <option value="4264" data-image="http://game.raceroom.com/de/assets/content/carlivery/euronicsbwt-mercedes-amg-2-4378-image-thumb.webp">
 Mercedes-AMG C63 DTM</option>
 </optgroup>
+<optgroup label="FR2 Cup">
+<option value="class-4597">
+Alle FR2 Cup-Wagen</option>
+<option value="4598" data-image="http://game.raceroom.com/de/assets/content/carlivery/redbull-racing-1-4600-image-thumb.webp">
+Formula RaceRoom 2</option>
+</optgroup>
 <optgroup label="GTO Classics">
 <option value="class-1713">
 Alle GTO Classics-Wagen</option>
@@ -137,12 +145,18 @@ BMW Alpina B6 GT3</option>
 BMW Z4 GT3</option>
 <option value="2338" data-image="http://game.raceroom.com/de/assets/content/carlivery/yaco-racing-11-2343-image-thumb.webp">
 Chevrolet Camaro GT3</option>
+<option value="3626" data-image="http://game.raceroom.com/de/assets/content/carlivery/v8-racing-7-3633-image-thumb.webp">
+Chevrolet Corvette Z06.R GT3</option>
+<option value="3754" data-image="http://game.raceroom.com/de/assets/content/carlivery/marc-vds-racing-3-3761-image-thumb.webp">
+Ford GT GT3</option>
 <option value="1909" data-image="http://game.raceroom.com/de/assets/content/carlivery/team-mclaren-59-1911-image-thumb.webp">
 McLaren MP4-12C GT3</option>
 <option value="2533" data-image="http://game.raceroom.com/de/assets/content/carlivery/rowe-racing-6-2874-image-thumb.webp">
 Mercedes-Benz SLS AMG GT3</option>
+<option value="1811" data-image="http://game.raceroom.com/de/assets/content/carlivery/gt-academy-team-rjn-80-3751-image-thumb.webp">
+Nissan GT-R GT3</option>
 <option value="3516" data-image="http://game.raceroom.com/de/assets/content/carlivery/flash-motorsport-3-3520-image-thumb.webp">
-RUF RT12R</option>
+RUF RT12R GTR3</option>
 </optgroup>
 <optgroup label="GTR X">
 <option value="class-1710">
@@ -283,6 +297,12 @@ Bathurst Circuit - Mount Panorama</option>
 <optgroup label="Brands Hatch">
 <option value="2520" data-image="http://game.raceroom.com/de/assets/content/tracklayout/brands-hatch-indy-2520-image-thumb.webp">
 Brands Hatch - Indy</option>
+</optgroup>
+<optgroup label="Chang International Circuit">
+<option value="4944" data-image="http://game.raceroom.com/de/assets/content/tracklayout/chang-international-circuit-d-circuit-4944-image-thumb.webp">
+Chang International Circuit - D Circuit</option>
+<option value="4253" data-image="http://game.raceroom.com/de/assets/content/tracklayout/chang-international-circuit-full-circuit-4253-image-thumb.webp">
+Chang International Circuit - Full Circuit</option>
 </optgroup>
 <optgroup label="Circuit Park Zandvoort">
 <option value="1679" data-image="http://game.raceroom.com/de/assets/content/tracklayout/circuit-park-zandvoort-club-1679-image-thumb.webp">

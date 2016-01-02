@@ -41,6 +41,8 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 --tracklength={shortname,           official asset name}
 ["6191.8174"]={"Bathurst",          "Bathurst Circuit - Mount Panorama"},
 ["1939.5625"]={"BrandsHatchIndy",   "Brands Hatch - Indy"},
+--["4134.2123"]={"ChangD",          "Chang International Circuit - D Circuit"},
+--["4134.2123"]={"ChangFull",       "Chang International Circuit - Full Circuit"},
 ["4275.6143"]={"Zandvoort",         "Circuit Park Zandvoort - Grand Prix"},
 ["2887.9546"]={"ZandvoortNational", "Circuit Park Zandvoort - National"},
 ["2510.1907"]={"ZandvoortClub",     "Circuit Park Zandvoort - Club"},
@@ -989,9 +991,8 @@ local function ParseResults(filename)
 end
 
 local function LoadStats(outfilename)
-  local standings = { description = newdescr }
   local f = io.open(outfilename,"rt")
-  if (not f) then return standings end
+  if (not f) then return nil end
   
   local str = f:read("*a")
   f:close()
@@ -1004,6 +1005,7 @@ local function LoadStats(outfilename)
   end
   
   standings = fn()
+  
   return standings
 end
 
@@ -1035,7 +1037,7 @@ local function UpdateHistory(filename, outfilename)
     local key = forcedkey ~= "" and forcedkey or key
     -- append to proper statistics file
     local outfilename = outfilename or outdir..key..".lua"
-    local standings = LoadStats(outfilename)
+    local standings = LoadStats(outfilename) or { description = newdescr }
     local numraces = #standings
     if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
       AppendStats(outfilename, res, numraces == 0 and standings.description)
@@ -1056,6 +1058,7 @@ do
   while (i <= argcnt) do
     local arg = cmdlineargs[i]
     if (arg == "-addrace") then
+      print("... -addrace ...")
       if (i + 2 > argcnt) then print("error: two arguments required: database-file raceresults-file"); os.exit(1); end
       local outfile = cmdlineargs[i+1]
       local infile  = cmdlineargs[i+2]
@@ -1064,12 +1067,15 @@ do
       
       i = i + 2
     elseif ( arg == "-makehtml") then
+      print("... -makehtml ...")
       if (i + 2 > argcnt) then print("error: two arguments required: database-file html-file"); os.exit(1); end
       
       local infile  = cmdlineargs[i+1]
       local outfile = cmdlineargs[i+2]
       
       local standings = LoadStats(infile)
+      if (not standings) then print("error: database-file did not load"); os.exit(1); end
+      
       GenerateStatsHTML(outfile,standings) 
       
       i = i + 1
@@ -1078,6 +1084,7 @@ do
     i = i + 1
   end
   if (argcnt > 1) then 
+    print("... done ...")
     return 
   end
 end
