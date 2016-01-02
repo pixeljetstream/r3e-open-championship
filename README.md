@@ -51,7 +51,7 @@ For example:
 
 `r3e-open-championship.exe -addrace season1.lua 201511030659.json -makehtml season1.lua season1.html`
 
-or you can use luajit as well, which will print outputs to console
+One should prefer using luajit as startup, as it will print error outputs to console, while the above doesn't.
 
 `luajit.exe r3e-open-championship.lua -addrace season1.lua 201511030659.json -makehtml season1.lua season1.html`
 
