@@ -788,7 +788,7 @@ local function ParseResultsJSON(filename)
       tab.Driver    = player[jsonDriverName]
       tab.Vehicle   = player.Car
       tab.Team      = "-"
-      tab.RaceTime  = player.TotalTime < 0 and "DNF" or MakeTime(player.TotalTime)
+      tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
       tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
       tab.Laps      = #player.RaceSessionLaps
       slots[slot]   = tab
