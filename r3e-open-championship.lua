@@ -27,6 +27,11 @@ local REGENONLY   = false
 local jsonDriverName = "FullName" -- alternatively use "Username"
 local useicons    = true
 local onlyicons   = false
+local driver_standings_vehicle = true
+local driver_standings_team = true
+local vehicle_standings = true
+local team_standings = true
+local stylesheetfile = "_style.css"
 
 local outdir      = "results/"
 local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
@@ -410,14 +415,13 @@ local function GenerateStatsHTML(outfilename,standings)
   local descr = standings.description ~= "" and standings.description
   descr = descr and "<h3>"..descr.."</h3>\n" or ""
   
-  
   f:write([[
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
     <meta charset="utf-8"/>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="_style.css">
+    <link rel="stylesheet" href="]]..stylesheetfile..[[">
     </head>
     <body>
     <span class="minor">Icons are linked directly from the game's official website</span>
@@ -428,8 +432,8 @@ local function GenerateStatsHTML(outfilename,standings)
     <tr>
     <th>Pos</th>
     <th>Driver</th>
-    <th>Vehicle</th>
-    <th>Team</th>
+    ]]..(driver_standings_vehicle and "<th>Vehicle</th>" or "")..[[ 
+    ]]..(driver_standings_team    and "<th>Team</th>" or "")..[[ 
     <th>Points</th>
   ]])
   
@@ -470,12 +474,15 @@ local function GenerateStatsHTML(outfilename,standings)
       vehicle = onlyicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
     end
     
+    local vehicle = driver_standings_vehicle and "<td>"..vehicle.."</td>" or ""
+    local team    = driver_standings_team    and "<td>"..info[i].Team.."</td>" or ""
+    
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
       <td>]]..pos..[[</td>
       <td>]]..info[i].Driver..[[</td>
-      <td>]]..vehicle..[[</td>
-      <td>]]..info[i].Team..[[</td>
+      ]]..vehicle..[[ 
+      ]]..team..[[ 
       <td class="points">]]..(accumpoints[i] == 0 and "-" or accumpoints[i])..[[</td>
     ]])
     for r=1,numraces do
@@ -500,7 +507,7 @@ local function GenerateStatsHTML(outfilename,standings)
   end
 
   -- team standings
-if (numteams > 1) then
+if (numteams > 1 and team_standings) then
   f:write([[
     </table>
     <br><br>
@@ -539,7 +546,7 @@ if (numteams > 1) then
 end
   
   
-if (numcars > 1) then
+if (numcars > 1 and vehicle_standings) then
   
   -- car standings
   f:write([[

@@ -55,10 +55,26 @@ One should prefer using luajit as startup, as it will print error outputs to con
 
 `luajit.exe r3e-open-championship.lua -addrace season1.lua 201511030659.json -makehtml season1.lua season1.html`
 
+### HTML Configuration
+
+To modify the HTML styling it's best to edit the `_style.css` file in '/results' or change the reference to your own file below. For league races it's recommended to disable the '#player' highlight color.
+
+In the top of `r3e-open-championship.lua` there is a few settings you can play with that affect the html generation:
+
+* jsonDriverName: The list driver names can be either based on "FullName" or "UserName" (nickname).
+* useicons: for track and car
+* onlyicons: don't print text if icon exists
+* driver_standings_vehicle: add vehicle column in driver standings
+* driver_standings_team: add team column in driver standings
+* vehicle_standings: print standings based on vehicle (automatically omitted if only one vehicle exists)
+* team_standings: print standings based on teams (automatically omitted if only one team exists)
+* stylesheetfile: change the default filename
+
 ### History
 
 Time-line for some distinct features
 
+* 10. 1.2016 - json result bugfix racefinish state, config to disable team/vehicle standings
 *  7.11.2015 - json result support to improve multiplayer usage
 * 20. 6.2015 - multiplayer-friendly commandline options, and database override
 * 14. 6.2015 - modified css styles a bit, allow position-based color-coding
