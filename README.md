@@ -34,7 +34,9 @@ Run the ".exe" file, it should bring up a very simple program that you keep runn
 It is an "open" championship, as none of the settings are really frozen (AI...), you can keep going and mix tracks however you want, a pseudo championship based on your single player races. Simply delete the appropriate database lua file in the "results" directory to start fresh again.
 
 * Edit the override database key to collect multiplayer races into a custom season database, just enter a filename compatible text here. There
-is no compatibility check when a race is appended, so keep organized :)
+is no compatibility check when a race is appended, so keep organized :) 
+
+* For Multiplayer races it is highly recommended to manually copy the result files and use the commandline mode, as it gives more control than the UI.
 
 ### Commandline mode
 
@@ -47,21 +49,33 @@ In commandline mode, the ui is not started and core functionality is exposed.
 * `-makehtml dataBaseFile htmlFile`
   Generates html results for the provided database file
   
+* `-config "lua string"`
+  Applies the lua string, overwriting the current settings. For example use `-config "ruleset='fia1962_1990'"` to apply old rulepoints prior adding a race to your custom season.
+  
+* `-configfile luaFile`
+  Applies the config from this file, overwriting the current settings. By default `config.lua` is loaded.
+  
 For example:
 
-`r3e-open-championship.exe -addrace season1.lua 201511030659.json -makehtml season1.lua season1.html`
+One should prefer using luajit as startup, as it will print error outputs to console.
 
-One should prefer using luajit as startup, as it will print error outputs to console, while the above doesn't.
+The following can be used as a batch file for managing multiplayer seasons.
 
-`luajit.exe r3e-open-championship.lua -addrace season1.lua 201511030659.json -makehtml season1.lua season1.html`
+```
+luajit.exe r3e-open-championship.lua -config "ruleset='%3'" -addrace ./results/%1.lua %2 -makehtml ./results/%1.lua ./results/%1.html
+```
 
-### HTML Configuration
+The batch file expects three arguments, season file, result file (json or txt) and ruleset for points in that race. It will add the results to the season and update the appropriate html file in the "results" subdirectory.
+
+`mybatch.bat mygroup5 lastrace.json fia1962_1990`
+
+
+### Configuration
 
 To modify the HTML styling it's best to edit the `_style.css` file in '/results' or change the reference to your own file below. For league races it's recommended to disable the '#player' highlight color.
 
-In the top of `r3e-open-championship.lua` there is a few settings you can play with that affect the html generation:
+In the `config.lua` there is a few settings you can play with that affect the html generation:
 
-* jsonDriverName: The list driver names can be either based on "FullName" or "UserName" (nickname).
 * useicons: for track and car
 * onlyicons: don't print text if icon exists
 * driver_standings_vehicle: add vehicle column in driver standings
@@ -69,11 +83,12 @@ In the top of `r3e-open-championship.lua` there is a few settings you can play w
 * vehicle_standings: print standings based on vehicle (automatically omitted if only one vehicle exists)
 * team_standings: print standings based on teams (automatically omitted if only one team exists)
 * stylesheetfile: change the default filename
+* rulepoints: the table that is used to assign points to the drivers. The default entry must be provided, all others are optional, you can define your own analog to the ones that already exist. Just make sure the "ruleset" of a race within the easons matches an entry of the rulepoints table.
 
 ### History
 
 Time-line for some distinct features
-
+* 17. 1.2016 - config file externalized, new config commandline, point handling per race
 * 10. 1.2016 - json result bugfix racefinish state, config to disable team/vehicle standings
 *  7.11.2015 - json result support to improve multiplayer usage
 * 20. 6.2015 - multiplayer-friendly commandline options, and database override

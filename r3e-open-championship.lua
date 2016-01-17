@@ -24,23 +24,25 @@ THE SOFTWARE.
 local cmdlineargs = {...}
 local REGENONLY   = false
 
-local jsonDriverName = "FullName" -- alternatively use "Username"
-local useicons    = true
-local onlyicons   = false
-local driver_standings_vehicle = true
-local driver_standings_team = true
-local vehicle_standings = true
-local team_standings = true
-local stylesheetfile = "_style.css"
+local cfg = {}
 
-local outdir      = "results/"
-local minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
-local checkrate   = 1           -- in minutes
-local rulepoints  = {25,18,15,12,10,8,6,4,2,1}
-local maxbestlap  = 3
-local maxbestqual = 3
-local tracknamelength = 12      -- to keep track columns tight, names are cut off, alternatively set 
-                                -- a high value here, and make use of <br> below
+local function loadConfigString(string)
+  local fn,err = loadstring(string)
+  assert(fn, err)
+  fn = setfenv(fn, cfg)
+  fn()
+end
+
+local function loadConfig(filename)
+  local fn,err = loadfile(filename)
+  assert(fn, err)
+  fn = setfenv(fn, cfg)
+  fn()
+end
+
+loadConfig("config.lua")
+
+
 local tracknames  =             -- maps tracklength to a name, let's hope those are unique
 {
 --tracklength={shortname,           official asset name}
@@ -103,8 +105,6 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["5801.7275"]={"Suzuka",            "Suzuka Circuit - Grand Prix"},
 ["3464.6255"]={"SuzukaWest",        "Suzuka Circuit - West Course"},
 }
-local newdescr = ""
-local forcedkey = ""
 -------------------------------------------------------------------------------------
 --
 
@@ -254,8 +254,8 @@ local function GenerateStatsHTML(outfilename,standings)
   
   
   local numraces   = #standings
-  local numbestlap = math.min(maxbestlap,numdrivers)
-  local numbestqual= math.min(maxbestqual,numdrivers)
+  local numbestlap = math.min(cfg.maxbestlap,numdrivers)
+  local numbestqual= math.min(cfg.maxbestqual,numdrivers)
   
   -- create team and car slots and lookup tables
   local lkcars = {}
@@ -326,6 +326,10 @@ local function GenerateStatsHTML(outfilename,standings)
     local sorted,times = getSortedTimes("RaceTime")
     local points = {}
     local results = {}
+    
+    local ruleset    = race.ruleset or "default"
+    local rulepoints = cfg.rulepoints[ruleset]
+    
     for i=1,math.min(numdrivers,#rulepoints) do
       -- only set points if time is valid
       points[sorted[i]] = times[sorted[i]] and rulepoints[i]
@@ -421,7 +425,7 @@ local function GenerateStatsHTML(outfilename,standings)
     <head>
     <meta charset="utf-8"/>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="]]..stylesheetfile..[[">
+    <link rel="stylesheet" href="]]..cfg.stylesheetfile..[[">
     </head>
     <body>
     <span class="minor">Icons are linked directly from the game's official website</span>
@@ -432,8 +436,8 @@ local function GenerateStatsHTML(outfilename,standings)
     <tr>
     <th>Pos</th>
     <th>Driver</th>
-    ]]..(driver_standings_vehicle and "<th>Vehicle</th>" or "")..[[ 
-    ]]..(driver_standings_team    and "<th>Team</th>" or "")..[[ 
+    ]]..(cfg.driver_standings_vehicle and "<th>Vehicle</th>" or "")..[[ 
+    ]]..(cfg.driver_standings_team    and "<th>Team</th>" or "")..[[ 
     <th>Points</th>
   ]])
   
@@ -448,8 +452,8 @@ local function GenerateStatsHTML(outfilename,standings)
       local ticon = tinfo and tinfo[2] or track
       local icon  = icons[ticon]
       if (icon) then
-        icon  = useicons and makeIcon(icon,ticon) or ""
-        track = onlyicons and icon or icon.."<br>"..tname
+        icon  = cfg.useicons and makeIcon(icon,ticon) or ""
+        track = cfg.onlyicons and icon or icon.."<br>"..tname
       end
       local time   = standings[r].timestring:gsub("(%s)","<br>")
       
@@ -469,13 +473,13 @@ local function GenerateStatsHTML(outfilename,standings)
   for pos,i in ipairs(sortedslots) do
     local vehicle = info[i].Vehicle
     local icon = icons[vehicle]
-    if (icon and useicons) then
+    if (icon and cfg.useicons) then
       icon = makeIcon(icon,vehicle)
-      vehicle = onlyicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
+      vehicle = cfg.onlyicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
     end
     
-    local vehicle = driver_standings_vehicle and "<td>"..vehicle.."</td>" or ""
-    local team    = driver_standings_team    and "<td>"..info[i].Team.."</td>" or ""
+    local vehicle = cfg.driver_standings_vehicle and "<td>"..vehicle.."</td>" or ""
+    local team    = cfg.driver_standings_team    and "<td>"..info[i].Team.."</td>" or ""
     
     f:write([[
       <tr]]..(pos%2 == 0 and ' class="even"' or "")..(i==1 and ' id="player"' or "")..[[>
@@ -507,7 +511,7 @@ local function GenerateStatsHTML(outfilename,standings)
   end
 
   -- team standings
-if (numteams > 1 and team_standings) then
+if (numteams > 1 and cfg.team_standings) then
   f:write([[
     </table>
     <br><br>
@@ -546,7 +550,7 @@ if (numteams > 1 and team_standings) then
 end
   
   
-if (numcars > 1 and vehicle_standings) then
+if (numcars > 1 and cfg.vehicle_standings) then
   
   -- car standings
   f:write([[
@@ -568,7 +572,7 @@ if (numcars > 1 and vehicle_standings) then
   for pos,i in ipairs(sortedslots) do
     local carname = carslots[i].Name
     local icon = icons[carname]
-    if (icon and useicons) then
+    if (icon and cfg.useicons) then
       icon = makeIcon(icon,carname)
       carname = icon..carname
     end
@@ -612,9 +616,9 @@ end
       local tab = lapracetimes[r][pos]
       local vehicle = tab.Vehicle
       local icon = icons[vehicle]
-      if (icon and useicons) then
+      if (icon and cfg.useicons) then
         icon = makeIcon(icon,vehicle)
-        vehicle = onlyicons and icon or icon.."<br>"..vehicle
+        vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
       end
       
       local driver  = tab and tab.Driver or ""
@@ -651,9 +655,9 @@ end
       if (tab) then
         local vehicle = tab.Vehicle
         local icon = icons[vehicle]
-        if (icon and useicons) then
+        if (icon and cfg.useicons) then
           icon = makeIcon(icon,vehicle)
-          vehicle = onlyicons and icon or icon.."<br>"..vehicle
+          vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
         end
         local driver  = tab.Driver or ""
         local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
@@ -702,7 +706,7 @@ end
       
       local vehicle = tab.Vehicle
       local icon = icons[vehicle]
-      if (icon and useicons and onlyicons) then
+      if (icon and cfg.useicons and cfg.onlyicons) then
         icon = makeIcon(icon,vehicle,"opacity:0.6;height:1.7em;")
         vehicle = icon
       else
@@ -792,7 +796,7 @@ local function ParseResultsJSON(filename)
     local slot = i
     if (not slots[slot]) then 
       local tab = {}
-      tab.Driver    = player[jsonDriverName]
+      tab.Driver    = player[cfg.jsonDriverName]
       tab.Vehicle   = player.Car
       tab.Team      = "-"
       tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
@@ -813,7 +817,7 @@ local function ParseResultsJSON(filename)
   end
   
   for i,player in ipairs(sessqualify.Players) do
-    local name = player[jsonDriverName]
+    local name = player[cfg.jsonDriverName]
     local tab = lkdrivers[name]
     
     if (player.BestLapTime > 0 and tab) then
@@ -829,7 +833,7 @@ local function ParseResultsJSON(filename)
     return
   end
   -- discard if race was too short
-  if (mintime < 60*minracetime) then 
+  if (mintime < 60*cfg.minracetime) then 
     printlog("race too short", slots[1].Vehicle)
     return 
   end
@@ -839,7 +843,7 @@ local function ParseResultsJSON(filename)
   
   printlog("race parsed",key, timestring)
   
-  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots}
+  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
 end
 
 local function ParseResultsTXT(filename)
@@ -971,7 +975,7 @@ RaceTime=0:02:11.328
     return
   end
   -- discard if race was too short
-  if (mintime < 60*minracetime) then 
+  if (mintime < 60*cfg.minracetime) then 
     printlog("race too short", slots[1].Vehicle)
     return 
   end
@@ -981,7 +985,7 @@ RaceTime=0:02:11.328
   
   printlog("race parsed",key, timestring)
   
-  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots}
+  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
 end
 
 local function ParseResults(filename)
@@ -1023,7 +1027,7 @@ local function AppendStats(outfilename,results,descr)
   end
   printlog("appendrace",outfilename)
   
-  f:write('{ trackname = '..quote(results.trackname)..', tracklength = '..quote(results.tracklength)..', scene='..quote(results.scene)..', timestring='..quote(results.timestring)..', slots = {\n')
+  f:write('{ trackname = '..quote(results.trackname)..', tracklength = '..quote(results.tracklength)..', scene='..quote(results.scene)..', timestring='..quote(results.timestring)..', ruleset='..quote(results.ruleset or "default")..', slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
     for k,v in pairs(s) do
@@ -1041,10 +1045,10 @@ local function UpdateHistory(filename, outfilename)
   local key,res = ParseResults(filename)
   if (key and res) then
     -- override key
-    local key = forcedkey ~= "" and forcedkey or key
+    local key = cfg.forcedkey ~= "" and cfg.forcedkey or key
     -- append to proper statistics file
-    local outfilename = outfilename or outdir..key..".lua"
-    local standings = LoadStats(outfilename) or { description = newdescr }
+    local outfilename = outfilename or cfg.outdir..key..".lua"
+    local standings = LoadStats(outfilename) or { description = cfg.newdescr }
     local numraces = #standings
     if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
       AppendStats(outfilename, res, numraces == 0 and standings.description)
@@ -1085,6 +1089,18 @@ do
       
       GenerateStatsHTML(outfile,standings) 
       
+      i = i + 2
+    elseif (arg == "-configfile") then
+      print("... -configfile ...")
+      if (i + 1 > argcnt) then print("error: two arguments required: config lua-file"); os.exit(1); end
+      loadConfig(cmdlineargs[i+1])
+      
+      i = i + 1
+    elseif (arg == "-config") then
+      print("... -config ...")
+      if (i + 1 > argcnt) then print("error: two arguments required: config lua string"); os.exit(1); end
+      loadConfigString(cmdlineargs[i+1])
+      
       i = i + 1
     end
     
@@ -1101,13 +1117,13 @@ require("wx")
 local function RegenerateStatsHTML()
   printlog("rebuilding all stats")
   -- iterate lua files
-  local path = wx.wxGetCwd().."/"..outdir
+  local path = wx.wxGetCwd().."/"..cfg.outdir
   local dir = wx.wxDir(path)
   local found, file = dir:GetFirst("*.lua", wx.wxDIR_FILES)
   while found do
     local key   = file:sub(1,-5) 
-    local standings = LoadStats(outdir..key..".lua")
-    GenerateStatsHTML(outdir..key..".html",standings)
+    local standings = LoadStats(cfg.outdir..key..".lua")
+    GenerateStatsHTML(cfg.outdir..key..".html",standings)
     
     found, file = dir:GetNext()
   end
@@ -1157,7 +1173,7 @@ function main()
       oldmod = newmod
       local key, standings = UpdateHistory(resultfile)
       if (key and standings) then
-        GenerateStatsHTML(outdir..key..".html",standings)
+        GenerateStatsHTML(cfg.outdir..key..".html",standings)
       end
     end
   end
@@ -1185,7 +1201,7 @@ function main()
   end
   
   printlog("init completed")
-  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", minracetime, checkrate, tostring(useicons), tostring(onlyicons) )) 
+  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", cfg.minracetime, cfg.checkrate, tostring(cfg.useicons), tostring(cfg.onlyicons) )) 
   
   splitter:SplitHorizontally(win, txtlog, sh)
   
@@ -1207,7 +1223,7 @@ function main()
   tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
     if (timer) then
       if (event:IsChecked ()) then
-        timer:Start(1000*60*checkrate)
+        timer:Start(1000*60*cfg.checkrate)
       else
         timer:Stop()
       end
@@ -1223,17 +1239,17 @@ function main()
   end)
 
   btnresult:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
-    local outpath = (wx.wxGetCwd().."/"..outdir.."_style.css"):gsub("/","\\")
+    local outpath = (wx.wxGetCwd().."/"..cfg.outdir.."_style.css"):gsub("/","\\")
     
     wx.wxExecute('explorer /select,"'..outpath..'"', wx.wxEXEC_ASYNC)
   end)
 
   txtdescr:Connect( wx.wxEVT_COMMAND_TEXT_UPDATED, function(event)
-    newdescr = event:GetString()
+    cfg.newdescr = event:GetString()
   end)
 
   txtkey:Connect( wx.wxEVT_COMMAND_TEXT_UPDATED, function(event)
-    forcedkey = event:GetString()
+    cfg.forcedkey = event:GetString()
   end)
 
   win.label = label
@@ -1250,7 +1266,7 @@ function main()
     function(event)
       if (not timer) then
         timer = wx.wxTimer( frame, wx.wxID_ANY )
-        timer:Start(1000*60*checkrate)
+        timer:Start(1000*60*cfg.checkrate)
         
         frame:Connect(wx.wxEVT_TIMER,
           function(event)
