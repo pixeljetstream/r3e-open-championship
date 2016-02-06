@@ -358,7 +358,7 @@ local function GenerateStatsHTML(outfilename,standings)
       results[i] = race.slots[sorted[i]]
       results[i].Player = sorted[i] == 1
       
-      if (results[i].Position and tonumber(results[i].Position) ~= i) then
+      if (times[i] and results[i].Position and tonumber(results[i].Position) ~= i) then
         printlog("warning position mismatch "..results[i].Driver.." should: "..results[i].Position.." has: "..i)
       end
       
