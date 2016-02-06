@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
+--local cmdlineargs = {"-addrace", "./results/test3.lua", "Race2.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -248,10 +249,8 @@ local function GenerateStatsHTML(outfilename,standings)
       race.slots = newslots
     end
   end
-  
-  
+    
   local numdrivers = #info
-  
   
   local numraces   = #standings
   local numbestlap = math.min(cfg.maxbestlap,numdrivers)
@@ -322,8 +321,29 @@ local function GenerateStatsHTML(outfilename,standings)
       return sorted,times
     end
     
+    local function getSortedResults()
+      local times = {}
+      local sorted = {}
+      local laps = {}
+      for i=1,numdrivers do
+        sorted[i] = i
+        assert(race.slots[i], string.format("%d %d",r,i))
+        times[i] = ParseTime(race.slots[i].RaceTime or "")
+        laps[i]  = tonumber(race.slots[i].Laps) or 0
+        -- may be nil if DNF 
+      end
+      
+      table.sort(sorted,
+        function(a,b) 
+          local diff = laps[a] - laps[b]
+          return diff == 0 and ((times[a] or 1000000000) < (times[b] or 1000000000)) or (laps[a] > laps[b] )
+        end)
+      
+      return sorted,times
+    end
+    
     -- get sorted and times and generate points
-    local sorted,times = getSortedTimes("RaceTime")
+    local sorted,times = getSortedResults()
     local points = {}
     local results = {}
     
@@ -337,6 +357,10 @@ local function GenerateStatsHTML(outfilename,standings)
     for i=1,numdrivers do
       results[i] = race.slots[sorted[i]]
       results[i].Player = sorted[i] == 1
+      
+      if (results[i].Position and tonumber(results[i].Position) ~= i) then
+        printlog("warning position mismatch "..results[i].Driver.." should: "..results[i].Position.." has: "..i)
+      end
       
       if (not points[i]) then
         -- only set non nil if had a valid time
@@ -696,12 +720,23 @@ end
       local gap  = ""
       
       if (pos > 1) then
+        local winner   = raceresults[r][1]
+        local previous = raceresults[r][pos-1]
+        
+        local function DiffLap(prevlap, selflap)
+          local diff = tonumber(prevlap)-tonumber(selflap)
+          if (diff > 0) then
+            return "+ "..diff.."laps "
+          else
+            return ""
+          end
+        end
         -- to winner
-        time = DiffTime( raceresults[r][1].RaceTime,      tab.RaceTime )
-        time = time and '<br>'..time or (didrace and "<br>DNF" or "<br>non-starter")
+        time = DiffTime( winner.RaceTime,      tab.RaceTime )
+        time = time and '<br>'..DiffLap(winner.Laps, tab.Laps)..time or (didrace and "<br>DNF" or "<br>non-starter")
         -- to previous driver
-        gap  = DiffTime( raceresults[r][pos-1].RaceTime,  tab.RaceTime )
-        gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
+        gap  = DiffTime( previous.RaceTime,  tab.RaceTime )
+        gap  = gap  and '<br><span class="minor">'..DiffLap(previous.Laps, tab.Laps)..gap..'</span>' or ""
       end
       
       local vehicle = tab.Vehicle
@@ -802,6 +837,7 @@ local function ParseResultsJSON(filename)
       tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
       tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
       tab.Laps      = #player.RaceSessionLaps
+      tab.Position  = player.Position
       slots[slot]   = tab
       
       hash = hash..tab.Team..tab.Driver
@@ -831,11 +867,6 @@ local function ParseResultsJSON(filename)
   if (not mintime) then
     printlog("race without results", slots[1].Vehicle)
     return
-  end
-  -- discard if race was too short
-  if (mintime < 60*cfg.minracetime) then 
-    printlog("race too short", slots[1].Vehicle)
-    return 
   end
   
   -- key is based on slot0 Vehicle + team and hash of all drivers

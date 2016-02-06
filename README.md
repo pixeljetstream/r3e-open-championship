@@ -88,6 +88,7 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 ### History
 
 Time-line for some distinct features
+*  6. 2.2016 - bugfix results when drivers are laps behind, remove minracetime check for json
 * 17. 1.2016 - config file externalized, new config commandline, point handling per race
 * 10. 1.2016 - json result bugfix racefinish state, config to disable team/vehicle standings
 *  7.11.2015 - json result support to improve multiplayer usage
@@ -106,7 +107,7 @@ Since the tracknames are not stored in the result file (only track lengths), the
 
 ### Third Party
 
-Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings.
+Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings. **ttfredo** and **Nicklas Petersson** from sector3studios forum for bug reproducers.
 
 The icons are directly linked to the official game website.
 
