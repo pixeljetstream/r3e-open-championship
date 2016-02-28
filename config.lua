@@ -20,6 +20,8 @@ stylesheetfile = "_style.css"
 
 -- json import
 jsonDriverName = "FullName" -- alternatively use "Username"
+-- xml
+xmlDriverName = "FullName" -- alternatively use "Username"
 
 -- general
 outdir      = "results/"

@@ -638,19 +638,38 @@ end
     ]])
     for r=1,numraces do
       local tab = lapracetimes[r][pos]
-      local vehicle = tab.Vehicle
-      local icon = icons[vehicle]
-      if (icon and cfg.useicons) then
-        icon = makeIcon(icon,vehicle)
-        vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
+      local str = ""
+      if (tab) then
+        local vehicle = tab.Vehicle
+        local icon = icons[vehicle]
+        if (icon and cfg.useicons) then
+          icon = makeIcon(icon,vehicle)
+          vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
+        end
+        
+        local driver  = tab.Driver or ""
+        local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
+        local time    = '<br>'..tab.BestLap or ""
+        local gap     = ""
+        
+        if (pos > 1) then
+          local winner   = lapracetimes[r][1]
+          local previous = lapracetimes[r][pos-1]
+
+          -- to winner
+          time = DiffTime( winner.BestLap, tab.BestLap )
+          time = time and '<br>'..time or ""
+          -- to previous driver
+          gap  = DiffTime( previous.BestLap, tab.BestLap )
+          gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
+        end
+        
+        str = driver..vehicle..time..gap
       end
-      
-      local driver  = tab and tab.Driver or ""
-      local vehicle = tab and '<br><span class="minor">'..vehicle.."</span>" or ""
-      local time    = tab and '<br>'..tab.BestLap or ""
+
       
       f:write([[
-        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..[[</td>
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..str..[[</td>
       ]])
     end
     f:write([[
@@ -686,7 +705,21 @@ end
         local driver  = tab.Driver or ""
         local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
         local time    = '<br>'..tab.QualTime or ""
-        str = driver..vehicle..time
+        local gap     = ""
+        
+        if (pos > 1) then
+          local winner   = qualracetimes[r][1]
+          local previous = qualracetimes[r][pos-1]
+
+          -- to winner
+          time = DiffTime( winner.QualTime, tab.QualTime )
+          time = time and '<br>'..time or ""
+          -- to previous driver
+          gap  = DiffTime( previous.QualTime, tab.QualTime )
+          gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
+        end
+        
+        str = driver..vehicle..time..gap
       end
       
       f:write([[
@@ -771,8 +804,8 @@ end
 ----------------------------------------------------------------------------------------------------------------
 -- Internals
 
-local md5 = dofile("md5.lua")
-local cjson = require "cjson"
+local md5   = dofile("md5.lua")
+local cjson = require("cjson")
 
 local function ParseResultsJSON(filename)
   local f = io.open(filename,"rt")
@@ -876,6 +909,119 @@ local function ParseResultsJSON(filename)
   
   return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
 end
+
+local lxml = dofile("xml.lua")
+
+local function ParseResultsXML(filename)
+  local f = io.open(filename,"rt")
+  if (not f) then 
+    printlog("race file not openable")
+    return
+  end
+  
+  local txt = f:read("*a")
+  f:close()
+  
+  local xml = lxml.parse(txt)
+  
+  if (not xml or not xml.MultiplayerRaceResult) then 
+    printlog("could not decode")
+    return
+  end
+  
+  xml = xml.MultiplayerRaceResult
+  
+  local timestring
+  do
+    -- 2015-10-30T20:45:12.217Z
+    local day,month,year,hour,min,sec = xml.Time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d-)%.")
+    timestring  = string.format("%s/%s/%s %s:%s:%s",year,month,day, hour, min, sec)
+  end
+  
+  
+  local trackname   = xml.Track
+  local scene       = "Unknown"
+  local mode        = "1"
+  
+  if (not (timestring and trackname and scene and mode)) then
+    printlog("race details not found")
+    return
+  end
+
+  local key
+  local hash = ""
+  local slots = {}
+  local mintime
+  local drivers = {}
+  local lkdrivers = {}
+  local uniquedrivers = true
+  
+  -- find race and qualify sessions
+  -- only track people who raced
+  
+  local sessqualify
+  local sessrace
+  
+  for i,sess in ipairs(xml.Sessions) do
+    if sess.Type == "Qualify" then sessqualify  = sess end
+    if sess.Type == "Race"    then sessrace     = sess end
+  end
+  
+  if (not sessrace) then 
+    printlog("race not found")
+    return 
+  end
+  
+  for i,player in ipairs(sessrace.Players) do
+    local slot = i
+    if (not slots[slot]) then 
+      local tab = {}
+      tab.Driver    = player[cfg.xmlDriverName]
+      tab.Vehicle   = player.Car
+      tab.Team      = "-"
+      tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
+      tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
+      tab.Laps      = #player.RaceSessionLaps
+      tab.Position  = player.Position
+      slots[slot]   = tab
+      
+      hash = hash..tab.Team..tab.Driver
+      table.insert(drivers,tab.Driver)
+      if (lkdrivers[tab.Driver]) then
+        uniquedrivers = false
+      end
+      lkdrivers[tab.Driver] = tab
+      
+      local time = player.TotalTime > 0 and player.TotalTime/1000
+      if (time) then mintime = math.min(mintime or 10000000,time) end
+    end
+  end
+  
+  for i,player in ipairs(sessqualify.Players) do
+    local name = player[cfg.jsonDriverName]
+    local tab = lkdrivers[name]
+    
+    if (player.BestLapTime > 0 and tab) then
+      tab.QualTime = MakeTime(player.BestLapTime)
+    end
+  end
+  
+  table.sort(drivers)
+  
+  -- discard if no valid time found
+  if (not mintime) then
+    printlog("race without results", slots[1].Vehicle)
+    return
+  end
+  
+  -- key is based on slot0 Vehicle + team and hash of all drivers
+  key = slots[1].Vehicle.." "..md5.sumhexa(hash)
+  
+  printlog("race parsed",key, timestring)
+  
+  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
+end
+
 
 local function ParseResultsTXT(filename)
 
@@ -1024,6 +1170,7 @@ local function ParseResults(filename)
   local parserRegistry = {
     txt  = ParseResultsTXT,
     json = ParseResultsJSON,
+    xml  = ParseResultsXML,
   }
   
   local ext = filename:lower():match("%.(.-)$")

@@ -65,7 +65,7 @@ The following can be used as a batch file for managing multiplayer seasons.
 luajit.exe r3e-open-championship.lua -config "ruleset='%3'" -addrace ./results/%1.lua %2 -makehtml ./results/%1.lua ./results/%1.html
 ```
 
-The batch file expects three arguments, season file, result file (json or txt) and ruleset for points in that race. It will add the results to the season and update the appropriate html file in the "results" subdirectory.
+The batch file expects three arguments, season file, result file (json, xml or txt) and ruleset for points in that race. It will add the results to the season and update the appropriate html file in the "results" subdirectory.
 
 `mybatch.bat mygroup5 lastrace.json fia1962_1990`
 
@@ -88,6 +88,7 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 ### History
 
 Time-line for some distinct features
+* 28. 2.2016 - xml result support, use time difference for best-lap and qualifying
 *  6. 2.2016 - bugfix results when drivers are laps behind, remove minracetime check for json
 * 17. 1.2016 - config file externalized, new config commandline, point handling per race
 * 10. 1.2016 - json result bugfix racefinish state, config to disable team/vehicle standings
