@@ -20,20 +20,22 @@ stylesheetfile = "_style.css"
 
 -- json import
 jsonDriverName = "FullName" -- alternatively use "Username"
--- xml
-xmlDriverName = "FullName" -- alternatively use "Username"
+-- xml import
+xmlDriverName = "FullName"  -- alternatively use "Username"
 
 -- general
 outdir      = "results/"
 
 -- processing races
 -- applied when loading a result file and appending/creating season file
-newdescr = ""   -- name of the championship if created new
-forcedkey = ""  -- enforce a key
+newdescr    = ""          -- name of the championship if created new
+forcedkey   = ""          -- enforce a key
 minracetime = 5           -- in minutes, if a race was shorter it doesn't contribute to stats
 ruleset     = "default"   -- the race will use this rulepoints (defined above) during html point generation
 
--- UI tool polling rate
-checkrate   = 1           -- in minutes
-
+-- UI tool 
+checkrate   = 1           -- polling rate in minutes
+-- default inputfile that is polled for changes
+-- for now only USER_DOCUMENTS is a special variable
+inputfile   = [[$USER_DOCUMENTS$\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results\raceresults.txt]]
 

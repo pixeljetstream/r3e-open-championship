@@ -1337,7 +1337,11 @@ function main()
   -- show the frame window
   frame:Show(true)
   
-  local resultfile = wx.wxStandardPaths.Get():GetDocumentsDir()..[[\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results\raceresults.txt]]
+  local replacedirs = {
+    USER_DOCUMENTS = wx.wxStandardPaths.Get():GetDocumentsDir(),
+  }
+  
+  local resultfile = cfg.inputfile:gsub("%$([%w_]+)%$", replacedirs)
   local oldmod     = GetFileModTime(resultfile)
   if (not oldmod) then
     local label = wx.wxStaticText(win, wx.wxID_ANY, "Could not find R3E results:\n"..resultfile)
