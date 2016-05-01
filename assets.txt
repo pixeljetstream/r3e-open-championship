@@ -1,4 +1,8 @@
-<div data-type="car_class" title="" class="car_class has-filter "><div class="text"><div class="arrow"></div>Wagen/Klasse</div>
+<div data-type="car_class" title="" class="car_class has-filter ">
+<div class="text">
+<div class="arrow">
+</div>
+Wagen/Klasse</div>
 <select name="car_class">
 <optgroup label="ADAC GT Masters 2013">
 <option value="class-2922">
@@ -34,11 +38,23 @@ McLaren MP4-12C GT3</option>
 <option value="3384" data-image="http://game.raceroom.com/de/assets/content/carlivery/team-zakspeed-21-3392-image-thumb.webp">
 Mercedes-Benz SLS AMG GT3</option>
 </optgroup>
-<optgroup label="American Nationals">
-<option value="class-1707">
-Alle American Nationals-Wagen</option>
-<option value="1782" data-image="http://game.raceroom.com/de/assets/content/carlivery/rooaar-racing-5-1787-image-thumb.webp">
-Ford Mustang GT3</option>
+<optgroup label="ADAC GT Masters 2015">
+<option value="class-4516">
+Alle ADAC GT Masters 2015-Wagen</option>
+<option value="4518" data-image="http://game.raceroom.com/de/assets/content/carlivery/c-abt-racing-1-4520-image-thumb.webp">
+Audi R8 LMS Ultra</option>
+<option value="4544" data-image="http://game.raceroom.com/de/assets/content/carlivery/senkyr-motorsport-12-4546-image-thumb.webp">
+BMW Z4 GT3</option>
+<option value="5152" data-image="http://game.raceroom.com/de/assets/content/carlivery/bentley-team-htp-7-5184-image-thumb.webp">
+Bentley Continental GT3</option>
+<option value="4582" data-image="http://game.raceroom.com/de/assets/content/carlivery/reiter-engineering-25-4584-image-thumb.webp">
+Chevrolet Camaro GT3</option>
+<option value="4570" data-image="http://game.raceroom.com/de/assets/content/carlivery/callaway-competition-66-4572-image-thumb.webp">
+Chevrolet Corvette Z06.R GT3 GTM15</option>
+<option value="4551" data-image="http://game.raceroom.com/de/assets/content/carlivery/team-zakspeed-21-4593-image-thumb.webp">
+Mercedes-Benz SLS AMG GT3</option>
+<option value="4557" data-image="http://game.raceroom.com/de/assets/content/carlivery/mrs-gt-racing-22-4559-image-thumb.webp">
+Nissan GT-R GT3</option>
 </optgroup>
 <optgroup label="Aquila CR1 Cup">
 <option value="class-255" selected="selected">
@@ -51,12 +67,6 @@ Aquila CR1 Sports GT</option>
 Alle Audi Sport TT Cup 2015-Wagen</option>
 <option value="4681" data-image="http://game.raceroom.com/de/assets/content/carlivery/audi-sport-89-4767-image-thumb.webp">
 Audi TT cup</option>
-</optgroup>
-<optgroup label="Chevrolet Daytona Prototype">
-<option value="class-2337">
-Alle Chevrolet Daytona Prototype-Wagen</option>
-<option value="2333" data-image="http://game.raceroom.com/de/assets/content/carlivery/wayne-taylor-racing-10-2336-image-thumb.webp">
-Chevrolet Daytona Prototype</option>
 </optgroup>
 <optgroup label="DTM 1992">
 <option value="class-3499">
@@ -108,11 +118,21 @@ Alle FR2 Cup-Wagen</option>
 <option value="4598" data-image="http://game.raceroom.com/de/assets/content/carlivery/redbull-racing-1-4600-image-thumb.webp">
 Formula RaceRoom 2</option>
 </optgroup>
+<optgroup label="FRJ Cup">
+<option value="class-253">
+Alle FRJ Cup-Wagen</option>
+<option value="4865" data-image="http://game.raceroom.com/de/assets/content/carlivery/snap-on-team-38-5048-image-thumb.webp">
+Formula RaceRoom Junior</option>
+</optgroup>
 <optgroup label="GTO Classics">
 <option value="class-1713">
 Alle GTO Classics-Wagen</option>
 <option value="2405" data-image="http://game.raceroom.com/de/assets/content/carlivery/audi-sport-north-america-3-2407-image-thumb.webp">
 Audi 90 Quattro</option>
+<option value="4386" data-image="http://game.raceroom.com/de/assets/content/carlivery/roush-racing-7-4389-image-thumb.webp">
+Ford Mustang IMSA GTO</option>
+<option value="2868" data-image="http://game.raceroom.com/de/assets/content/carlivery/nissan-motorsport-75-3786-image-thumb.webp">
+Nissan 300ZX Z32</option>
 </optgroup>
 <optgroup label="GTR 1">
 <option value="class-1687">
@@ -143,18 +163,24 @@ Audi R8 LMS Ultra</option>
 BMW Alpina B6 GT3</option>
 <option value="1738" data-image="http://game.raceroom.com/de/assets/content/carlivery/tungram-racing-7-1740-image-thumb.webp">
 BMW Z4 GT3</option>
+<option value="5170" data-image="http://game.raceroom.com/de/assets/content/carlivery/m-sport-bentley-17-5187-image-thumb.webp">
+Bentley Continental GT3</option>
 <option value="2338" data-image="http://game.raceroom.com/de/assets/content/carlivery/yaco-racing-11-2343-image-thumb.webp">
 Chevrolet Camaro GT3</option>
 <option value="3626" data-image="http://game.raceroom.com/de/assets/content/carlivery/v8-racing-7-3633-image-thumb.webp">
 Chevrolet Corvette Z06.R GT3</option>
 <option value="3754" data-image="http://game.raceroom.com/de/assets/content/carlivery/marc-vds-racing-3-3761-image-thumb.webp">
 Ford GT GT3</option>
+<option value="1782" data-image="http://game.raceroom.com/de/assets/content/carlivery/rooaar-racing-5-1787-image-thumb.webp">
+Ford Mustang GT3</option>
 <option value="1909" data-image="http://game.raceroom.com/de/assets/content/carlivery/team-mclaren-59-1911-image-thumb.webp">
 McLaren MP4-12C GT3</option>
 <option value="2533" data-image="http://game.raceroom.com/de/assets/content/carlivery/rowe-racing-6-2874-image-thumb.webp">
 Mercedes-Benz SLS AMG GT3</option>
 <option value="1811" data-image="http://game.raceroom.com/de/assets/content/carlivery/gt-academy-team-rjn-80-3751-image-thumb.webp">
 Nissan GT-R GT3</option>
+<option value="1821" data-image="http://game.raceroom.com/de/assets/content/carlivery/scuderia-cameron-glickenhaus-23-1823-image-thumb.webp">
+P4-5 Competizione</option>
 <option value="3516" data-image="http://game.raceroom.com/de/assets/content/carlivery/flash-motorsport-3-3520-image-thumb.webp">
 RUF RT12R GTR3</option>
 </optgroup>
@@ -165,8 +191,6 @@ Alle GTR X-Wagen</option>
 Gumpert Apollo Sport</option>
 <option value="1794" data-image="http://game.raceroom.com/de/assets/content/carlivery/egg-engineering-7-1796-image-thumb.webp">
 Koenigsegg CCGT</option>
-<option value="1821" data-image="http://game.raceroom.com/de/assets/content/carlivery/scuderia-cameron-glickenhaus-3-1823-image-thumb.webp">
-P4/5 Competizione</option>
 <option value="1824" data-image="http://game.raceroom.com/de/assets/content/carlivery/pagani-automobili-16-1826-image-thumb.webp">
 Pagani Zonda R</option>
 <option value="1834" data-image="http://game.raceroom.com/de/assets/content/carlivery/gmr-autosports-1-1836-image-thumb.webp">
@@ -206,31 +230,41 @@ Alle Hillclimb Icons-Wagen</option>
 <option value="2849" data-image="http://game.raceroom.com/de/assets/content/carlivery/team-meisel-motorsport-01-2851-image-thumb.webp">
 Carlsson SLK 340 JUDD</option>
 </optgroup>
+<optgroup label="NSU TTS Cup">
+<option value="class-4813">
+Alle NSU TTS Cup-Wagen</option>
+<option value="4810" data-image="http://game.raceroom.com/de/assets/content/carlivery/jagerbomb-motor-71-4948-image-thumb.webp">
+NSU TTS</option>
+</optgroup>
+<optgroup label="P1">
+<option value="class-1714">
+Alle P1-Wagen</option>
+<option value="4308" data-image="http://game.raceroom.com/de/assets/content/carlivery/audi-sport-team-joest-1-4310-image-thumb.webp">
+Audi R18</option>
+<option value="1756" data-image="http://game.raceroom.com/de/assets/content/carlivery/curbstone-rs-1-1758-image-thumb.webp">
+DMD P20</option>
+<option value="1800" data-image="http://game.raceroom.com/de/assets/content/carlivery/2525-motorsports-5-1802-image-thumb.webp">
+Mistral M530</option>
+</optgroup>
+<optgroup label="P2">
+<option value="class-1923">
+Alle P2-Wagen</option>
+<option value="2333" data-image="http://game.raceroom.com/de/assets/content/carlivery/wayne-taylor-racing-10-2336-image-thumb.webp">
+Chevrolet Daytona Prototype</option>
+<option value="1759" data-image="http://game.raceroom.com/de/assets/content/carlivery/mt-overmax-racing-3-1761-image-thumb.webp">
+DMD P21</option>
+<option value="1803" data-image="http://game.raceroom.com/de/assets/content/carlivery/motorista-motorsports-7-1805-image-thumb.webp">
+Mistral M531</option>
+<option value="1827" data-image="http://game.raceroom.com/de/assets/content/carlivery/lakeview-racing-team-1-1830-image-thumb.webp">
+Radical SR9 AER</option>
+<option value="1831" data-image="http://game.raceroom.com/de/assets/content/carlivery/kingdom-racing-3-1833-image-thumb.webp">
+Radical SR9 Judd</option>
+</optgroup>
 <optgroup label="Procar">
 <option value="class-2378">
 Alle Procar-Wagen</option>
 <option value="2339" data-image="http://game.raceroom.com/de/assets/content/carlivery/bmw-motorsport-1-2342-image-thumb.webp">
 BMW M1 Procar</option>
-</optgroup>
-<optgroup label="Prototype Series">
-<option value="class-1716">
-Alle Prototype Series-Wagen</option>
-<option value="1756" data-image="http://game.raceroom.com/de/assets/content/carlivery/curbstone-rs-1-1758-image-thumb.webp">
-DMD P20</option>
-<option value="1759" data-image="http://game.raceroom.com/de/assets/content/carlivery/mt-overmax-racing-3-1761-image-thumb.webp">
-DMD P21</option>
-<option value="1800" data-image="http://game.raceroom.com/de/assets/content/carlivery/2525-motorsports-5-1802-image-thumb.webp">
-Mistral M530</option>
-<option value="1803" data-image="http://game.raceroom.com/de/assets/content/carlivery/motorista-motorsports-7-1805-image-thumb.webp">
-Mistral M531</option>
-</optgroup>
-<optgroup label="Radical SR9 Cup">
-<option value="class-1828">
-Alle Radical SR9 Cup-Wagen</option>
-<option value="1827" data-image="http://game.raceroom.com/de/assets/content/carlivery/lakeview-racing-team-1-1830-image-thumb.webp">
-Radical SR9 AER</option>
-<option value="1831" data-image="http://game.raceroom.com/de/assets/content/carlivery/kingdom-racing-3-1833-image-thumb.webp">
-Radical SR9 Judd</option>
 </optgroup>
 <optgroup label="Silhouette Series">
 <option value="class-1717">
@@ -281,6 +315,18 @@ Citroen C Elysee WTCC</option>
 Honda Civic WTCC 2014</option>
 <option value="4067" data-image="http://game.raceroom.com/de/assets/content/carlivery/lada-sport-lukoil-11-4069-image-thumb.webp">
 LADA Granta 1.6T</option>
+</optgroup>
+<optgroup label="WTCC 2015">
+<option value="class-4517">
+Alle WTCC 2015-Wagen</option>
+<option value="4579" data-image="http://game.raceroom.com/de/assets/content/carlivery/roal-motorsport-3-4581-image-thumb.webp">
+Chevrolet RML Cruze TC1 2015</option>
+<option value="4585" data-image="http://game.raceroom.com/de/assets/content/carlivery/citroen-total-wtcc-9-4587-image-thumb.webp">
+Citroen C Elysee WTCC 2015</option>
+<option value="4554" data-image="http://game.raceroom.com/de/assets/content/carlivery/honda-racing-team-jas-2-4556-image-thumb.webp">
+Honda Civic WTCC 2015</option>
+<option value="4720" data-image="http://game.raceroom.com/de/assets/content/carlivery/lada-sport-rosneft-10-4815-image-thumb.webp">
+Lada Vesta WTCC 2015</option>
 </optgroup>
 </select>
 </div>
@@ -379,6 +425,16 @@ Moscow Raceway - Sprint</option>
 <optgroup label="Motorsport Arena Oschersleben">
 <option value="2384" data-image="http://game.raceroom.com/de/assets/content/tracklayout/motorsport-arena-oschersleben-grand-prix-2384-image-thumb.webp">
 Motorsport Arena Oschersleben - Grand Prix</option>
+</optgroup>
+<optgroup label="Nordschleife">
+<option value="5095" data-image="http://game.raceroom.com/de/assets/content/tracklayout/nordschleife-24-hours-5095-image-thumb.webp">
+Nordschleife - 24 Hours</option>
+<option value="2813" data-image="http://game.raceroom.com/de/assets/content/tracklayout/nordschleife-nordschleife-2813-image-thumb.webp">
+Nordschleife - Nordschleife</option>
+<option value="5093" data-image="http://game.raceroom.com/de/assets/content/tracklayout/nordschleife-tourist-5093-image-thumb.webp">
+Nordschleife - Tourist</option>
+<option value="4975" data-image="http://game.raceroom.com/de/assets/content/tracklayout/nordschleife-vln-4975-image-thumb.webp">
+Nordschleife - VLN</option>
 </optgroup>
 <optgroup label="Norisring">
 <option value="2518" data-image="http://game.raceroom.com/de/assets/content/tracklayout/norisring-grand-prix-2518-image-thumb.webp">
