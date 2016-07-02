@@ -2,6 +2,7 @@
 -- html generation
 useicons    = true
 onlyicons   = false
+driver_standings_position = true
 driver_standings_vehicle = true
 driver_standings_team = true
 vehicle_standings = true

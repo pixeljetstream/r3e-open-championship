@@ -60,6 +60,9 @@ tr.even td {
 td.pointcolumn {
   border-right:1px hidden #767B7F;
 }
+td.pointcolumn_only {
+  
+}
 td.poscolumn
 {
   font-size:smaller;

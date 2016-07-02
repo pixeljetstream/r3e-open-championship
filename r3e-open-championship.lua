@@ -493,7 +493,8 @@ local function GenerateStatsHTML(outfilename,standings)
       </tr>
     ]])
   end
-  addHeaderTracks("colspan=2")
+  local colspan = cfg.driver_standings_position and "colspan=2" or ""
+  addHeaderTracks(colspan)
 
   -- iterate sorted drivers
   local accumpoints = getaccumpoints(racepoints, numdrivers)
@@ -524,11 +525,13 @@ local function GenerateStatsHTML(outfilename,standings)
       f:write([[
           <span class="points">]])
       if (not str) then
-        f:write([[<td colspan=2 class="minor">]]..(didrace and "DNF" or "non-starter")..[[</td>]])
+        f:write([[<td ]]..colspan..[[ class="minor">]]..(didrace and "DNF" or "non-starter")..[[</td>]])
       else
         str = (str == 0 and "-" or str)
         local rpos = racepositions[r][i]
-        f:write([[<td class="pointcolumn">]]..str..[[</td><td class="poscolumn pos]]..rpos..[[">]]..rpos..[[.</td>]])
+        local ppos = [[<td class="pointcolumn]]..(cfg.driver_standings_position and [[">]] or [[_only">]])..str..[[</td>]]
+        local rpos = cfg.driver_standings_position and [[<td class="poscolumn pos]]..rpos..[[">]]..rpos..[[.</td>]] or ""
+        f:write(ppos..rpos)
       end
       f:write([[</span>
           ]])
