@@ -39,7 +39,7 @@ th {
   background:#5D5D5D;
 }
 #track {
-  font-size:xx-small; /* use xx-small instead of smaller for tinier text */
+  font-size:smaller; /* use xx-small instead of smaller for tinier text */
   font-weight:normal;
 }
 #player {
