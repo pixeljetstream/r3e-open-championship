@@ -1,7 +1,12 @@
 
 -- html generation
-useicons    = true
-onlyicons   = false
+usetrackdates    = true
+usetrackicons    = true
+onlytrackicons   = false
+trackiconstyle   = "" -- if you want to have smaller icons use for example "max-width:50%;"
+usevehicleicons    = true
+onlyvehicleicons   = false
+
 driver_standings_position = true
 driver_standings_vehicle = true
 driver_standings_team = true

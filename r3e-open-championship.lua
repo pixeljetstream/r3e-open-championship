@@ -480,13 +480,13 @@ local function GenerateStatsHTML(outfilename,standings)
       local ticon = tinfo and tinfo[2] or track
       local icon  = icons[ticon]
       if (icon) then
-        icon  = cfg.useicons and makeIcon(icon,ticon) or ""
-        track = cfg.onlyicons and icon or icon.."<br>"..tname
+        icon  = cfg.usetrackicons and makeIcon(icon,ticon,cfg.trackiconstyle) or ""
+        track = cfg.onlytrackicons and icon or icon.."<br>"..tname
       end
       local time   = standings[r].timestring:gsub("(%s)","<br>")
       
       f:write([[
-        <th id="track" ]]..(attr or "").." >"..track.."<br>"..time..[[</th>
+        <th id="track" ]]..(attr or "").." >"..track..(cfg.usetrackdates and "<br>"..time or "")..[[</th>
       ]])
     end
     f:write([[
@@ -502,9 +502,9 @@ local function GenerateStatsHTML(outfilename,standings)
   for pos,i in ipairs(sortedslots) do
     local vehicle = info[i].Vehicle
     local icon = icons[vehicle]
-    if (icon and cfg.useicons) then
+    if (icon and cfg.usevehicleicons) then
       icon = makeIcon(icon,vehicle)
-      vehicle = cfg.onlyicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
+      vehicle = cfg.onlyvehicleicons and icon or icon..'<span class="minor">'..vehicle..'</span>'
     end
     
     local vehicle = cfg.driver_standings_vehicle and "<td>"..vehicle.."</td>" or ""
@@ -603,7 +603,7 @@ if (numcars > 1 and cfg.vehicle_standings) then
   for pos,i in ipairs(sortedslots) do
     local carname = carslots[i].Name
     local icon = icons[carname]
-    if (icon and cfg.useicons) then
+    if (icon and cfg.usevehicleicons) then
       icon = makeIcon(icon,carname)
       carname = icon..carname
     end
@@ -649,9 +649,9 @@ end
       if (tab) then
         local vehicle = tab.Vehicle
         local icon = icons[vehicle]
-        if (icon and cfg.useicons) then
+        if (icon and cfg.usevehicleicons) then
           icon = makeIcon(icon,vehicle)
-          vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
+          vehicle = cfg.onlyvehicleicons and icon or icon.."<br>"..vehicle
         end
         
         local driver  = tab.Driver or ""
@@ -705,10 +705,11 @@ end
       if (tab) then
         local vehicle = tab.Vehicle
         local icon = icons[vehicle]
-        if (icon and cfg.useicons) then
+        if (icon and cfg.usevehicleicons) then
           icon = makeIcon(icon,vehicle)
-          vehicle = cfg.onlyicons and icon or icon.."<br>"..vehicle
+          vehicle = cfg.onlyvehicleicons and icon or icon.."<br>"..vehicle
         end
+        
         local driver  = tab.Driver or ""
         local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
         local time    = '<br>'..tab.QualTime or ""
@@ -781,7 +782,7 @@ end
       
       local vehicle = tab.Vehicle
       local icon = icons[vehicle]
-      if (icon and cfg.useicons and cfg.onlyicons) then
+      if (icon and cfg.usevehicleicons and cfg.onlyvehicleicons) then
         icon = makeIcon(icon,vehicle,"opacity:0.6;height:1.7em;")
         vehicle = icon
       else
@@ -1390,7 +1391,7 @@ function main()
   end
   
   printlog("init completed")
-  printlog(string.format("minracetime %d mins, checkrate %d mins, useicons %s, onlyicons %s", cfg.minracetime, cfg.checkrate, tostring(cfg.useicons), tostring(cfg.onlyicons) )) 
+  printlog(string.format("minracetime %d mins, checkrate %d mins", cfg.minracetime, cfg.checkrate)) 
   
   splitter:SplitHorizontally(win, txtlog, sh)
   
