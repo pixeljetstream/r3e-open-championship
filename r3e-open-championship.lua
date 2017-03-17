@@ -99,7 +99,7 @@ local tracknames  =             -- maps tracklength to a name, let's hope those 
 ["4101.1851"]={"SonomaWTCC",        "Sonoma Raceway - WTCC"},
 ["3706.5615"]={"SonomaIRL",         "Sonoma Raceway - IRL"},
 ["4046.4993"]={"SonomaLong",        "Sonoma Raceway - Long"},
-["4305.5688"]={"RedBullRing",       "Red Bull Ring Spielberg - Grand Prix"},
+["4305.5688"]={"RedBullRing",       "Red Bull Ring Spielberg - Grand Prix Circuit"},
 ["3649.3059"]={"Sachsenring",       "Sachsenring - Grand Prix"},
 --["????.????"]={"Salzburgring",      "Salzburgring - Grand Prix"},
 --["????.????"]={"Shanghai",          "Shanghai Circuit - East Course"},
@@ -351,8 +351,9 @@ local function GenerateStatsHTML(outfilename,standings)
     local points = {}
     local results = {}
     
-    local ruleset    = race.ruleset or "default"
+    local ruleset    = race.ruleset ~= "" and race.ruleset or "default"
     local rulepoints = cfg.rulepoints[ruleset]
+    assert(rulepoints, "could not find ruleset: "..ruleset)
     
     for i=1,math.min(numdrivers,#rulepoints) do
       -- only set points if time is valid
