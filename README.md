@@ -44,12 +44,12 @@ is no compatibility check when a race is appended, so keep organized :)
 
 If you do not want to setup the commandline yourself, simply use the `myleague.bat`:
 
+`myleague.bat 201602031038.json`
+
 * Pass the json or xml file that the server generates onto it, for example drag drop the result file (json or xml) onto the batch file.
 * This will append the results to a database called `myleague` and the result html is generated and then shown in your default browser. 
 * By renaming the batch file, for example `GTR3 Summer Season.bat` you will also rename the database being used. So simply copy the batch file, rename it to the league it shall represent, and pass the result files onto it.
 * Every time you pass a result file onto the batch, it will get appended to the database of that filename, so races only need to be added once.
-
-By renaming the batch file to something else, you can change
 
 ### Commandline mode
 
