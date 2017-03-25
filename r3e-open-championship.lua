@@ -352,7 +352,7 @@ local function GenerateStatsHTML(outfilename,standings)
     local results = {}
     
     local ruleset    = race.ruleset ~= "" and race.ruleset or "default"
-    local rulepoints = cfg.rulepoints[ruleset]
+    local rulepoints = cfg.rulepoints[ruleset] 
     assert(rulepoints, "could not find ruleset: "..ruleset)
     
     for i=1,math.min(numdrivers,#rulepoints) do
@@ -1175,7 +1175,7 @@ RaceTime=0:02:11.328
 end
 
 local function ParseResults(filename)
-  assert(filename)
+  assert(filename, "no filename provided")
   local parserRegistry = {
     txt  = ParseResultsTXT,
     json = ParseResultsJSON,
@@ -1184,7 +1184,7 @@ local function ParseResults(filename)
   
   local ext = filename:lower():match("%.(.-)$")
   local parser = parserRegistry[ext or ""]
-  assert(parser)
+  assert(parser, "could not derive valid parser for: "..filename)
   return parser(filename)
 end
 
