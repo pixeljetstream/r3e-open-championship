@@ -1,0 +1,8 @@
+*.txt
+*.xml
+*.json
+*.bat
+*.7z
+results/*.html
+results/*.lua
+results/test

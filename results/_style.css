@@ -12,7 +12,7 @@ body {
   text-align:left;
   background:url(foo) fixed;
 
-  overflow-x:hidden;
+  overflow-x:auto;
   overflow-y:scroll;
   color:#E5E5E5;
 }
