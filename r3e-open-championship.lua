@@ -133,6 +133,21 @@ local function parseAssetIcons(filename)
     icons[key] = url
   end
   
+  -- manual car icon patches
+  icons["Mercedes-AMG GT3 2020"] = icons["Mercedes AMG GT3 Evo"]
+  icons["BMW M4 DTM 2020e"] = icons["BMW M4 DTM 2020"]
+  icons["Porsche 911 GT3 R"] = icons["Porsche 911 GT3 R (2019)"]
+  icons["AMG-Mercedes C-Klasse DTM 2005"] = icons["AMG-Mercedes C-Klasse DTM"]
+  icons["Audi RS 5 DTM 2020e"] = icons["Audi RS 5 DTM 2020"]
+  icons["Lynk & Co 03 TCR"] = icons["Lynk &amp; Co 03 TCR"]
+  icons["E36 V8 JUDD"] = icons["134 Judd V8"]
+  icons["AMG-Mercedes CLK DTM 2003"] = icons["AMG-Mercedes CLK DTM"]
+  icons["Mercedes-AMG C 63 DTM"] = icons["Mercedes-AMG C63 DTM"]
+  icons["BMW M3 DTM "] = icons["BMW M3 DTM"]
+  icons["Mercedes-AMG C 63 DTM 2015"] = icons["Mercedes-AMG C63 DTM"]
+  icons["AMG-Mercedes 190 E 2.5-16 Evolution II 1992"] = icons["Mercedes 190E Evo II DTM"]
+  icons["Porsche 911 GT3 Cup Endurance"] = icons["Porsche 911 GT3 Cup"]
+  
   for i,v in pairs(tracknames) do
     assert(icons[v[2]], v[2].." icon not found")
   end
