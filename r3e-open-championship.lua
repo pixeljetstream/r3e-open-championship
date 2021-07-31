@@ -484,10 +484,10 @@ local function GenerateStatsHTML(outfilename,standings)
         icon  = cfg.usetrackicons and makeIcon(icon,ticon,cfg.trackiconstyle) or ""
         track = cfg.onlytrackicons and icon or icon.."<br>"..tname
       end
-      local time   = standings[r].timestring:gsub("(%s)","<br>")
+      local ctime = standings[r].timestring:gsub("(%s)","<br>")
       
       f:write([[
-        <th id="track" ]]..(attr or "").." >"..track..(cfg.usetrackdates and "<br>"..time or "")..[[</th>
+        <th id="track" ]]..(attr or "").." >"..track..(cfg.usetrackdates and "<br>"..ctime or "")..[[</th>
       ]])
     end
     f:write([[
@@ -657,7 +657,7 @@ end
         
         local driver  = tab.Driver or ""
         local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
-        local time    = '<br>'..tab.BestLap or ""
+        local ctime   = '<br>'..tab.BestLap or ""
         local gap     = ""
         
         if (pos > 1) then
@@ -665,14 +665,14 @@ end
           local previous = lapracetimes[r][pos-1]
 
           -- to winner
-          time = DiffTime( winner.BestLap, tab.BestLap )
-          time = time and '<br>'..time or ""
+          ctime = DiffTime( winner.BestLap, tab.BestLap )
+          ctime = ctime and '<br>'..ctime or ""
           -- to previous driver
           gap  = DiffTime( previous.BestLap, tab.BestLap )
           gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
         end
         
-        str = driver..vehicle..time..gap
+        str = driver..vehicle..ctime..gap
       end
 
       
@@ -713,7 +713,7 @@ end
         
         local driver  = tab.Driver or ""
         local vehicle = '<br><span class="minor">'..vehicle.."</span>" or ""
-        local time    = '<br>'..tab.QualTime or ""
+        local ctime   = '<br>'..tab.QualTime or ""
         local gap     = ""
         
         if (pos > 1) then
@@ -721,14 +721,14 @@ end
           local previous = qualracetimes[r][pos-1]
 
           -- to winner
-          time = DiffTime( winner.QualTime, tab.QualTime )
-          time = time and '<br>'..time or ""
+          ctime = DiffTime( winner.QualTime, tab.QualTime )
+          ctime = ctime and '<br>'..ctime or ""
           -- to previous driver
           gap  = DiffTime( previous.QualTime, tab.QualTime )
           gap  = gap  and '<br><span class="minor">'..gap..'</span>' or ""
         end
         
-        str = driver..vehicle..time..gap
+        str = driver..vehicle..ctime..gap
       end
       
       f:write([[
@@ -758,8 +758,8 @@ end
     for r=1,numraces do
       local tab  = raceresults[r][pos]
       local didrace = tab.RaceTime
-      local time = '<br>'..(tab.RaceTime or "non-starter")
-      local gap  = ""
+      local ctime = '<br>'..(tab.RaceTime or "non-starter")
+      local gap   = ""
       
       if (pos > 1) then
         local winner   = raceresults[r][1]
@@ -774,8 +774,8 @@ end
           end
         end
         -- to winner
-        time = DiffTime( winner.RaceTime,      tab.RaceTime )
-        time = time and '<br>'..DiffLap(winner.Laps, tab.Laps)..time or (didrace and "<br>DNF" or "<br>non-starter")
+        ctime = DiffTime( winner.RaceTime,      tab.RaceTime )
+        ctime = ctime and '<br>'..DiffLap(winner.Laps, tab.Laps)..ctime or (didrace and "<br>DNF" or "<br>non-starter")
         -- to previous driver
         gap  = DiffTime( previous.RaceTime,  tab.RaceTime )
         gap  = gap  and '<br><span class="minor">'..DiffLap(previous.Laps, tab.Laps)..gap..'</span>' or ""
@@ -794,7 +794,7 @@ end
       local vehicle = '<br>'..vehicle
       
       f:write([[
-        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..time..gap..[[</td>
+        <td]]..(tab and tab.Player and ' id="player"' or "")..[[>]]..driver..vehicle..ctime..gap..[[</td>
       ]])
     end
     f:write([[
@@ -889,8 +889,8 @@ local function ParseResultsJSON(filename)
       end
       lkdrivers[tab.Driver] = tab
       
-      local time = player.TotalTime > 0 and player.TotalTime/1000
-      if (time) then mintime = math.min(mintime or 10000000,time) end
+      local ctime = player.TotalTime > 0 and player.TotalTime/1000
+      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
     end
   end
   
@@ -1001,8 +1001,8 @@ local function ParseResultsXML(filename)
       end
       lkdrivers[tab.Driver] = tab
       
-      local time = player.TotalTime > 0 and player.TotalTime/1000
-      if (time) then mintime = math.min(mintime or 10000000,time) end
+      local ctime = player.TotalTime > 0 and player.TotalTime/1000
+      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
     end
   end
   
@@ -1148,8 +1148,8 @@ RaceTime=0:02:11.328
       end
       lkdrivers[tab.Driver] = true
       
-      local time = ParseTime(tab.RaceTime)
-      if (time) then mintime = math.min(mintime or 10000000,time) end
+      local ctime = ParseTime(tab.RaceTime)
+      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
     end
   end
   
@@ -1157,12 +1157,12 @@ RaceTime=0:02:11.328
   
   -- discard if no valid time found
   if (not mintime) then
-    printlog("race without results", slots[1].Vehicle)
+    printlog("race without results", slots[1] and slots[1].Vehicle)
     return
   end
   -- discard if race was too short
   if (mintime < 60*cfg.minracetime) then 
-    printlog("race too short", slots[1].Vehicle)
+    printlog("race too short", slots[1] and slots[1].Vehicle)
     return 
   end
   
