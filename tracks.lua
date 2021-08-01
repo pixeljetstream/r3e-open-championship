@@ -1,6 +1,6 @@
 return
 {
--- the app will look for the tracklength that is witin a meter
+-- the app will look for the tracklength that is close
 
 --{tracklength, shortname,  official asset name (look it up in assets.txt to get icons) }
 {4224.0947, "Most",              "Autodrom Most - Grand Prix"},
