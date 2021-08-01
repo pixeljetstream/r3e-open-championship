@@ -45,6 +45,41 @@ loadConfig("config.lua")
 
 
 local tracknames = dofile("tracks.lua")
+table.sort(tracknames, function(a,b) return a[1] < b[1] end)
+local nTracks = #tracknames
+local minDist = 1000000
+do
+  for a=0,nTracks-1 do
+    for b=0,a-1 do
+      local dist = math.abs(tracknames[a+1][1] - tracknames[b+1][1])
+      if (dist < minDist) then
+        minDist = dist
+        --print("minDist", minDist, tracknames[a+1][3], tracknames[b+1][3])
+      end
+    end
+  end
+end
+
+local function findTrack(str)
+  local dist = tonumber(str)
+  local s = 0
+  local e = nTracks-1
+  local r = minDist / 2
+  
+  while (s <= e) do
+    local h = math.floor((s + e) / 2)
+    local tinfo = tracknames[h+1]
+    if (dist > tinfo[1] + r) then
+      s = h + 1
+    elseif (dist < tinfo[1] - r) then
+      e = h - 1
+    else
+      return tinfo
+    end
+  end
+  
+  return nil
+end
 
 -------------------------------------------------------------------------------------
 --
@@ -148,8 +183,8 @@ local function parseAssetIcons(filename)
   icons["AMG-Mercedes 190 E 2.5-16 Evolution II 1992"] = icons["Mercedes 190E Evo II DTM"]
   icons["Porsche 911 GT3 Cup Endurance"] = icons["Porsche 911 GT3 Cup"]
   
-  for i,v in pairs(tracknames) do
-    assert(icons[v[2]], v[2].." icon not found")
+  for _,v in ipairs(tracknames) do
+    assert(icons[v[3]], v[3].." icon not found")
   end
   return icons
 end
@@ -427,9 +462,9 @@ local function GenerateStatsHTML(outfilename,standings)
     for r=1,numraces do
       
       local track = standings[r].tracklength and tostring(standings[r].tracklength) or standings[r].trackname
-      local tinfo = tracknames[track]
-      local tname = tinfo and tinfo[1] or track
-      local ticon = tinfo and tinfo[2] or track
+      local tinfo = findTrack(track)
+      local tname = tinfo and tinfo[2] or track
+      local ticon = tinfo and tinfo[3] or track
       local icon  = icons[ticon]
       if (icon) then
         icon  = cfg.usetrackicons and makeIcon(icon,ticon,cfg.trackiconstyle) or ""
