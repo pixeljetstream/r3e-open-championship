@@ -45,8 +45,7 @@ loadConfig("config.lua")
 
 
 local tracknames = dofile("tracks.lua")
-table.sort(tracknames, function(a,b) return a[1] < b[1] end)
-local nTracks = #tracknames
+local nTracks    = #tracknames
 local minDist = 1000000
 do
   for a=0,nTracks-1 do
@@ -60,25 +59,41 @@ do
   end
 end
 
+--table.sort(tracknames, function(a,b) return a[1] < b[1] end)
+
 local function findTrack(str)
-  local dist = tonumber(str)
+  local searchDist = tonumber(str)
+
+  --[[
   local s = 0
   local e = nTracks-1
   local r = minDist / 2
-  
   while (s <= e) do
     local h = math.floor((s + e) / 2)
     local tinfo = tracknames[h+1]
-    if (dist > tinfo[1] + r) then
+    if (searchDist > tinfo[1] + r) then
       s = h + 1
-    elseif (dist < tinfo[1] - r) then
+    elseif (searchDist < tinfo[1] - r) then
       e = h - 1
     else
       return tinfo
     end
   end
+  ]]
   
-  return nil
+  local closestDist  = 0.5
+  local closestTrack = nil
+  
+  for i=1,nTracks do
+    local tinfo = tracknames[i]
+    local dist  = math.abs(searchDist - tinfo[1])
+    if (dist < closestDist) then
+      closestTrack = tinfo
+      closestDist  = dist
+    end
+  end
+  
+  return closestTrack
 end
 
 -------------------------------------------------------------------------------------
