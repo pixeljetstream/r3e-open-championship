@@ -20,6 +20,8 @@ rulepoints  = {   -- applied based on race's "ruleset" entry
   fia1991_2002 = {10,6,4,3,2,1},
   fia2003_2009 = {10,8,6,5,4,3,2,1},
   fia_current  = {25,18,15,12,10,8,6,4,2,1},
+  porsche_ccd      = {25,20,16,13,11,10,9,8,7,6,5,4,3,2,1},
+  porsche_supercup = {25,20,17,14,12,10,9,8,7,6,5,4,3,2,1},
 }
 
 stylesheetfile = "_style.css"
