@@ -101,6 +101,7 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 ### History
 
 Time-line for some distinct features
+* 30. 9.2021 - json and xml fixes for latest file formating, base results on player.Position if exists, json/xml add support for race2 and race3
 * 28. 2.2016 - xml result support, use time difference for best-lap and qualifying
 *  6. 2.2016 - bugfix results when drivers are laps behind, remove minracetime check for json
 * 17. 1.2016 - config file externalized, new config commandline, point handling per race

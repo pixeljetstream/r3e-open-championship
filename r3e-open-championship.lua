@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
---local cmdlineargs = {"-addrace", "./results/test3.lua", "Race2.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
+--local cmdlineargs = {"-addrace", "./results/test3.lua", "202109280642.xml", "-makehtml", "./results/test3.lua", "./results/test3.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -63,6 +63,16 @@ end
 
 local function findTrack(str)
   local searchDist = tonumber(str)
+  if (searchDist == nil) then
+    for i=1,nTracks do
+      local tinfo = tracknames[i]
+      if (tinfo[3] == str) then
+        return tinfo
+      end
+    end
+    
+    return nil
+  end
 
   --[[
   local s = 0
@@ -183,20 +193,23 @@ local function parseAssetIcons(filename)
     icons[key] = url
   end
   
+  local function patch(dst, src)
+    local i = icons[src]
+    if i then icons[dst] = i end
+  end
+  
   -- manual car icon patches
-  icons["Mercedes-AMG GT3 2020"] = icons["Mercedes AMG GT3 Evo"]
-  icons["BMW M4 DTM 2020e"] = icons["BMW M4 DTM 2020"]
-  icons["Porsche 911 GT3 R"] = icons["Porsche 911 GT3 R (2019)"]
-  icons["AMG-Mercedes C-Klasse DTM 2005"] = icons["AMG-Mercedes C-Klasse DTM"]
-  icons["Audi RS 5 DTM 2020e"] = icons["Audi RS 5 DTM 2020"]
-  icons["Lynk & Co 03 TCR"] = icons["Lynk &amp; Co 03 TCR"]
-  icons["E36 V8 JUDD"] = icons["134 Judd V8"]
-  icons["AMG-Mercedes CLK DTM 2003"] = icons["AMG-Mercedes CLK DTM"]
-  icons["Mercedes-AMG C 63 DTM"] = icons["Mercedes-AMG C63 DTM"]
-  icons["BMW M3 DTM "] = icons["BMW M3 DTM"]
-  icons["Mercedes-AMG C 63 DTM 2015"] = icons["Mercedes-AMG C63 DTM"]
-  icons["AMG-Mercedes 190 E 2.5-16 Evolution II 1992"] = icons["Mercedes 190E Evo II DTM"]
-  icons["Porsche 911 GT3 Cup Endurance"] = icons["Porsche 911 GT3 Cup"]
+  patch("BMW M4 DTM 2020e", "BMW M4 DTM 2020")
+  patch("Porsche 911 GT3 R", "Porsche 911 GT3 R (2019)")
+  patch("AMG-Mercedes C-Klasse DTM 2005", "AMG-Mercedes C-Klasse DTM")
+  patch("Audi RS 5 DTM 2020e", "Audi RS 5 DTM 2020")
+  patch("Lynk & Co 03 TCR", "Lynk &amp; Co 03 TCR")
+  patch("E36 V8 JUDD", "134 Judd V8")
+  patch("AMG-Mercedes CLK DTM 2003", "AMG-Mercedes CLK DTM")
+  patch("Mercedes-AMG C 63 DTM", "Mercedes-AMG C63 DTM")
+  patch("BMW M3 DTM ", "BMW M3 DTM")
+  patch("Mercedes-AMG C 63 DTM 2015", "Mercedes-AMG C63 DTM")
+  patch("AMG-Mercedes 190 E 2.5-16 Evolution II 1992", "Mercedes 190E Evo II DTM")
   
   for _,v in ipairs(tracknames) do
     assert(icons[v[3]], v[3].." icon not found")
@@ -329,19 +342,26 @@ local function GenerateStatsHTML(outfilename,standings)
     local function getSortedResults()
       local times = {}
       local sorted = {}
-      local laps = {}
+      local pos    = {}
+      local laps   = {}
       for i=1,numdrivers do
         sorted[i] = i
         assert(race.slots[i], string.format("%d %d",r,i))
         times[i] = ParseTime(race.slots[i].RaceTime or "")
         laps[i]  = tonumber(race.slots[i].Laps) or 0
-        -- may be nil if DNF 
+        pos[i]   = race.slots[i].Position and tonumber(race.slots[i].Position) or 0
       end
       
       table.sort(sorted,
         function(a,b) 
-          local diff = laps[a] - laps[b]
-          return diff == 0 and ((times[a] or 1000000000) < (times[b] or 1000000000)) or (laps[a] > laps[b] )
+          local posdiff  = pos[a] - pos[b]
+          local lapdiff  = laps[a] - laps[b]
+          local timediff = (times[a] or 1000000000) - (times[b] or 1000000000)
+          
+          if      (posdiff ~= 0) then return (posdiff < 0)
+          elseif  (lapdiff ~= 0) then return (lapdiff > 0)
+          else                        return (timediff > 0)
+          end
         end)
       
       return sorted,times
@@ -834,10 +854,15 @@ local function ParseResultsJSON(filename)
     return
   end
   
-  local date = os.date("*t",math.floor(tonumber(json.Time:match("(%d+)"))/1000))
-  local timestring  = string.format("%d/%d/%d %d:%d:%d",date.year,date.month,date.day, date.hour, date.min, date.sec)
-  
-  local trackname   = json.Track
+  local datet = type(json.Time) == "string" and math.floor(tonumber(json.Time:match("(%d+)"))/1000) or json.Time
+  local date  = os.date("*t",datet)
+  local date2 = os.date("*t",datet + 1)
+  local date3 = os.date("*t",datet + 2)
+  local timestring  = string.format("%d/%d/%d %d:%d:%d",date.year, date.month, date.day,  date.hour,  date.min,  date.sec)
+  local timestring2 = string.format("%d/%d/%d %d:%d:%d",date2.year,date2.month,date2.day, date2.hour, date2.min, date2.sec)
+  local timestring3 = string.format("%d/%d/%d %d:%d:%d",date3.year,date3.month,date3.day, date3.hour, date3.min, date3.sec)
+    
+  local trackname   = json.Track..(json.TrackLayout and " - "..json.TrackLayout or "")
   local scene       = "Unknown"
   local mode        = "1"
   
@@ -848,7 +873,9 @@ local function ParseResultsJSON(filename)
 
   local key
   local hash = ""
-  local slots = {}
+  local slots  = {}
+  local slots2 = {}
+  local slots3 = {}
   local mintime
   local drivers = {}
   local lkdrivers = {}
@@ -859,10 +886,14 @@ local function ParseResultsJSON(filename)
   
   local sessqualify
   local sessrace
+  local sessrace2
+  local sessrace3
   
   for i,sess in ipairs(json.Sessions) do
     if sess.Type == "Qualify" then sessqualify  = sess end
     if sess.Type == "Race"    then sessrace     = sess end
+    if sess.Type == "Race2"   then sessrace2    = sess end
+    if sess.Type == "Race3"   then sessrace3    = sess end
   end
   
   if (not sessrace) then 
@@ -870,54 +901,74 @@ local function ParseResultsJSON(filename)
     return 
   end
   
-  for i,player in ipairs(sessrace.Players) do
-    local slot = i
-    if (not slots[slot]) then 
-      local tab = {}
-      tab.Driver    = player[cfg.jsonDriverName]
-      tab.Vehicle   = player.Car
-      tab.Team      = "-"
-      tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
-      tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
-      tab.Laps      = #player.RaceSessionLaps
-      tab.Position  = player.Position
-      slots[slot]   = tab
-      
-      hash = hash..tab.Team..tab.Driver
-      table.insert(drivers,tab.Driver)
-      if (lkdrivers[tab.Driver]) then
-        uniquedrivers = false
+  local function procRace(sess, slots, first)
+    for i,player in ipairs(sess.Players) do
+      local slot = i
+      if (not slots[slot]) then 
+        local tab = {}
+        tab.Driver    = player[cfg.jsonDriverName]
+        tab.Vehicle   = player.Car
+        tab.Team      = "-"
+        tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
+        tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
+        tab.Laps      = #player.RaceSessionLaps
+        tab.Position  = player.Position
+        slots[slot]   = tab
+        
+        if (first) then
+          hash = hash..tab.Team..tab.Driver
+          table.insert(drivers,tab.Driver)
+          if (lkdrivers[tab.Driver]) then
+            uniquedrivers = false
+          end
+          lkdrivers[tab.Driver] = tab
+        end
+        
+        local ctime = player.TotalTime > 0 and player.TotalTime/1000
+        if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
       end
-      lkdrivers[tab.Driver] = tab
-      
-      local ctime = player.TotalTime > 0 and player.TotalTime/1000
-      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
     end
   end
   
-  for i,player in ipairs(sessqualify.Players) do
-    local name = player[cfg.jsonDriverName]
-    local tab = lkdrivers[name]
-    
-    if (player.BestLapTime > 0 and tab) then
-      tab.QualTime = MakeTime(player.BestLapTime)
+  procRace(sessrace1, slots, true)
+  
+  if (sessrace2) then
+    procRace(sessrace2, slots2, false)
+  end
+  
+  if (sessrace3) then
+    procRace(sessrace3, slots3, false)
+  end
+  
+  if (sessqualify) then
+    for i,player in ipairs(sessqualify.Players) do
+      local name = player[cfg.jsonDriverName]
+      local tab = lkdrivers[name]
+      
+      if (player.BestLapTime > 0 and tab) then
+        tab.QualTime = MakeTime(player.BestLapTime)
+      end
     end
   end
   
   table.sort(drivers)
   
   -- discard if no valid time found
-  if (not mintime) then
-    printlog("race without results", slots[1].Vehicle)
-    return
-  end
+  --if (not mintime) then
+  --  printlog("race without results", slots[1].Vehicle, timestring)
+  --  return
+  --end
   
   -- key is based on slot0 Vehicle + team and hash of all drivers
   key = slots[1].Vehicle.." "..md5.sumhexa(hash)
   
   printlog("race parsed",key, timestring)
   
-  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
+  local race1 =               {trackname = trackname, scene=scene, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
+  local race2 = sessrace2 and {trackname = trackname, scene=scene, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
+  local race3 = sessrace3 and {trackname = trackname, scene=scene, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
+  
+  return key, race1, race2, race3
 end
 
 local lxml = dofile("xml.lua")
@@ -942,14 +993,19 @@ local function ParseResultsXML(filename)
   xml = xml.MultiplayerRaceResult
   
   local timestring
+  local timestring2
+  local timestring3
   do
+    -- 2021-09-27T19:01:45Z
     -- 2015-10-30T20:45:12.217Z
-    local day,month,year,hour,min,sec = xml.Time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d-)%.")
+    local year,month,day,hour,min,sec = xml.Time:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):([%d%.]+)")
     timestring  = string.format("%s/%s/%s %s:%s:%s",year,month,day, hour, min, sec)
+    timestring2 = string.format("%s/%s/%s %s:%s:%s",year,month,day, hour, min, sec+1) -- bit of a hack
+    timestring3 = string.format("%s/%s/%s %s:%s:%s",year,month,day, hour, min, sec+2) -- bit of a hack
   end
   
   
-  local trackname   = xml.Track
+  local trackname   = xml.Track..(xml.TrackLayout and " - "..xml.TrackLayout or "")
   local scene       = "Unknown"
   local mode        = "1"
   
@@ -960,7 +1016,9 @@ local function ParseResultsXML(filename)
 
   local key
   local hash = ""
-  local slots = {}
+  local slots  = {}
+  local slots2 = {}
+  local slots3 = {}
   local mintime
   local drivers = {}
   local lkdrivers = {}
@@ -971,10 +1029,13 @@ local function ParseResultsXML(filename)
   
   local sessqualify
   local sessrace
+  local sessrace2
+  local sessrace3
   
   for i,sess in ipairs(xml.Sessions) do
     if sess.Type == "Qualify" then sessqualify  = sess end
     if sess.Type == "Race"    then sessrace     = sess end
+    if sess.Type == "Race2"   then sessrace2    = sess end
   end
   
   if (not sessrace) then 
@@ -982,54 +1043,74 @@ local function ParseResultsXML(filename)
     return 
   end
   
-  for i,player in ipairs(sessrace.Players) do
-    local slot = i
-    if (not slots[slot]) then 
-      local tab = {}
-      tab.Driver    = player[cfg.xmlDriverName]
-      tab.Vehicle   = player.Car
-      tab.Team      = "-"
-      tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
-      tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
-      tab.Laps      = #player.RaceSessionLaps
-      tab.Position  = player.Position
-      slots[slot]   = tab
-      
-      hash = hash..tab.Team..tab.Driver
-      table.insert(drivers,tab.Driver)
-      if (lkdrivers[tab.Driver]) then
-        uniquedrivers = false
+  local function procRace(sess, slots, first)
+    for i,player in ipairs(sess.Players) do
+      local slot = i
+      if (not slots[slot]) then 
+        local tab = {}
+        tab.Driver    = player[cfg.xmlDriverName]
+        tab.Vehicle   = player.Car
+        tab.Team      = "-"
+        tab.RaceTime  = player.FinishStatus == "Finished" and MakeTime(player.TotalTime) or "DNF"
+        tab.BestLap   = player.BestLapTime > 0 and MakeTime(player.BestLapTime) or nil
+        tab.Laps      = #player.RaceSessionLaps
+        tab.Position  = player.Position
+        slots[slot]   = tab
+        
+        if (first) then
+          hash = hash..tab.Team..tab.Driver
+          table.insert(drivers,tab.Driver)
+          if (lkdrivers[tab.Driver]) then
+            uniquedrivers = false
+          end
+          lkdrivers[tab.Driver] = tab
+        end
+        
+        local ctime = player.TotalTime > 0 and player.TotalTime/1000
+        if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
       end
-      lkdrivers[tab.Driver] = tab
-      
-      local ctime = player.TotalTime > 0 and player.TotalTime/1000
-      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
     end
   end
   
-  for i,player in ipairs(sessqualify.Players) do
-    local name = player[cfg.jsonDriverName]
-    local tab = lkdrivers[name]
-    
-    if (player.BestLapTime > 0 and tab) then
-      tab.QualTime = MakeTime(player.BestLapTime)
+  procRace(sessrace, slots, true)
+  
+  if (sessrace2) then
+    procRace(sessrace2, slots2, false)
+  end
+  
+  if (sessrace3) then
+    procRace(sessrace3, slots3, false)
+  end
+  
+  if (sessqualify) then
+    for i,player in ipairs(sessqualify.Players) do
+      local name = player[cfg.jsonDriverName]
+      local tab = lkdrivers[name]
+      
+      if (player.BestLapTime > 0 and tab) then
+        tab.QualTime = MakeTime(player.BestLapTime)
+      end
     end
   end
   
   table.sort(drivers)
   
   -- discard if no valid time found
-  if (not mintime) then
-    printlog("race without results", slots[1].Vehicle)
-    return
-  end
+  --if (not mintime) then
+  --  printlog("race without results", slots[1].Vehicle)
+  --  return
+  --end
   
   -- key is based on slot0 Vehicle + team and hash of all drivers
   key = slots[1].Vehicle.." "..md5.sumhexa(hash)
   
   printlog("race parsed",key, timestring)
   
-  return key,{trackname = trackname, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
+  local race1 =               {trackname = trackname, scene=scene, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
+  local race2 = sessrace2 and {trackname = trackname, scene=scene, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
+  local race3 = sessrace3 and {trackname = trackname, scene=scene, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
+  
+  return key, race1,race2,race3
 end
 
 
@@ -1172,7 +1253,10 @@ RaceTime=0:02:11.328
   
   printlog("race parsed",key, timestring)
   
-  return key,{tracklength = tracklength, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
+  local track     = findTrack(tostring(tracklength))
+  local trackname = track and track[3]
+  
+  return key,{trackname = trackname, tracklength = tracklength, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
 end
 
 local function ParseResults(filename)
@@ -1230,7 +1314,7 @@ end
 
 local function UpdateHistory(filename, outfilename)
   -- parse results
-  local key,res = ParseResults(filename)
+  local key,res,res2,res3 = ParseResults(filename)
   if (key and res) then
     -- override key
     local key = cfg.forcedkey ~= "" and cfg.forcedkey or key
@@ -1238,9 +1322,18 @@ local function UpdateHistory(filename, outfilename)
     local outfilename = outfilename or cfg.outdir..key..".lua"
     local standings = LoadStats(outfilename) or { description = cfg.newdescr }
     local numraces = #standings
-    if (numraces == 0 or standings[numraces].timestring ~= res.timestring) then
+    local lastres = res3 or res2 or res
+    if (numraces == 0 or standings[numraces].timestring ~= lastres.timestring) then
       AppendStats(outfilename, res, numraces == 0 and standings.description)
-      table.insert(standings,res)
+      table.insert(standings, res)
+      if (res2) then
+        AppendStats(outfilename, res2)
+        table.insert(standings, res2)
+      end
+      if (res3) then
+        AppendStats(outfilename, res3)
+        table.insert(standings, res3)
+      end
       
       return key,standings
     else

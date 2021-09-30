@@ -77,7 +77,7 @@ Callaway Corvette C7 GT3-R</option>
 <option value="8940" data-image="https://prod.r3eassets.com/assets/content/carlivery/dlv-team-schutz-motorsport-36-9629-image-thumb.webp">
 Mercedes AMG GT3</option>
 <option value="9581" data-image="https://prod.r3eassets.com/assets/content/carlivery/knaus-team-htp-winward-48-9601-image-thumb.webp">
-Mercedes AMG GT3 Evo</option>
+Mercedes-AMG GT3 2020</option>
 <option value="8938" data-image="https://prod.r3eassets.com/assets/content/carlivery/kus-team75-bernhard-17-9568-image-thumb.webp">
 Porsche 911 GT3 R (2019)</option>
 </optgroup>
@@ -243,6 +243,12 @@ Alle FRJ Cup-Wagen</option>
 <option value="4865" data-image="https://prod.r3eassets.com/assets/content/carlivery/snap-on-team-38-5048-image-thumb.webp">
 Formula RaceRoom Junior</option>
 </optgroup>
+<optgroup label="Ford Mustang Mach E">
+<option value="class-10266">
+Alle Ford Mustang Mach E-Wagen</option>
+<option value="10263" data-image="https://prod.r3eassets.com/assets/content/carlivery/ford-1-10265-image-thumb.webp">
+Ford Mustang Mach-E 1400</option>
+</optgroup>
 <optgroup label="GT2">
 <option value="class-8248">
 Alle GT2-Wagen</option>
@@ -350,6 +356,8 @@ BMW M4 GT4</option>
 KTM X-Bow GT4</option>
 <option value="7162" data-image="https://prod.r3eassets.com/assets/content/carlivery/lotus-cars-0-7230-image-thumb.webp">
 Lotus Evora GT4</option>
+<option value="9644" data-image="https://prod.r3eassets.com/assets/content/carlivery/mercedes-amg-0-9674-image-thumb.webp">
+Mercedes AMG GT4 2020</option>
 <option value="8201" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-4-8204-image-thumb.webp">
 Porsche 718 Cayman GT4 Clubsport</option>
 <option value="6623" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-4-6625-image-thumb.webp">
@@ -451,7 +459,7 @@ Radical SR9 Judd</option>
 <option value="class-6345">
 Alle Porsche 911 GT3 Cup-Wagen</option>
 <option value="4675" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-911-6346-image-thumb.webp">
-Porsche 911 GT3 Cup</option>
+Porsche 911 GT3 Cup Endurance</option>
 </optgroup>
 <optgroup label="Porsche Carrera Cup Classic">
 <option value="class-7287">
@@ -695,6 +703,8 @@ Circuit Zolder - Grand Prix</option>
 DEKRA Lausitzring - DTM Grand Prix Course</option>
 <option value="2468" data-image="https://prod.r3eassets.com/assets/content/tracklayout/dekra-lausitzring-dtm-short-course-2468-image-thumb.webp">
 DEKRA Lausitzring - DTM Short Course</option>
+<option value="10328" data-image="https://prod.r3eassets.com/assets/content/tracklayout/dekra-lausitzring-gp-course-oval-t1-10328-image-thumb.webp">
+DEKRA Lausitzring - GP Course Oval T1</option>
 <option value="6166" data-image="https://prod.r3eassets.com/assets/content/tracklayout/dekra-lausitzring-grand-prix-course-6166-image-thumb.webp">
 DEKRA Lausitzring - Grand Prix Course</option>
 <option value="3291" data-image="https://prod.r3eassets.com/assets/content/tracklayout/dekra-lausitzring-short-course-3291-image-thumb.webp">
@@ -750,6 +760,14 @@ Indianapolis 2012 - Grand Prix</option>
 <option value="2014" data-image="https://prod.r3eassets.com/assets/content/tracklayout/indianapolis-2012-moto-2014-image-thumb.webp">
 Indianapolis 2012 - Moto</option>
 </optgroup>
+<optgroup label="Indianapolis Motor Speedway">
+<option value="9957" data-image="https://prod.r3eassets.com/assets/content/tracklayout/indianapolis-motor-speedway-historic-9957-image-thumb.webp">
+Indianapolis Motor Speedway - Historic</option>
+<option value="9958" data-image="https://prod.r3eassets.com/assets/content/tracklayout/indianapolis-motor-speedway-oval-9958-image-thumb.webp">
+Indianapolis Motor Speedway - Oval</option>
+<option value="9943" data-image="https://prod.r3eassets.com/assets/content/tracklayout/indianapolis-motor-speedway-road-course-9943-image-thumb.webp">
+Indianapolis Motor Speedway - Road Course</option>
+</optgroup>
 <optgroup label="Knutstorp Ring">
 <option value="6137" data-image="https://prod.r3eassets.com/assets/content/tracklayout/knutstorp-ring-gp-6137-image-thumb.webp">
 Knutstorp Ring - GP</option>
@@ -803,6 +821,8 @@ Motorland Aragón - Motorcycle Grand Prix</option>
 Motorland Aragón - Motorcycle National</option>
 <option value="9041" data-image="https://prod.r3eassets.com/assets/content/tracklayout/motorland-aragon-national-9041-image-thumb.webp">
 Motorland Aragón - National</option>
+<option value="9483" data-image="https://prod.r3eassets.com/assets/content/tracklayout/motorland-aragon-wtcr-9483-image-thumb.webp">
+Motorland Aragón - WTCR</option>
 </optgroup>
 <optgroup label="Motorsport Arena Oschersleben">
 <option value="2384" data-image="https://prod.r3eassets.com/assets/content/tracklayout/motorsport-arena-oschersleben-a-course-2384-image-thumb.webp">
@@ -826,6 +846,14 @@ Ningbo International Speedpark - Intermediate circuit no chicane</option>
 <option value="8314" data-image="https://prod.r3eassets.com/assets/content/tracklayout/ningbo-international-speedpark-short-circuit-8314-image-thumb.webp">
 Ningbo International Speedpark - Short circuit</option>
 </optgroup>
+<optgroup label="Nogaro Circuit Paul Armagnac">
+<option value="10392" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nogaro-circuit-paul-armagnac-caupenne-circuit-10392-image-thumb.webp">
+Nogaro Circuit Paul Armagnac - Caupenne Circuit</option>
+<option value="10258" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nogaro-circuit-paul-armagnac-club-circuit-10258-image-thumb.webp">
+Nogaro Circuit Paul Armagnac - Club Circuit</option>
+<option value="9659" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nogaro-circuit-paul-armagnac-grand-prix-circuit-9659-image-thumb.webp">
+Nogaro Circuit Paul Armagnac - Grand Prix Circuit</option>
+</optgroup>
 <optgroup label="Nordschleife">
 <option value="5095" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-24-hours-5095-image-thumb.webp">
 Nordschleife - 24 Hours</option>
@@ -845,6 +873,8 @@ Norisring - Grand Prix</option>
 Nürburgring - Grand Prix</option>
 <option value="2010" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nurburgring-grand-prix-fast-chicane-2010-image-thumb.webp">
 Nürburgring - Grand Prix Fast Chicane</option>
+<option value="9847" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nurburgring-mullenbachschleife-9847-image-thumb.webp">
+Nürburgring - Müllenbachschleife</option>
 <option value="3377" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nurburgring-sprint-3377-image-thumb.webp">
 Nürburgring - Sprint</option>
 <option value="2011" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nurburgring-sprint-fast-chicane-2011-image-thumb.webp">
