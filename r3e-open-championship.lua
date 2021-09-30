@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
---local cmdlineargs = {"-addrace", "./results/test3.lua", "202109280642.xml", "-makehtml", "./results/test3.lua", "./results/test3.html"}
+local cmdlineargs = {"-addrace", "./results/test3.lua", "raceresults.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -930,7 +930,7 @@ local function ParseResultsJSON(filename)
     end
   end
   
-  procRace(sessrace1, slots, true)
+  procRace(sessrace, slots, true)
   
   if (sessrace2) then
     procRace(sessrace2, slots2, false)
@@ -951,7 +951,7 @@ local function ParseResultsJSON(filename)
     end
   end
   
-  table.sort(drivers)
+  --table.sort(drivers)
   
   -- discard if no valid time found
   --if (not mintime) then
@@ -1036,6 +1036,7 @@ local function ParseResultsXML(filename)
     if sess.Type == "Qualify" then sessqualify  = sess end
     if sess.Type == "Race"    then sessrace     = sess end
     if sess.Type == "Race2"   then sessrace2    = sess end
+    if sess.Type == "Race3"   then sessrace3    = sess end
   end
   
   if (not sessrace) then 
@@ -1093,7 +1094,7 @@ local function ParseResultsXML(filename)
     end
   end
   
-  table.sort(drivers)
+  --table.sort(drivers)
   
   -- discard if no valid time found
   --if (not mintime) then
