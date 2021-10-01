@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
-local cmdlineargs = {"-addrace", "./results/test3.lua", "raceresults.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
+--local cmdlineargs = {"-addrace", "./results/test3.lua", "raceresults.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
 local REGENONLY   = false
 
 local cfg = {}
