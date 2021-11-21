@@ -10,9 +10,9 @@ return
 { 2372.593994, "AragonMCNat",       "Motorland Aragón - Motorcycle National"},
 { 2639.177979, "AragonNat",         "Motorland Aragón - National"},
 { 5366.570801, "AragonWTCR",        "Motorland Aragón - WTCR"},
-{ 4532.513672, "Assen",             "Motorland Aragón - National"}, -- FIXME final asset name
-{ 4534.183594, "AssenMC",           "Motorland Aragón - WTCR"},     -- FIXME final asset name
-{ 2366.257324, "AssenNorth",        "Motorland Aragón - WTCR"},     -- FIXME final asset name
+--{ 4532.513672, "Assen",             "Motorland Aragón - National"}, -- FIXME final asset name
+--{ 4534.183594, "AssenMC",           "Motorland Aragón - WTCR"},     -- FIXME final asset name
+--{ 2366.257324, "AssenNorth",        "Motorland Aragón - WTCR"},     -- FIXME final asset name
 { 6191.8174, "Bathurst",            "Bathurst Circuit - Mount Panorama"},
 { 4171.6758 ,  "Bilster",           "Bilster Berg - Gesamtstrecke"},
 { 4202.6030 ,  "BilsterS",          "Bilster Berg - Gesamtstrecke Schikane"},
@@ -33,6 +33,7 @@ return
 { 4536.0342 , "LausitzGP",          "DEKRA Lausitzring - Grand Prix Course"},
 { 3405.6841 , "LausitzShort",       "DEKRA Lausitzring - Short Course"},
 { 3434.4827 , "LausitzDTMShort",    "DEKRA Lausitzring - DTM Short Course"},
+{ 4630.6646 , "LausitzOval",        "DEKRA Lausitzring - GP Course Oval T1"},
 { 5742.6631 , "DaytonaRoad",        "Daytona International Speedway - Road Course"},
 { 4762.4058 ,  "DaytonaRoadMC",     "Daytona International Speedway - Road Course Motorcycle (2006)"},
 { 4025.3291 ,  "DaytonaSpeedway",   "Daytona International Speedway - Speedway (Not Supported)"},
@@ -85,6 +86,7 @@ return
 { 3609.2053 , "NürburgringSprint", "Nürburgring - Sprint"},
 { 5123.2124 , "Nürburgring",       "Nürburgring - Grand Prix"},
 { 3596.4531 , "NürburgringShort",  "Nürburgring - Sprint Fast Chicane"},
+{ 1502.6133 , "NürburgringMSchleife",  "Nürburgring - Müllenbachschleife"},
 { 5787.7212 ,  "PaulRicard1A",      "Paul Ricard - Solution 1A"},
 { 5880.4438 ,  "PaulRicard1CV2",    "Paul Ricard - Solution 1C-V2"},
 { 3488.6926 ,  "PaulRicard2AS",     "Paul Ricard - Solution 2A short"},
