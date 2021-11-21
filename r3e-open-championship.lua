@@ -352,17 +352,27 @@ local function GenerateStatsHTML(outfilename,standings)
         pos[i]   = race.slots[i].Position and tonumber(race.slots[i].Position) or 0
       end
       
-      table.sort(sorted,
-        function(a,b) 
-          local posdiff  = pos[a] - pos[b]
-          local lapdiff  = laps[a] - laps[b]
-          local timediff = (times[a] or 1000000000) - (times[b] or 1000000000)
-          
-          if      (posdiff ~= 0) then return (posdiff < 0)
-          elseif  (lapdiff ~= 0) then return (lapdiff > 0)
-          else                        return (timediff > 0)
-          end
-        end)
+      local function sortTime(a,b)
+        local lapdiff  = laps[a] - laps[b]
+        local timediff = (times[a] or 1000000000) - (times[b] or 1000000000)
+        
+        if  (lapdiff ~= 0) then return (lapdiff > 0)
+        else                    return (timediff < 0)
+        end
+      end
+      
+      local function sortPos(a,b)
+        local posdiff  = pos[a] - pos[b]
+        local lapdiff  = laps[a] - laps[b]
+        local timediff = (times[a] or 1000000000) - (times[b] or 1000000000)
+        
+        if      (posdiff ~= 0) then return (posdiff < 0)
+        elseif  (lapdiff ~= 0) then return (lapdiff > 0)
+        else                        return (timediff < 0)
+        end
+      end
+      
+      table.sort(sorted, cfg.usepositionsort and sortPos or sortTime)
       
       return sorted,times
     end

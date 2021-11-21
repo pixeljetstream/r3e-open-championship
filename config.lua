@@ -7,6 +7,8 @@ trackiconstyle   = "" -- if you want to have smaller icons use for example "max-
 usevehicleicons    = true
 onlyvehicleicons   = false
 
+usepositionsort    = true -- use position logged in results if available, otherwise only use lap & racetime fields
+
 driver_standings_position = true
 driver_standings_vehicle = true
 driver_standings_team = true
