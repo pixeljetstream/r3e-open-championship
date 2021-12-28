@@ -1408,17 +1408,56 @@ require("wx")
 
 local function RegenerateStatsHTML()
   printlog("rebuilding all stats")
+  
+  local f = io.open(cfg.outdir.."index.html","wt")
+  f:write([[
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta charset="utf-8"/>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="]]..cfg.stylesheetfile..[[">
+    </head>
+    <body>
+    <h1>Championships</h1>
+    <table>
+    <tr>
+    <th>Car</th>
+    <th>Description</th>
+    <th>Races</th>
+    <th></th>
+    </tr>
+  ]])
+  
   -- iterate lua files
   local path = wx.wxGetCwd().."/"..cfg.outdir
   local dir = wx.wxDir(path)
   local found, file = dir:GetFirst("*.lua", wx.wxDIR_FILES)
+  local row = 1
   while found do
-    local key   = file:sub(1,-5) 
+    local key = file:sub(1,-5)
     local standings = LoadStats(cfg.outdir..key..".lua")
     GenerateStatsHTML(cfg.outdir..key..".html",standings)
     
+    local info = standings[1].slots
+    local vehicle = info[1].Vehicle
+    local icon = icons[vehicle]
+    local imgicon = makeIcon(icon,vehicle)
+    f:write([[
+    <tr]]..(row%2 == 0 and ' class="even"' or "")..[[>
+    <td>]]..imgicon..vehicle..[[</td>
+    <td style="color:#aaa">]]..standings.description..[[</td>
+    <td style="color:#aaa">]]..#standings..[[</td>
+    <td>
+    <a style="color:#aaa" href="]]..key..[[.html">Results</a> 
+    </td>
+    </tr>
+    ]])
+    
+    row = row + 1
     found, file = dir:GetNext()
   end
+  f:close()
 end
 
 local function GetFileModTime(filename)
