@@ -349,7 +349,8 @@ local function GenerateStatsHTML(outfilename,standings)
         assert(race.slots[i], string.format("%d %d",r,i))
         times[i] = ParseTime(race.slots[i].RaceTime or "")
         laps[i]  = tonumber(race.slots[i].Laps) or 0
-        pos[i]   = race.slots[i].Position and tonumber(race.slots[i].Position) or 0
+        -- if no position use something very high
+        pos[i]   = race.slots[i].Position and tonumber(race.slots[i].Position) or 10000000
       end
       
       local function sortTime(a,b)
