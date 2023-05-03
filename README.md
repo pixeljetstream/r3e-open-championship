@@ -2,7 +2,7 @@ r3e-open-championship
 =====================
 
 Open Championship Statistics for [R3E](http://game.raceroom.com)
-© 2015 by Christoph Kubisch
+© 2015-2023 by Christoph Kubisch
 
 ### About
 
@@ -25,18 +25,16 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 
 #### Local Results
 
-Run the ".exe" file, it should bring up a very simple program that you keep running while doing singleplayer races in R3E.
+*TEMPORARY CHANGE*: Due to incompatibilities with new game version, use the server results way and not the UI application.
 
-![ui](https://github.com/pixeljetstream/r3e-open-championship/blob/master/doc/ui.png)
+This means following actions:
 
-* The program tracks edits to "My Documents/My Games/SimBin... raceresults.txt" which contains the results of the last completed race (no matter what kind of race it was).
-* Based on the content of the file a unique "championship" is created (hash based on starter-field). That means if you choose always the same starter-field config (vehicle class and number of opponents) in your single player race, it shall treat it as a single championship
-* For every completed race, the results are appended to the championship file (a simple text file storing the results for every race) and a HTML file is generated with the current standings, see image above
+* Find the txt files inside `"My Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results"` which contains the results of the last completed race (no matter what kind of race it was).
+* Use the commandline or provided batch files similar to the server results.
+* WARNING: That means there is no longer an automatic detection of who you race against to get consistent seasons. You have to watch for which result files you apply to the batch file.
+  Future version should bring back the live tracking of new result files and auto detecting the field so you don't have to.
 
-It is an "open" championship, as none of the settings are really frozen (AI...), you can keep going and mix tracks however you want, a pseudo championship based on your single player races. Simply delete the appropriate database lua file in the "results" directory to start fresh again.
-
-* Edit the override database key to collect multiplayer races into a custom season database, just enter a filename compatible text here. There
-is no compatibility check when a race is appended, so keep organized :) 
+As the raceroom developer is still making changes to the results output, further changes may need to be done to account for this.
 
 #### Server Results
 
@@ -101,6 +99,7 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 ### History
 
 Time-line for some distinct features
+* 03.05.2023 - start supporting new raceroom local result files for commandline mode (still subject to improvements)
 * 28.12.2021 - the "Rebuild all HTML stats" function generates a `index.html` page in the output directory (thx to contribution by **blgk**) 
 * 30. 9.2021 - json and xml fixes for latest file formating, base results on player.Position if exists, json/xml add support for race2 and race3
 * 28. 2.2016 - xml result support, use time difference for best-lap and qualifying
@@ -116,14 +115,9 @@ Time-line for some distinct features
 *  9. 1.2015 - added team and car standings, as well as best laptimes
 *  4. 1.2015 - first release, track multiple championship, html report for driver standings
 
-### A few caveats
-
-Simply do not run the app if you do races you don't want to track. If something is accidentally added somewhere you can always manually delete or edit the files and remove the last entry.
-Since the tracknames are not stored in the result file (only track lengths), there needs to a mapping, which may be incomplete. Please send in tracklength-name pairings if you recgonize some are missing (then only the tracklength is printed).
-
 ### Third Party
 
-Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings. **ttfredo** and **Nicklas Petersson** from sector3studios forum for bug reproducers.
+Special thanks to **tAz-07** and **heppsan** from steam community on feedback and providing most of the track mappings. **ttfredo** and **Nicklas Petersson** from kwstudios forum for bug reproducers.
 
 The icons are directly linked to the official game website.
 

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
---local cmdlineargs = {"-addrace", "./results/test3.lua", "raceresults.json", "-makehtml", "./results/test3.lua", "./results/test3.html"}
+--local cmdlineargs = {"-addrace", "./results/test_may_2023.lua", "2023_04_07_16_21_44_Race1.txt", "-makehtml", "./results/test_may_2023.lua", "./results/test_may_2023.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -44,66 +44,16 @@ end
 loadConfig("config.lua")
 
 
-local tracknames = dofile("tracks.lua")
-local nTracks    = #tracknames
-local minDist = 1000000
+local lkupper = {}
+local tracks  = dofile("tracks.lua")
+local lktracks = {}
 do
-  for a=0,nTracks-1 do
-    for b=0,a-1 do
-      local dist = math.abs(tracknames[a+1][1] - tracknames[b+1][1])
-      if (dist < minDist) then
-        minDist = dist
-        --print("minDist", minDist, tracknames[a+1][3], tracknames[b+1][3])
-      end
-    end
+  for _,t in pairs(tracks) do
+    t.name = t.track.." - "..t.layout
+    t.layoutid = _
+    lktracks[t.name] = t
+    lkupper[string.lower(t.name)] = t.name
   end
-end
-
---table.sort(tracknames, function(a,b) return a[1] < b[1] end)
-
-local function findTrack(str)
-  local searchDist = tonumber(str)
-  if (searchDist == nil) then
-    for i=1,nTracks do
-      local tinfo = tracknames[i]
-      if (tinfo[3] == str) then
-        return tinfo
-      end
-    end
-    
-    return nil
-  end
-
-  --[[
-  local s = 0
-  local e = nTracks-1
-  local r = minDist / 2
-  while (s <= e) do
-    local h = math.floor((s + e) / 2)
-    local tinfo = tracknames[h+1]
-    if (searchDist > tinfo[1] + r) then
-      s = h + 1
-    elseif (searchDist < tinfo[1] - r) then
-      e = h - 1
-    else
-      return tinfo
-    end
-  end
-  ]]
-  
-  local closestDist  = 0.5
-  local closestTrack = nil
-  
-  for i=1,nTracks do
-    local tinfo = tracknames[i]
-    local dist  = math.abs(searchDist - tinfo[1])
-    if (dist < closestDist) then
-      closestTrack = tinfo
-      closestDist  = dist
-    end
-  end
-  
-  return closestTrack
 end
 
 -------------------------------------------------------------------------------------
@@ -191,11 +141,15 @@ local function parseAssetIcons(filename)
   local icons = {}
   for url,key in str:gmatch('image="(.-)">%s*(.-)<') do
     icons[key] = url
+    lkupper[string.lower(key)] = key
   end
   
   local function patch(dst, src)
     local i = icons[src]
-    if i then icons[dst] = i end
+    if i then 
+      icons[dst] = i
+      lkupper[string.lower(dst)] = dst
+    end
   end
   
   -- manual car icon patches
@@ -211,13 +165,16 @@ local function parseAssetIcons(filename)
   patch("Mercedes-AMG C 63 DTM 2015", "Mercedes-AMG C63 DTM")
   patch("AMG-Mercedes 190 E 2.5-16 Evolution II 1992", "Mercedes 190E Evo II DTM")
   
-  for _,v in ipairs(tracknames) do
-    assert(icons[v[3]], v[3].." icon not found")
+  for i,t in pairs(lktracks) do
+    assert(icons[i], i.." icon not found")
   end
   return icons
 end
 local function makeIcon(url,name,style)
   return '<img src="'..url..'" alt="'..name..'" title="'..name..'" style="vertical-align:middle;'..(style or "")..'" >'
+end
+local function upperfix(str)
+  return lkupper[str] or str
 end
 
 local icons = parseAssetIcons("assets.txt")
@@ -507,10 +464,10 @@ local function GenerateStatsHTML(outfilename,standings)
     -- <th><div class="track">blah<br>2015/01/04<br>10:21:50</div></th>
     for r=1,numraces do
       
-      local track = standings[r].tracklength and tostring(standings[r].tracklength) or standings[r].trackname
-      local tinfo = findTrack(track)
-      local tname = tinfo and tinfo[2] or track
-      local ticon = tinfo and tinfo[3] or track
+      local track = standings[r].trackname
+      local tinfo = lktracks[track]
+      local tname = tinfo and tinfo.name or track
+      local ticon = tinfo and tinfo.name or track
       local icon  = icons[ticon]
       if (icon) then
         icon  = cfg.usetrackicons and makeIcon(icon,ticon,cfg.trackiconstyle) or ""
@@ -848,23 +805,7 @@ end
 local md5   = dofile("md5.lua")
 local cjson = require("cjson")
 
-local function ParseResultsJSON(filename)
-  local f = io.open(filename,"rt")
-  if (not f) then 
-    printlog("race file not openable")
-    return
-  end
-  
-  local txt = f:read("*a")
-  f:close()
-  
-  local json = cjson.decode(txt)
-  
-  if (not json) then 
-    printlog("could not decode")
-    return
-  end
-  
+local function ParseResultsJSONdedi(json)
   local datet = type(json.Time) == "string" and math.floor(tonumber(json.Time:match("(%d+)"))/1000) or json.Time
   local date  = os.date("*t",datet)
   local date2 = os.date("*t",datet + 1)
@@ -874,10 +815,10 @@ local function ParseResultsJSON(filename)
   local timestring3 = string.format("%d/%d/%d %d:%d:%d",date3.year,date3.month,date3.day, date3.hour, date3.min, date3.sec)
     
   local trackname   = json.Track..(json.TrackLayout and " - "..json.TrackLayout or "")
-  local scene       = "Unknown"
+  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
   local mode        = "1"
   
-  if (not (timestring and trackname and scene and mode)) then
+  if (not (timestring and trackname and trackid and mode)) then
     printlog("race details not found")
     return
   end
@@ -975,11 +916,101 @@ local function ParseResultsJSON(filename)
   
   printlog("race parsed",key, timestring)
   
-  local race1 =               {trackname = trackname, scene=scene, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
-  local race2 = sessrace2 and {trackname = trackname, scene=scene, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
-  local race3 = sessrace3 and {trackname = trackname, scene=scene, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
+  local race1 =               {trackname = trackname, trackid=trackid, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
+  local race2 = sessrace2 and {trackname = trackname, trackid=trackid, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
+  local race3 = sessrace3 and {trackname = trackname, trackid=trackid, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
   
   return key, race1, race2, race3
+end
+
+local function ParseResultsJSONsp(json)
+  
+  local key
+  local hash = ""
+  local slots  = {}
+  local mintime
+  local drivers = {}
+  local lkdrivers = {}
+  
+  local timestring  = json.header.time
+  local trackname   = upperfix(json.event.track.." - "..json.event.layout)
+  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
+  trackname         = lktracks[trackname] and lktracks[trackname].name
+  
+  local function procRace(drivers, slots, first)
+    for i,player in ipairs(drivers) do
+      local slot = i
+      if (not slots[slot] and player.name) then 
+        local tab = {}
+        tab.Driver    = player.name
+        tab.Vehicle   = upperfix(player.vehicle)
+        tab.Team      = player.team
+        tab.RaceTime  = player.place > 0 and MakeTime(player.racetimems) or "DNF"
+        tab.QualTime  = player.qualtimems > 0 and MakeTime(player.qualtimems) or nil
+        tab.BestLap   = player.bestlaptimems > 0 and MakeTime(player.bestlaptimems) or nil
+        tab.Laps      = player.totallaps
+        tab.Position  = player.place
+        slots[slot]   = tab
+        
+        if (first) then
+          hash = hash..tab.Team..tab.Driver
+          table.insert(drivers,tab.Driver)
+          if (lkdrivers[tab.Driver]) then
+            uniquedrivers = false
+          end
+          lkdrivers[tab.Driver] = tab
+        end
+        
+        local ctime = player.racetimems > 0 and player.racetimems/1000
+        if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
+      end
+    end
+  end
+  
+  procRace(json.drivers, slots, true)
+  
+  if (#slots < 1) then
+    printlog("no drivers found")
+    return 
+  end
+  
+  -- discard if race was too short
+  if (mintime < 60*cfg.minracetime) then 
+    printlog("race too short", slots[1] and slots[1].Vehicle)
+    return 
+  end
+  
+  key = slots[1].Vehicle.." "..md5.sumhexa(hash)
+  
+  printlog("race parsed",key, timestring)
+  
+  local race1 = {trackname = trackname, trackid=trackid, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
+  
+  return key, race1
+end
+
+local function ParseResultsJSON(filename)
+    local f = io.open(filename,"rt")
+  if (not f) then 
+    printlog("race file not openable")
+    return
+  end
+  
+  local txt = f:read("*a")
+  f:close()
+  
+  local json = cjson.decode(txt)
+  
+  if (not json) then 
+    printlog("could not decode")
+    return
+  end
+  
+  if (json.Server) then
+    return ParseResultsJSONdedi(json)
+  else
+    return ParseResultsJSONsp(json)
+  end
 end
 
 local lxml = dofile("xml.lua")
@@ -1017,10 +1048,10 @@ local function ParseResultsXML(filename)
   
   
   local trackname   = xml.Track..(xml.TrackLayout and " - "..xml.TrackLayout or "")
-  local scene       = "Unknown"
+  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
   local mode        = "1"
   
-  if (not (timestring and trackname and scene and mode)) then
+  if (not (timestring and trackname and trackid and mode)) then
     printlog("race details not found")
     return
   end
@@ -1118,163 +1149,17 @@ local function ParseResultsXML(filename)
   
   printlog("race parsed",key, timestring)
   
-  local race1 =               {trackname = trackname, scene=scene, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
-  local race2 = sessrace2 and {trackname = trackname, scene=scene, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
-  local race3 = sessrace3 and {trackname = trackname, scene=scene, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
+  local race1 =               {trackname = trackname, trackid=trackid, timestring=timestring,  slots = slots,  ruleset=cfg.ruleset}
+  local race2 = sessrace2 and {trackname = trackname, trackid=trackid, timestring=timestring2, slots = slots2, ruleset=cfg.ruleset}
+  local race3 = sessrace3 and {trackname = trackname, trackid=trackid, timestring=timestring3, slots = slots3, ruleset=cfg.ruleset}
   
   return key, race1,race2,race3
-end
-
-
-local function ParseResultsTXT(filename)
-
-
-  
-local txt = [[
-[Header]
-Game=RaceRoom Racing Experience
-Version=0.3.0.4058
-TimeString=2015/01/04 10:21:50
-
-[Race]
-RaceMode=1
-Scene=Grand Prix
-AIDB=Grand Prix.AIW
-Track Length=3434.4822
-
-[Slot000]
-Driver=Christoph Kubisch
-Vehicle=Opel Omega 3000 Evo500
-Team=Irmscher Motorsport
-Penalty=0
-Laps=0
-LapDistanceTravelled=282.287811
-RaceTime=DNF
-Reason=0
-
-[Slot001]
-Driver=Hubert Haubt
-Vehicle=Audi V8 DTM
-Team=Schmidt Motorsport Technik
-Penalty=0
-QualTime=1:59.338
-Laps=10
-LapDistanceTravelled=1157.956909
-BestLap=2:00.171
-RaceTime=0:02:13.192
-
-[Slot002]
-Driver=Frank Jelinski
-Vehicle=Audi V8 DTM
-Team=Audi Zentrum Reutlingen
-Penalty=0
-QualTime=1:59.711
-Laps=10
-LapDistanceTravelled=1104.959106
-BestLap=2:01.038
-RaceTime=0:02:11.328
-
-]]
-
-  local f = io.open(filename,"rt")
-  if (not f) then 
-    printlog("race file not openable")
-    return
-  end
-  
-  local txt = f:read("*a")
-  f:close()
-  
-  if (not txt:find("[END]")) then 
-    printlog("race incomplete")
-    return
-  end
-  
-  local header = txt:match("%[Header%](.-\n\n)")
-  if (not (header)) then
-    printlog("race header not found")
-    return
-  end
-  
-  local timestring  = header:match("TimeString=(.-)\n")
-
-  local race = txt:match("%[Race%](.-\n\n)")
-  if (not (race)) then
-    printlog("race info not found")
-    return
-  end
-  
-  local tracklength = race:match("Track Length=(.-)\n")
-  local scene       = race:match("Scene=(.-)\n")
-  local mode        = race:match("RaceMode=(.-)\n")
-  
-  if (not (timestring and tracklength and scene and mode)) then
-    printlog("race details not found")
-    return
-  end
-  
-  if (mode == "3") then
-    printlog("race was replay")
-    return
-  end
-
-  local key
-  local hash = ""
-  local slots = {}
-  local mintime
-  local drivers = {}
-  local lkdrivers = {}
-  local uniquedrivers = true
-  
-  for slot,info in txt:gmatch("%[Slot(%d+)%](.-\n\n)") do
-    slot = tonumber(slot) + 1
-    if (not slots[slot]) then 
-      local tab = {}
-      for key,val in info:gmatch("(%w+)=(.-)\n") do
-        tab[key] = val
-      end
-      slots[slot] = tab
-      
-      hash = hash..tab.Team..tab.Driver
-      table.insert(drivers,tab.Driver)
-      if (lkdrivers[tab.Driver]) then
-        uniquedrivers = false
-      end
-      lkdrivers[tab.Driver] = true
-      
-      local ctime = ParseTime(tab.RaceTime)
-      if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
-    end
-  end
-  
-  table.sort(drivers)
-  
-  -- discard if no valid time found
-  if (not mintime) then
-    printlog("race without results", slots[1] and slots[1].Vehicle)
-    return
-  end
-  -- discard if race was too short
-  if (mintime < 60*cfg.minracetime) then 
-    printlog("race too short", slots[1] and slots[1].Vehicle)
-    return 
-  end
-  
-  -- key is based on slot0 Vehicle + team and hash of all drivers
-  key = slots[1].Vehicle.." "..md5.sumhexa(hash)
-  
-  printlog("race parsed",key, timestring)
-  
-  local track     = findTrack(tostring(tracklength))
-  local trackname = track and track[3]
-  
-  return key,{trackname = trackname, tracklength = tracklength, scene=scene, timestring=timestring, slots = slots, ruleset=cfg.ruleset}
 end
 
 local function ParseResults(filename)
   assert(filename, "no filename provided")
   local parserRegistry = {
-    txt  = ParseResultsTXT,
+    txt  = ParseResultsJSON,
     json = ParseResultsJSON,
     xml  = ParseResultsXML,
   }
@@ -1311,7 +1196,7 @@ local function AppendStats(outfilename,results,descr)
   end
   printlog("appendrace",outfilename)
   
-  f:write('{ trackname = '..quote(results.trackname)..', tracklength = '..quote(results.tracklength)..', scene='..quote(results.scene)..', timestring='..quote(results.timestring)..', ruleset='..quote(results.ruleset or "default")..', slots = {\n')
+  f:write('{ trackname = '..quote(results.trackname)..', trackid='..quote(results.trackid)..', timestring='..quote(results.timestring)..', ruleset='..quote(results.ruleset or "default")..', slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
     for k,v in pairs(s) do
