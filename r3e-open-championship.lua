@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
 local cmdlineargs = {...}
---local cmdlineargs = {"-addrace", "./results/test_may_2023.lua", "2023_04_07_16_21_44_Race1.txt", "-makehtml", "./results/test_may_2023.lua", "./results/test_may_2023.html"}
+--local cmdlineargs = {"-addrace", "./results/test_may_2023.lua", "inputs/2023_04_07_16_21_44_Race1.txt", "-makehtml", "./results/test_may_2023.lua", "./results/test_may_2023.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -1220,7 +1220,15 @@ local function UpdateHistory(filename, outfilename)
     local standings = LoadStats(outfilename) or { description = cfg.newdescr }
     local numraces = #standings
     local lastres = res3 or res2 or res
-    if (numraces == 0 or standings[numraces].timestring ~= lastres.timestring) then
+    
+    local found = false
+    for i=1,numraces do
+      if (standings[i].timestring == lastres.timestring) then
+        found = true
+      end
+    end
+    
+    if (not found) then
       AppendStats(outfilename, res, numraces == 0 and standings.description)
       table.insert(standings, res)
       if (res2) then
