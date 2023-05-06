@@ -797,6 +797,8 @@ end
     </html>
   ]])
   f:close()
+  
+  return outfilename
 end
 
 ----------------------------------------------------------------------------------------------------------------
@@ -1196,7 +1198,11 @@ local function AppendStats(outfilename,results,descr)
   end
   printlog("appendrace",outfilename)
   
-  f:write('{ trackname = '..quote(results.trackname)..', trackid='..quote(results.trackid)..', timestring='..quote(results.timestring)..', ruleset='..quote(results.ruleset or "default")..', slots = {\n')
+  f:write('{ trackname = '..quote(results.trackname)..', trackid = '..quote(results.trackid))
+  if (results.filename) then
+    f:write(', filename = '..quote(results.filename))
+  end
+  f:write(', timestring = '..quote(results.timestring)..', ruleset = '..quote(results.ruleset or "default")..', slots = {\n')
   for i,s in ipairs(results.slots) do
     f:write("  { ")
     for k,v in pairs(s) do
@@ -1209,14 +1215,17 @@ local function AppendStats(outfilename,results,descr)
   f:close()
 end
 
-local function UpdateHistory(filename, outfilename)
+local function UpdateHistory(filename, outfilename, outpath)
   -- parse results
   local key,res,res2,res3 = ParseResults(filename)
   if (key and res) then
+    -- test
+    local filenameshort = filename:match("[^\\/]+$")
+    
     -- override key
     local key = cfg.forcedkey ~= "" and cfg.forcedkey or key
     -- append to proper statistics file
-    local outfilename = outfilename or cfg.outdir..key..".lua"
+    local outfilename = outfilename or (outpath and outpath.."/" or "")..cfg.outdir..key..".lua"
     local standings = LoadStats(outfilename) or { description = cfg.newdescr }
     local numraces = #standings
     local lastres = res3 or res2 or res
@@ -1229,18 +1238,21 @@ local function UpdateHistory(filename, outfilename)
     end
     
     if (not found) then
+      res.filename = filenameshort
       AppendStats(outfilename, res, numraces == 0 and standings.description)
       table.insert(standings, res)
       if (res2) then
+        res2.filename = filenameshort
         AppendStats(outfilename, res2)
         table.insert(standings, res2)
       end
       if (res3) then
+        res3.filename = filenameshort
         AppendStats(outfilename, res3)
         table.insert(standings, res3)
       end
       
-      return key,standings
+      return key,standings,outfilename
     else
       printlog("race already in database")
     end
@@ -1262,6 +1274,24 @@ do
       
       UpdateHistory(infile,outfile)
       
+      i = i + 2
+    elseif (arg == "-addraceautodb") then
+      print("... -addraceautodb ...")
+      if (i + 3 > argcnt) then print("error: three arguments required: raceresults-file"); os.exit(1); end
+      local infile   = cmdlineargs[i+1]
+      local basepath = cmdlineargs[i+2]
+      local cmd      = cmdlineargs[i+3]
+      
+      basepath = basepath:match("(.+)[\\/]$") or basepath
+      
+      local _,standings,outfile = UpdateHistory(infile,nil,basepath)
+      if (standings and outfile and cmd:find("html")) then
+        local htmlfile = outfile:sub(1,-5)..".html"
+        htmlfile = GenerateStatsHTML(htmlfile,standings)
+        if (htmlfile and cmd:find("show")) then
+          os.execute('start "" "'..htmlfile..'"')
+        end
+      end
       i = i + 2
     elseif ( arg == "-makehtml") then
       print("... -makehtml ...")
@@ -1331,23 +1361,24 @@ local function RegenerateStatsHTML()
   while found do
     local key = file:sub(1,-5)
     local standings = LoadStats(cfg.outdir..key..".lua")
-    GenerateStatsHTML(cfg.outdir..key..".html",standings)
-    
-    local info = standings[1].slots
-    local vehicle = info[1].Vehicle
-    local icon = icons[vehicle]
-    local imgicon = makeIcon(icon,vehicle)
-    f:write([[
-    <tr]]..(row%2 == 0 and ' class="even"' or "")..[[>
-    <td>]]..imgicon..vehicle..[[</td>
-    <td style="color:#aaa">]]..standings.description..[[</td>
-    <td style="color:#aaa">]]..#standings..[[</td>
-    <td>
-    <a style="color:#aaa" href="]]..key..[[.html">Results</a> 
-    </td>
-    </tr>
-    ]])
-    
+    if (standings) then
+      GenerateStatsHTML(cfg.outdir..key..".html",standings)
+      
+      local info = standings[1].slots
+      local vehicle = info[1].Vehicle
+      local icon = icons[vehicle]
+      local imgicon = makeIcon(icon,vehicle)
+      f:write([[
+      <tr]]..(row%2 == 0 and ' class="even"' or "")..[[>
+      <td>]]..imgicon..vehicle..[[</td>
+      <td style="color:#aaa">]]..standings.description..[[</td>
+      <td style="color:#aaa">]]..#standings..[[</td>
+      <td>
+      <a style="color:#aaa" href="]]..key..[[.html">Results</a> 
+      </td>
+      </tr>
+      ]])
+    end
     row = row + 1
     found, file = dir:GetNext()
   end
@@ -1389,23 +1420,7 @@ function main()
   }
   
   local resultfile = cfg.inputfile:gsub("%$([%w_]+)%$", replacedirs)
-  local oldmod     = GetFileModTime(resultfile)
-  if (not oldmod) then
-    local label = wx.wxStaticText(win, wx.wxID_ANY, "Could not find R3E results:\n"..resultfile)
-    frame.label = label
-    return
-  end
-  
-  local function checkUpdate(force)
-    local newmod = GetFileModTime(resultfile)
-    if (force or (newmod and oldmod and oldmod:IsEarlierThan(newmod))) then
-      oldmod = newmod
-      local key, standings = UpdateHistory(resultfile)
-      if (key and standings) then
-        GenerateStatsHTML(cfg.outdir..key..".html",standings)
-      end
-    end
-  end
+  local resultpath = resultfile:match("(.+)[\\/][^\\/]+$")
   
   local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(ww+16,wh))
   splitter:SetMinimumPaneSize(sh) -- don't let it unsplit
@@ -1434,40 +1449,40 @@ function main()
   
   splitter:SplitHorizontally(win, txtlog, sh)
   
-  local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(ww,50) )
+  --local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(ww,50) )
   local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(ww-16,-1))
   local s = 70
   local bw,bh = 200,20
-  local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically",      wx.wxPoint(8,s),        wx.wxSize(bw-16,bh))
-  local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now",                  wx.wxPoint(8+bw,s),     wx.wxSize(bw-16,bh))
+  --local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically",      wx.wxPoint(8,s),        wx.wxSize(bw-16,bh))
+  --local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now",                  wx.wxPoint(8+bw,s),     wx.wxSize(bw-16,bh))
   local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats",     wx.wxPoint(8,s+30),     wx.wxSize(bw-16,bh))
-  local btnresult   = wx.wxButton(win, wx.wxID_ANY, "Open result directory",      wx.wxPoint(8+bw,s+30),  wx.wxSize(bw-16,bh))
+  local btnoutput   = wx.wxButton(win, wx.wxID_ANY, "Open output directory",      wx.wxPoint(8+bw,s+30),  wx.wxSize(bw-16,bh))
   local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description (optional):",wx.wxPoint(8,s+60),     wx.wxSize(300,16) )
   local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, "",                 wx.wxPoint(8,s+80),     wx.wxSize(400-16,30), 0)
   local labelkey    = wx.wxStaticText(win, wx.wxID_ANY, "Override database filename (optional):", wx.wxPoint(8,s+110),    wx.wxSize(300,16) )
   local txtkey      = wx.wxTextCtrl(win, wx.wxID_ANY, "",                   wx.wxPoint(8,s+130),    wx.wxSize(400-16,30), 0)
   local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:",                   wx.wxPoint(8,s+164),    wx.wxSize(60,16) )
   
-  tglpoll:SetValue(true)
-  tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
-    if (timer) then
-      if (event:IsChecked ()) then
-        timer:Start(1000*60*cfg.checkrate)
-      else
-        timer:Stop()
-      end
-    end
-  end)
+  --tglpoll:SetValue(true)
+  --tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
+  --  if (timer) then
+  --    if (event:IsChecked ()) then
+  --      timer:Start(1000*60*cfg.checkrate)
+  --    else
+  --      timer:Stop()
+  --    end
+  --  end
+  --end)
 
-  btncheck:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
-    checkUpdate(true)
-  end)
+  --btncheck:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
+  --  checkUpdate(true)
+  --end)
 
   btnrebuild:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
     RegenerateStatsHTML()
   end)
 
-  btnresult:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
+  btnoutput:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
     local outpath = (wx.wxGetCwd().."/"..cfg.outdir.."_style.css"):gsub("/","\\")
     
     wx.wxExecute('explorer /select,"'..outpath..'"', wx.wxEXEC_ASYNC)
@@ -1490,19 +1505,6 @@ function main()
   win.labeldescr = labeldescr
   win.txtdescr  = txtdescr
   win.labellog = labellog
-  
-  frame:Connect(wx.wxEVT_ACTIVATE,
-    function(event)
-      if (not timer) then
-        timer = wx.wxTimer( frame, wx.wxID_ANY )
-        timer:Start(1000*60*cfg.checkrate)
-        
-        frame:Connect(wx.wxEVT_TIMER,
-          function(event)
-            checkUpdate()
-          end)
-      end
-    end)
 end
 
 main()

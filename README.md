@@ -30,9 +30,7 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 This means following actions:
 
 * Find the txt files inside `"My Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results"` which contains the results of the last completed race (no matter what kind of race it was).
-* Use the commandline or provided batch files similar to the server results.
-* WARNING: That means there is no longer an automatic detection of who you race against to get consistent seasons. You have to watch for which result files you apply to the batch file.
-  Future version should bring back the live tracking of new result files and auto detecting the field so you don't have to.
+* Use appropriate commandline to add the race to a custom database file, or drop file on the `addautomaticrace.bat`.
 
 As the raceroom developer is still making changes to the results output, further changes may need to be done to account for this.
 
@@ -60,11 +58,16 @@ In commandline mode, the ui is not started and core functionality is exposed.
 * `-makehtml dataBaseFile htmlFile`
   Generates html results for the provided database file
   
+* `-addraceautodb raceresultsFile exePath instructions`
+  Parses the race and automatically generates the database file.
+  If *instructions* contains `html`, it will generate the html and if it contains `show` it will open the html in the default browser.
+  
 * `-config "lua string"`
   Applies the lua string, overwriting the current settings. For example use `-config "ruleset='fia1962_1990'"` to apply old rulepoints prior adding a race to your custom season.
   
 * `-configfile luaFile`
   Applies the config from this file, overwriting the current settings. By default `config.lua` is loaded.
+  
   
 For example:
 
@@ -99,6 +102,7 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 ### History
 
 Time-line for some distinct features
+* 06.05.2023 - add `addraceautomatic.bat` and new commandline options to create result database file automatically
 * 03.05.2023 - start supporting new raceroom local result files for commandline mode (still subject to improvements)
 * 28.12.2021 - the "Rebuild all HTML stats" function generates a `index.html` page in the output directory (thx to contribution by **blgk**) 
 * 30. 9.2021 - json and xml fixes for latest file formating, base results on player.Position if exists, json/xml add support for race2 and race3

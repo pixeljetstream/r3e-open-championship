@@ -1,4 +1,3 @@
-cd %~dp0
-luajit.exe r3e-open-championship.lua -addrace ./results/%~n0.lua %1 -makehtml ./results/%~n0.lua ./results/%~n0.html
-start "" ./results/%~n0.html
+%~dp0\luajit.exe %~dp0/r3e-open-championship.lua -addrace %~dp0/results/%~n0.lua %1 -makehtml %~dp0/results/%~n0.lua %~dp0/results/%~n0.html
+start "" %~dp0/results/%~n0.html
 pause
