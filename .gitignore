@@ -1,8 +1,8 @@
 *.txt
 *.xml
 *.json
-*.bat
 *.7z
+assets_raceroom_leaderboard.html
 results/*.html
 results/*.lua
 results/test

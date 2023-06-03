@@ -21,8 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]
+local cjson = require("cjson")
+
 local cmdlineargs = {...}
---local cmdlineargs = {"-addrace", "./results/test_may_2023.lua", "inputs/2023_04_07_16_21_44_Race1.txt", "-makehtml", "./results/test_may_2023.lua", "./results/test_may_2023.html"}
+local cmdlineargs = {"-addrace", "./results/test_june_2023.lua", "inputs/2023_05_21_17_21_06_Race1.txt", "-makehtml", "./results/test_june_2023.lua", "./results/test_june_2023.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -41,23 +43,21 @@ local function loadConfig(filename)
   fn()
 end
 
-loadConfig("config.lua")
-
-
-local lkupper = {}
-local tracks  = dofile("tracks.lua")
-local lktracks = {}
-do
-  for _,t in pairs(tracks) do
-    t.name = t.track.." - "..t.layout
-    t.layoutid = _
-    lktracks[t.name] = t
-    lkupper[string.lower(t.name)] = t.name
+local function parseJson(filename)
+  local f = io.open(filename,"rt")
+  if (not f) then 
+    printlog("file not openable")
+    return
   end
+
+  local txt = f:read("*a")
+  f:close()
+ return cjson.decode(txt)
 end
 
+loadConfig("config.lua")
+
 -------------------------------------------------------------------------------------
---
 
 local printlog = print
 
@@ -133,6 +133,41 @@ local function DiffTime(stra, strb)
   
 end
 
+-------------------------------------------------------------------------------------
+
+
+-- indexed by id
+local tracks   = {} -- table
+local cars     = {} -- string name
+local teams    = {} -- string name
+-- indexed by name
+local lktracks = {} -- table
+local lkcars   = {} -- string id
+local lkteams  = {} -- string id
+local lkupper  = {} -- string upper name
+
+do
+  local json = parseJson("r3e-data.json")
+  
+  for id,track in pairs(json.tracks) do
+    for _,layout in pairs(track.layouts) do
+      local t = {track = track.Name, layout = layout.Name, name = track.Name.." - "..layout.Name, layoutId = layout.Id}
+      tracks[layout.Id] = t
+      lktracks[t.name] = t
+      lkupper[string.lower(t.name)] = t.name
+    end
+  end
+  
+  for id,team in pairs(json.teams) do
+    teams[id] = team.Name
+    lkteams[team.Name] = id
+  end
+  for id,car in pairs(json.cars) do
+    cars[id] = car.Name
+    lkcars[car.Name] = id
+  end
+end
+
 local function parseAssetIcons(filename)
   local f = io.open(filename,"rt")
   local str = f:read("*a")
@@ -168,6 +203,11 @@ local function parseAssetIcons(filename)
   for i,t in pairs(lktracks) do
     assert(icons[i], i.." icon not found")
   end
+  for i,t in pairs(cars) do
+    if (not icons[t]) then
+      --print(t.." icon not found")
+    end
+  end
   return icons
 end
 local function makeIcon(url,name,style)
@@ -177,7 +217,10 @@ local function upperfix(str)
   return lkupper[str] or str
 end
 
+
 local icons = parseAssetIcons("assets.txt")
+
+-------------------------------------------------------------------------------------
 
 local function GenerateStatsHTML(outfilename,standings)
   assert(outfilename and standings)
@@ -805,7 +848,6 @@ end
 -- Internals
 
 local md5   = dofile("md5.lua")
-local cjson = require("cjson")
 
 local function ParseResultsJSONdedi(json)
   local datet = type(json.Time) == "string" and math.floor(tonumber(json.Time:match("(%d+)"))/1000) or json.Time
@@ -817,7 +859,7 @@ local function ParseResultsJSONdedi(json)
   local timestring3 = string.format("%d/%d/%d %d:%d:%d",date3.year,date3.month,date3.day, date3.hour, date3.min, date3.sec)
     
   local trackname   = json.Track..(json.TrackLayout and " - "..json.TrackLayout or "")
-  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
+  local trackid     = lktracks[trackname] and lktracks[trackname].layoutId
   local mode        = "1"
   
   if (not (timestring and trackname and trackid and mode)) then
@@ -877,9 +919,6 @@ local function ParseResultsJSONdedi(json)
           end
           lkdrivers[tab.Driver] = tab
         end
-        
-        local ctime = player.TotalTime > 0 and player.TotalTime/1000
-        if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
       end
     end
   end
@@ -935,9 +974,25 @@ local function ParseResultsJSONsp(json)
   local lkdrivers = {}
   
   local timestring  = json.header.time
-  local trackname   = upperfix(json.event.track.." - "..json.event.layout)
-  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
-  trackname         = lktracks[trackname] and lktracks[trackname].name
+  
+  local track
+  local trackname
+  if (json.event.track and json.event.layout) then
+    trackname = upperfix(json.event.track.." - "..json.event.layout)
+    track     = lktracks[trackname]
+  else
+    trackkname = tostring(json.event.layoutId)
+    track      = tracks[json.event.layoutId]
+  end
+
+  if (not track) then
+    printlog("error could not find track", trackname)
+    return
+  end
+  
+    
+  local trackid     = track.layoutId
+  local trackname   = track.name
   
   local function procRace(drivers, slots, first)
     for i,player in ipairs(drivers) do
@@ -945,12 +1000,33 @@ local function ParseResultsJSONsp(json)
       if (not slots[slot] and player.name) then 
         local tab = {}
         tab.Driver    = player.name
-        tab.Vehicle   = upperfix(player.vehicle)
-        tab.Team      = player.team
-        tab.RaceTime  = player.place > 0 and MakeTime(player.racetimems) or "DNF"
-        tab.QualTime  = player.qualtimems > 0 and MakeTime(player.qualtimems) or nil
-        tab.BestLap   = player.bestlaptimems > 0 and MakeTime(player.bestlaptimems) or nil
-        tab.Laps      = player.totallaps
+        
+        tab.countryId = tostring(player.countryId)
+        tab.liveryId  = tostring(player.liveryId)
+        tab.carId     = tostring(player.carId)
+        tab.teamId    = tostring(player.teamId)
+        
+        if (player.vehicle) then
+          tab.Vehicle   = upperfix(player.vehicle)
+          tab.carId     = lkcars[tab.Vehicle]
+        else
+          tab.Vehicle   = cars[tab.carId] or tab.carId
+        end
+        if (player.team) then
+          tab.Team    = player.team
+          tab.teamId  = lkteams[player.team]
+        else
+          tab.Team    = teams[tab.teamId] or tab.teamId
+        end
+        
+        local qualTimeMs = player.qualtimems or player.qualTimeMs
+        local raceTimeMs = player.racetimems or player.raceTimeMs
+        local bestLapTimeMs = player.bestlaptimems or player.bestLapTimeMs
+        
+        tab.RaceTime  = player.place > 0 and MakeTime(raceTimeMs) or "DNF"
+        tab.QualTime  = qualTimeMs > 0 and MakeTime(qualTimeMs) or nil
+        tab.BestLap   = bestLapTimeMs > 0 and MakeTime(bestLapTimeMs) or nil
+        tab.Laps      = player.totallaps or player.totalLaps
         tab.Position  = player.place
         slots[slot]   = tab
         
@@ -963,7 +1039,7 @@ local function ParseResultsJSONsp(json)
           lkdrivers[tab.Driver] = tab
         end
         
-        local ctime = player.racetimems > 0 and player.racetimems/1000
+        local ctime = raceTimeMs > 0 and raceTimeMs/1000
         if (ctime) then mintime = math.min(mintime or 10000000,ctime) end
       end
     end
@@ -977,7 +1053,7 @@ local function ParseResultsJSONsp(json)
   end
   
   -- discard if race was too short
-  if (mintime < 60*cfg.minracetime) then 
+  if (not mintime or (mintime < 60*cfg.minracetime)) then 
     printlog("race too short", slots[1] and slots[1].Vehicle)
     return 
   end
@@ -1050,7 +1126,7 @@ local function ParseResultsXML(filename)
   
   
   local trackname   = xml.Track..(xml.TrackLayout and " - "..xml.TrackLayout or "")
-  local trackid     = lktracks[trackname] and lktracks[trackname].layoutid
+  local trackid     = lktracks[trackname] and lktracks[trackname].layoutId
   local mode        = "1"
   
   if (not (timestring and trackname and trackid and mode)) then

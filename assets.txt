@@ -369,6 +369,8 @@ Audi R8 LMS GT3 EVO</option>
 Audi R8 LMS Ultra</option>
 <option value="1695" data-image="https://prod.r3eassets.com/assets/content/carlivery/mp-racing-174-3342-image-thumb.webp">
 BMW Alpina B6 GT3</option>
+<option value="11536" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-11538-image-thumb.webp">
+BMW M4 GT3</option>
 <option value="5818" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-01-5926-image-thumb.webp">
 BMW M6 GT3</option>
 <option value="1738" data-image="https://prod.r3eassets.com/assets/content/carlivery/schubert-motorsports-17-3575-image-thumb.webp">

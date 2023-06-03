@@ -99,9 +99,28 @@ In the `config.lua` there is a few settings you can play with that affect the ht
 * stylesheetfile: change the default filename
 * rulepoints: the table that is used to assign points to the drivers. The default entry must be provided, all others are optional, you can define your own analog to the ones that already exist. Just make sure the "ruleset" of a race within the easons matches an entry of the rulepoints table.
 
+### Trouble Shooting / Handling Game Update
+
+The `r3e-data.json` as well as the `assets.txt` file could get out of date, when the game is being updated and gets new content (tracks, cars etc.).
+
+If there is errors about track or other content not being found try updating
+`r3e-data.json`. You can find it in your Raceroom install (typically `Steam\SteamApps\common\raceroom racing experience\Game\GameData\General`) and replace the one that is in this directory.
+
+Updating the assets (used for icons/thumbnails) works as follows (a bit more manual):
+
+1. [Open html source of https://game.raceroom.com/leaderboard/](view-source:https://game.raceroom.com/leaderboard/)
+2. Save the source as `assets_raceroom_leaderboard.html` into the directory of this application
+3. Run `update_assets.bat`
+
+
+Due to the changes or results handling around May 2023, some results / result databases may be incompatible for a brief moment. Names were exported in lower case, then upper case again.
+
 ### History
 
 Time-line for some distinct features
+* 03.06.2023 - Account for single player result files containing Ids.
+  Added parsing of `r3e-data.json`.
+  Added description how to update some key files.
 * 06.05.2023 - add `addraceautomatic.bat` and new commandline options to create result database file automatically
 * 03.05.2023 - start supporting new raceroom local result files for commandline mode (still subject to improvements)
 * 28.12.2021 - the "Rebuild all HTML stats" function generates a `index.html` page in the output directory (thx to contribution by **blgk**) 
