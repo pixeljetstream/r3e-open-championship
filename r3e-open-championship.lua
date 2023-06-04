@@ -43,6 +43,12 @@ local function loadConfig(filename)
   fn()
 end
 
+loadConfig("config.lua")
+
+-------------------------------------------------------------------------------------
+
+local printlog = print
+
 local function parseJson(filename)
   local f = io.open(filename,"rt")
   if (not f) then 
@@ -54,12 +60,6 @@ local function parseJson(filename)
   f:close()
  return cjson.decode(txt)
 end
-
-loadConfig("config.lua")
-
--------------------------------------------------------------------------------------
-
-local printlog = print
 
 local function tableFlatCopy(tab,fields)
   local tout = {}
