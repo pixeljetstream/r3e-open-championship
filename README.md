@@ -27,7 +27,7 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 
 As of May 2023 Raceroom generates unique race result files in
 `"My Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results"`
-For example `2023_06_03_14_13_21_Race1.txt`
+For example `2023_06_03_14_13_21_Race1.txt`. 
 
 **Using UI**
 
@@ -35,7 +35,9 @@ Run the `r3e-open-championship.exe`
 
 ![ui](doc/ui.png)
 
-With the *"Process result file"* button you can select one or more result files to be processed. The Log should update with a message like this (In the example we selected two files):
+With the *"Process result file"* button you can select one or more result files to be processed. Watch out and **do not** select the old *raceresults.txt* that won't work anymore.
+
+ The Log should update with a message like this (In the example we selected two files):
 
 ```
 race parsed     BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742	2023/06/03 12:28:41
@@ -47,6 +49,8 @@ appendrace      results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.lua
 generate HTML   results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.html
 uniquedrivers used
 ```
+
+
 
 The database filename will be created based on all driver names that participated in the race. So keep it consistent whom you race against. You can override it through the text field. In the above example the automatic database name was `BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742`.
 
