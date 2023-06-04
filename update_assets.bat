@@ -1,3 +1,3 @@
 cd %~dp0
-%~dp0\luajit.exe %~dp0/update_assets.lua
+luajit.exe update_assets.lua
 pause

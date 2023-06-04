@@ -25,14 +25,47 @@ As you can see at this [full sample website](http://htmlpreview.github.io/?https
 
 #### Local Results
 
-*TEMPORARY CHANGE*: Due to incompatibilities with new game version, use the server results way and not the UI application.
+As of May 2023 Raceroom generates unique race result files in
+`"My Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results"`
+For example `2023_06_03_14_13_21_Race1.txt`
 
-This means following actions:
+**Using UI**
 
-* Find the txt files inside `"My Documents\My Games\SimBin\RaceRoom Racing Experience\UserData\Log\Results"` which contains the results of the last completed race (no matter what kind of race it was).
+Run the `r3e-open-championship.exe`
+
+![ui](doc/ui.png)
+
+With the *"Process result file"* button you can select one or more result files to be processed. The Log should update with a message like this (In the example we selected two files):
+
+```
+race parsed     BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742	2023/06/03 12:28:41
+appendrace      results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.lua
+generate HTML   results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.html
+uniquedrivers used
+race parsed     BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742	2023/06/03 14:13:45
+appendrace      results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.lua
+generate HTML   results/BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.html
+uniquedrivers used
+```
+
+The database filename will be created based on all driver names that participated in the race. So keep it consistent whom you race against. You can override it through the text field. In the above example the automatic database name was `BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742`.
+
+Races that have been processed before will be detected and won't be added to the database again. You would get a log message as following (example):
+
+```
+race parsed	BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742	2023/06/03 12:28:41
+race already in database
+```
+
+Races that were too short will be rejected as well. By default 5 minutes is the minumum, and you can edit this in the `config.lua`.
+
+Your next action typically would be to press *"Open output directory"* and double click the `html` file from your database to look at it in the browser.
+In our example it would be `BMW M4 GT3 faf1a3e8f004aedfe46addca2c22a742.html`
+
+**Using Commandline**
+
+* Find the txt files inside  which contains the results of the last completed race (no matter what kind of race it was).
 * Use appropriate commandline to add the race to a custom database file, or drop file on the `addautomaticrace.bat`.
-
-As the raceroom developer is still making changes to the results output, further changes may need to be done to account for this.
 
 #### Server Results
 
@@ -58,9 +91,11 @@ In commandline mode, the ui is not started and core functionality is exposed.
 * `-makehtml dataBaseFile htmlFile`
   Generates html results for the provided database file
   
-* `-addraceautodb raceresultsFile exePath instructions`
+* `-addraceautodb raceresultsFile instructions`
   Parses the race and automatically generates the database file.
-  If *instructions* contains `html`, it will generate the html and if it contains `show` it will open the html in the default browser.
+  If *instructions* string contains:
+  - `html`, it will generate the html 
+  - `show` it will open the html in the default browser.
   
 * `-config "lua string"`
   Applies the lua string, overwriting the current settings. For example use `-config "ruleset='fia1962_1990'"` to apply old rulepoints prior adding a race to your custom season.
@@ -82,7 +117,6 @@ luajit.exe r3e-open-championship.lua -config "ruleset='%3'" -addrace ./results/%
 The batch file expects three arguments, season file, result file (json, xml or txt) and ruleset for points in that race. It will add the results to the season and update the appropriate html file in the "results" subdirectory.
 
 `mybatch.bat mygroup5 lastrace.json fia1962_1990`
-
 
 ### Configuration
 
@@ -108,16 +142,16 @@ If there is errors about track or other content not being found try updating
 
 Updating the assets (used for icons/thumbnails) works as follows (a bit more manual):
 
-1. [Open html source of https://game.raceroom.com/leaderboard/](view-source:https://game.raceroom.com/leaderboard/)
+1. Open html source of https://game.raceroom.com/leaderboard using your browser (typically right-click in browser window, *"Show page source"*).
 2. Save the source as `assets_raceroom_leaderboard.html` into the directory of this application
-3. Run `update_assets.bat`
+3. Run `update_assets.bat`. This will read the html file and update the `assets.txt` file, that contains the locations of the thumbnail / icon files used in the generated html.
 
-
-Due to the changes or results handling around May 2023, some results / result databases may be incompatible for a brief moment. Names were exported in lower case, then upper case again.
+Due to the changes or results handling around April and May 2023, some results / result databases may be incompatible for a brief moment. Names were exported in lower case, then upper case again, this would alter the database key, entries etc.
 
 ### History
 
 Time-line for some distinct features
+* 04.06.2023 - bugfixes, add ui button to process result files
 * 03.06.2023 - Account for single player result files containing Ids.
   Added parsing of `r3e-data.json`.
   Added description how to update some key files.

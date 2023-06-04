@@ -24,7 +24,7 @@ THE SOFTWARE.
 local cjson = require("cjson")
 
 local cmdlineargs = {...}
-local cmdlineargs = {"-addrace", "./results/test_june_2023.lua", "inputs/2023_05_21_17_21_06_Race1.txt", "-makehtml", "./results/test_june_2023.lua", "./results/test_june_2023.html"}
+--local cmdlineargs = {"-addrace", "./results/test_june_2023.lua", "inputs/2023_05_21_17_21_06_Race1.txt", "-makehtml", "./results/test_june_2023.lua", "./results/test_june_2023.html"}
 local REGENONLY   = false
 
 local cfg = {}
@@ -1291,7 +1291,7 @@ local function AppendStats(outfilename,results,descr)
   f:close()
 end
 
-local function UpdateHistory(filename, outfilename, outpath)
+local function UpdateHistory(filename, outfilename)
   -- parse results
   local key,res,res2,res3 = ParseResults(filename)
   if (key and res) then
@@ -1301,7 +1301,7 @@ local function UpdateHistory(filename, outfilename, outpath)
     -- override key
     local key = cfg.forcedkey ~= "" and cfg.forcedkey or key
     -- append to proper statistics file
-    local outfilename = outfilename or (outpath and outpath.."/" or "")..cfg.outdir..key..".lua"
+    local outfilename = outfilename or cfg.outdir..key..".lua"
     local standings = LoadStats(outfilename) or { description = cfg.newdescr }
     local numraces = #standings
     local lastres = res3 or res2 or res
@@ -1355,12 +1355,9 @@ do
       print("... -addraceautodb ...")
       if (i + 3 > argcnt) then print("error: three arguments required: raceresults-file"); os.exit(1); end
       local infile   = cmdlineargs[i+1]
-      local basepath = cmdlineargs[i+2]
-      local cmd      = cmdlineargs[i+3]
+      local cmd      = cmdlineargs[i+2]
       
-      basepath = basepath:match("(.+)[\\/]$") or basepath
-      
-      local _,standings,outfile = UpdateHistory(infile,nil,basepath)
+      local _,standings,outfile = UpdateHistory(infile,nil)
       if (standings and outfile and cmd:find("html")) then
         local htmlfile = outfile:sub(1,-5)..".html"
         htmlfile = GenerateStatsHTML(htmlfile,standings)
@@ -1480,11 +1477,10 @@ timer = nil
 
 function main()
   -- create the frame window
-  local ww = 400
-  local wh = 390
-  local sh = 250
+  local ww = 600
+  local wh = 700
   
-  frame = wx.wxFrame( wx.NULL, wx.wxID_ANY, "R3E Open Championship",
+  frame = wx.wxFrame( wx.NULL, 1, "R3E Open Championship",
                       wx.wxDefaultPosition, wx.wxSize(ww+16, wh),
                       wx.wxDEFAULT_FRAME_STYLE )
 
@@ -1495,11 +1491,9 @@ function main()
     USER_DOCUMENTS = wx.wxStandardPaths.Get():GetDocumentsDir(),
   }
   
-  local resultfile = cfg.inputfile:gsub("%$([%w_]+)%$", replacedirs)
-  local resultpath = resultfile:match("(.+)[\\/][^\\/]+$")
+  local resultpath = cfg.inputfile:gsub("%$([%w_]+)%$", replacedirs):match("(.+)[\\/][^\\/]+$")
   
   local splitter = wx.wxSplitterWindow(frame, wx.wxID_ANY, wx.wxDefaultPosition, wx.wxSize(ww+16,wh))
-  splitter:SetMinimumPaneSize(sh) -- don't let it unsplit
   splitter:SetSashGravity(0)
   frame.splitter = splitter
   
@@ -1507,7 +1501,7 @@ function main()
   frame.win = win
   
   local txtlog  = wx.wxTextCtrl(splitter, wx.wxID_ANY, "",
-                  wx.wxPoint(0,0), wx.wxSize(440+16,100),
+                  wx.wxPoint(0,0), wx.wxSize(ww-16,500),
                   wx.wxTE_MULTILINE+wx.wxTE_DONTWRAP+wx.wxTE_READONLY)
   frame.txtlog = txtlog
   
@@ -1521,38 +1515,45 @@ function main()
   end
   
   printlog("init completed")
-  printlog(string.format("minracetime %d mins, checkrate %d mins", cfg.minracetime, cfg.checkrate)) 
+  printlog(string.format("minracetime %d mins", cfg.minracetime))  
   
+  local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultpath, wx.wxPoint(8,8), wx.wxSize(ww,70) )
+  local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,80), wx.wxSize(ww-16,-1))
+  local s = 100
+  local bw,bh,bhgap = 200,30,40
+  local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Process result file",        wx.wxPoint(8,s),     wx.wxSize(bw-16,bh))
+  s = s + bhgap
+  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats",     wx.wxPoint(8,s),     wx.wxSize(bw-16,bh))
+  local btnoutput   = wx.wxButton(win, wx.wxID_ANY, "Open output directory",      wx.wxPoint(8+bw,s),  wx.wxSize(bw-16,bh))
+  s = s + bhgap
+  local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description (optional):",wx.wxPoint(8,s),     wx.wxSize(300,bh) )
+  local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, "",                 wx.wxPoint(8,s+bh+5),     wx.wxSize(ww-32,30), 0)
+  s = s + bh+5+30+5
+  local labelkey    = wx.wxStaticText(win, wx.wxID_ANY, "Override database filename (optional):", wx.wxPoint(8,s),    wx.wxSize(300,bh) )
+  local txtkey      = wx.wxTextCtrl(win, wx.wxID_ANY, "",                   wx.wxPoint(8,s+bh+5),    wx.wxSize(ww-32,30), 0)
+  s = s + bh+5+30+5
+  local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:",                   wx.wxPoint(8,s),    wx.wxSize(60,bh) )
+  
+  local sh = s + bhgap
+  splitter:SetMinimumPaneSize(sh) -- don't let it unsplit
   splitter:SplitHorizontally(win, txtlog, sh)
-  
-  --local label = wx.wxStaticText(win, wx.wxID_ANY, "R3E results found:\n"..resultfile, wx.wxPoint(8,8), wx.wxSize(ww,50) )
-  local line  = wx.wxStaticLine(win, wx.wxID_ANY, wx.wxPoint(8,60), wx.wxSize(ww-16,-1))
-  local s = 70
-  local bw,bh = 200,20
-  --local tglpoll     = wx.wxCheckBox(win, wx.wxID_ANY, "Check automatically",      wx.wxPoint(8,s),        wx.wxSize(bw-16,bh))
-  --local btncheck    = wx.wxButton(win, wx.wxID_ANY, "Check now",                  wx.wxPoint(8+bw,s),     wx.wxSize(bw-16,bh))
-  local btnrebuild  = wx.wxButton(win, wx.wxID_ANY, "Rebuild all HTML stats",     wx.wxPoint(8,s+30),     wx.wxSize(bw-16,bh))
-  local btnoutput   = wx.wxButton(win, wx.wxID_ANY, "Open output directory",      wx.wxPoint(8+bw,s+30),  wx.wxSize(bw-16,bh))
-  local labeldescr  = wx.wxStaticText(win, wx.wxID_ANY, "New season description (optional):",wx.wxPoint(8,s+60),     wx.wxSize(300,16) )
-  local txtdescr    = wx.wxTextCtrl(win, wx.wxID_ANY, "",                 wx.wxPoint(8,s+80),     wx.wxSize(400-16,30), 0)
-  local labelkey    = wx.wxStaticText(win, wx.wxID_ANY, "Override database filename (optional):", wx.wxPoint(8,s+110),    wx.wxSize(300,16) )
-  local txtkey      = wx.wxTextCtrl(win, wx.wxID_ANY, "",                   wx.wxPoint(8,s+130),    wx.wxSize(400-16,30), 0)
-  local labellog    = wx.wxStaticText(win, wx.wxID_ANY, "Log:",                   wx.wxPoint(8,s+164),    wx.wxSize(60,16) )
-  
-  --tglpoll:SetValue(true)
-  --tglpoll:Connect( wx.wxEVT_COMMAND_CHECKBOX_CLICKED, function(event)
-  --  if (timer) then
-  --    if (event:IsChecked ()) then
-  --      timer:Start(1000*60*cfg.checkrate)
-  --    else
-  --      timer:Stop()
-  --    end
-  --  end
-  --end)
 
-  --btncheck:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
-  --  checkUpdate(true)
-  --end)
+  btncheck:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
+    local fileDialog = wx.wxFileDialog(frame, "Process file",
+      resultpath,
+      "Text Files (.txt)|.txt",
+      "",
+      wx.wxFD_OPEN + wx.wxFD_FILE_MUST_EXIST + wx.wxFD_MULTIPLE)
+    if fileDialog:ShowModal() == wx.wxID_OK then
+      for _, path in ipairs(fileDialog:GetPaths()) do
+        local key, standings = UpdateHistory(path)
+        if (key and standings) then
+          GenerateStatsHTML(cfg.outdir..key..".html",standings)
+        end
+      end
+    end
+    fileDialog:Destroy()
+  end)
 
   btnrebuild:Connect( wx.wxEVT_COMMAND_BUTTON_CLICKED, function(event)
     RegenerateStatsHTML()
