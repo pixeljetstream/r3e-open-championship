@@ -174,13 +174,16 @@ local function parseAssetIcons(filename)
   f:close()
 
   local icons = {}
-  for url,key in str:gmatch('image="(.-)">%s*(.-)<') do
+  for id,url,key in str:gmatch('option value="(%d+)" data%-image="(.-)">%s*(.-)<') do
+    icons[id]  = url
     icons[key] = url
     lkupper[string.lower(key)] = key
   end
   
   local function patch(dst, src)
     local i = icons[src]
+    assert(i, src.." icon not found")
+    
     if i then 
       icons[dst] = i
       lkupper[string.lower(dst)] = dst
@@ -199,13 +202,18 @@ local function parseAssetIcons(filename)
   patch("BMW M3 DTM ", "BMW M3 DTM")
   patch("Mercedes-AMG C 63 DTM 2015", "Mercedes-AMG C63 DTM")
   patch("AMG-Mercedes 190 E 2.5-16 Evolution II 1992", "Mercedes 190E Evo II DTM")
+  patch("AMG-Mercedes C-Klasse DTM 1995", "7076")
   
   for i,t in pairs(lktracks) do
-    assert(icons[i], i.." icon not found")
+    if (icons[i] == nil) then
+      printlog("icon not found", i)
+      icons[i] = "https://prod.r3eassets.com/static/img/icons/track.svg"
+    end
   end
   for i,t in pairs(cars) do
     if (not icons[t]) then
-      --print(t.." icon not found")
+      printlog("icon not found", t)
+      icons[t] = "https://prod.r3eassets.com/static/img/icons/car.svg"
     end
   end
   return icons

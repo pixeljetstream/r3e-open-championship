@@ -124,17 +124,17 @@ Alle Audi TT RS cup-Wagen</option>
 <option value="4299" data-image="https://prod.r3eassets.com/assets/content/carlivery/raeder-motorsport-125-4301-image-thumb.webp">
 Audi TT RS VLN</option>
 </optgroup>
+<optgroup label="BMW M2 Cup">
+<option value="class-10909">
+Alle BMW M2 Cup-Wagen</option>
+<option value="10599" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-10601-image-thumb.webp">
+BMW M2 CS Racing 2021</option>
+</optgroup>
 <optgroup label="BMW M235i Racing Cup">
 <option value="class-6344">
 Alle BMW M235i Racing Cup-Wagen</option>
 <option value="6262" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-235-6264-image-thumb.webp">
 BMW M235i Racing</option>
-</optgroup>
-<optgroup label="C-Klasse DTM 1995">
-<option value="class-7075">
-Alle C-Klasse DTM 1995-Wagen</option>
-<option value="7076" data-image="https://prod.r3eassets.com/assets/content/carlivery/d2-amg-mercedes-14-7088-image-thumb.webp">
-AMG-Mercedes C-Klasse DTM 1995</option>
 </optgroup>
 <optgroup label="C-Klasse DTM 2005">
 <option value="class-7168">
@@ -185,6 +185,16 @@ Ford Mustang GT DTM</option>
 Mercedes 190E Evo II DTM</option>
 <option value="3874" data-image="https://prod.r3eassets.com/assets/content/carlivery/irmscher-motorsport-26-3876-image-thumb.webp">
 Opel Omega 3000 Evo500</option>
+</optgroup>
+<optgroup label="DTM 1995">
+<option value="class-7075">
+Alle DTM 1995-Wagen</option>
+<option value="7076" data-image="https://prod.r3eassets.com/assets/content/carlivery/d2-amg-mercedes-14-7088-image-thumb.webp">
+AMG-Mercedes C-Klasse DTM</option>
+<option value="12850" data-image="https://prod.r3eassets.com/assets/content/carlivery/alfa-corse-7-12867-image-thumb.webp">
+Alfa Romeo 155 TI DTM 1995</option>
+<option value="12839" data-image="https://prod.r3eassets.com/assets/content/carlivery/opel-team-joest-10-12841-image-thumb.webp">
+Opel Calibra V6 DTM</option>
 </optgroup>
 <optgroup label="DTM 2013">
 <option value="class-1921">
@@ -249,6 +259,20 @@ McLaren 720S GT3 DTM</option>
 Mercedes-AMG GT3 2020 DTM</option>
 <option value="10564" data-image="https://prod.r3eassets.com/assets/content/carlivery/ssr-performance-92-10566-image-thumb.webp">
 Porsche 911 GT3 R (2019) DTM</option>
+</optgroup>
+<optgroup label="DTM 2023">
+<option value="class-12196">
+Alle DTM 2023-Wagen</option>
+<option value="12352" data-image="https://prod.r3eassets.com/assets/content/carlivery/team-abt-sportsline-3-12354-image-thumb.webp">
+Audi R8 LMS GT3 EVO II DTM</option>
+<option value="12237" data-image="https://prod.r3eassets.com/assets/content/carlivery/schubert-motorsport-1-12254-image-thumb.webp">
+BMW M4 GT3 DTM</option>
+<option value="12421" data-image="https://prod.r3eassets.com/assets/content/carlivery/emil-frey-racing-69-12424-image-thumb.webp">
+Ferrari 296 GT3 DTM</option>
+<option value="12240" data-image="https://prod.r3eassets.com/assets/content/carlivery/mercedes-amg-team-landgraf-4-12255-image-thumb.webp">
+Mercedes-AMG GT3 2020 DTM</option>
+<option value="12197" data-image="https://prod.r3eassets.com/assets/content/carlivery/toksport-wrt-9-12199-image-thumb.webp">
+Porsche 911 GT3 R (992) DTM</option>
 </optgroup>
 <optgroup label="FR US Cup">
 <option value="class-5383">
@@ -315,6 +339,8 @@ Porsche 911 GT2 RS Clubsport</option>
 <optgroup label="GTE">
 <option value="class-8600">
 Alle GTE-Wagen</option>
+<option value="12430" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-12432-image-thumb.webp">
+BMW M8 GTE</option>
 <option value="8487" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-911-showroom-8573-image-thumb.webp">
 Porsche 911 RSR 2019</option>
 </optgroup>
@@ -365,6 +391,8 @@ Alle GTR 3-Wagen</option>
 Audi R8 LMS</option>
 <option value="8604" data-image="https://prod.r3eassets.com/assets/content/carlivery/audi-sport-customer-racing-0-8606-image-thumb.webp">
 Audi R8 LMS GT3 EVO</option>
+<option value="12319" data-image="https://prod.r3eassets.com/assets/content/carlivery/audi-sport-1-12355-image-thumb.webp">
+Audi R8 LMS GT3 EVO II</option>
 <option value="2037" data-image="https://prod.r3eassets.com/assets/content/carlivery/team-audi-racing-3-2043-image-thumb.webp">
 Audi R8 LMS Ultra</option>
 <option value="1695" data-image="https://prod.r3eassets.com/assets/content/carlivery/mp-racing-174-3342-image-thumb.webp">
@@ -385,6 +413,8 @@ Callaway Corvette C7 GT3-R</option>
 Chevrolet Camaro GT3</option>
 <option value="3626" data-image="https://prod.r3eassets.com/assets/content/carlivery/v8-racing-7-3633-image-thumb.webp">
 Chevrolet Corvette Z06.R GT3</option>
+<option value="12405" data-image="https://prod.r3eassets.com/assets/content/carlivery/ferrari-1-12407-image-thumb.webp">
+Ferrari 296 GT3</option>
 <option value="10890" data-image="https://prod.r3eassets.com/assets/content/carlivery/scuderia-ferrari-1-10892-image-thumb.webp">
 Ferrari 488 GT3 EVO 2020</option>
 <option value="3754" data-image="https://prod.r3eassets.com/assets/content/carlivery/marc-vds-racing-3-3761-image-thumb.webp">
@@ -393,11 +423,13 @@ Ford GT GT3</option>
 Ford Mustang GT3</option>
 <option value="5786" data-image="https://prod.r3eassets.com/assets/content/carlivery/mclaren-automotive-ltd-0-5788-image-thumb.webp">
 McLaren 650S GT3</option>
+<option value="9575" data-image="https://prod.r3eassets.com/assets/content/carlivery/factory-team-3-11450-image-thumb.webp">
+McLaren 720S GT3</option>
 <option value="1909" data-image="https://prod.r3eassets.com/assets/content/carlivery/team-mclaren-59-1911-image-thumb.webp">
 McLaren MP4-12C GT3</option>
 <option value="6168" data-image="https://prod.r3eassets.com/assets/content/carlivery/mercedes-amg-team-htp-motorsport-29-6403-image-thumb.webp">
 Mercedes AMG GT3</option>
-<option value="9603" data-image="https://prod.r3eassets.com/assets/content/carlivery/mercedes-amg-0-9615-image-thumb.webp">
+<option value="9603" data-image="https://prod.r3eassets.com/assets/content/carlivery/mercedes-amg-customer-racing-0-9615-image-thumb.webp">
 Mercedes-AMG GT3 2020</option>
 <option value="2533" data-image="https://prod.r3eassets.com/assets/content/carlivery/rowe-racing-6-2874-image-thumb.webp">
 Mercedes-Benz SLS AMG GT3</option>
@@ -407,6 +439,8 @@ Nissan GT-R GT3</option>
 P4-5 Competizione GT3</option>
 <option value="8257" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-911-8260-image-thumb.webp">
 Porsche 911 GT3 R (2019)</option>
+<option value="12090" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-0-12092-image-thumb.webp">
+Porsche 911 GT3 R (992)</option>
 </optgroup>
 <optgroup label="GTR 4">
 <option value="class-5825">
@@ -414,7 +448,9 @@ Alle GTR 4-Wagen</option>
 <option value="8900" data-image="https://prod.r3eassets.com/assets/content/carlivery/audi-sport-0-9180-image-thumb.webp">
 Audi R8 LMS GT4 2020</option>
 <option value="8053" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-8148-image-thumb.webp">
-BMW M4 GT4</option>
+BMW M4 GT4 (F82)</option>
+<option value="12509" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-12511-image-thumb.webp">
+BMW M4 GT4 (G82)</option>
 <option value="5767" data-image="https://prod.r3eassets.com/assets/content/carlivery/reiter-engineering-246-6163-image-thumb.webp">
 KTM X-Bow GT4</option>
 <option value="7162" data-image="https://prod.r3eassets.com/assets/content/carlivery/lotus-cars-0-7230-image-thumb.webp">
@@ -538,17 +574,29 @@ Radical SR9 AER</option>
 <option value="1831" data-image="https://prod.r3eassets.com/assets/content/carlivery/van-der-steur-racing-19-3323-image-thumb.webp">
 Radical SR9 Judd</option>
 </optgroup>
-<optgroup label="Porsche 911 GT3 Cup">
-<option value="class-6345">
-Alle Porsche 911 GT3 Cup-Wagen</option>
-<option value="4675" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-911-6346-image-thumb.webp">
-Porsche 911 GT3 Cup Endurance</option>
+<optgroup label="Porsche 944 Turbo Cup">
+<option value="class-11564">
+Alle Porsche 944 Turbo Cup-Wagen</option>
+<option value="11561" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-pinky-11803-image-thumb.webp">
+Porsche 944 Turbo Cup</option>
 </optgroup>
-<optgroup label="Porsche Carrera Cup Classic">
+<optgroup label="Porsche 964 Cup">
 <option value="class-7287">
-Alle Porsche Carrera Cup Classic-Wagen</option>
+Alle Porsche 964 Cup-Wagen</option>
 <option value="7396" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-1-7440-image-thumb.webp">
 Porsche 911 Carrera Cup (964)</option>
+</optgroup>
+<optgroup label="Porsche 991.2 GT3 Cup">
+<option value="class-6345">
+Alle Porsche 991.2 GT3 Cup-Wagen</option>
+<option value="4675" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-911-6346-image-thumb.webp">
+Porsche 911 GT3 Cup (991.2) Endurance</option>
+</optgroup>
+<optgroup label="Porsche 992 GT3 Cup">
+<option value="class-12302">
+Alle Porsche 992 GT3 Cup-Wagen</option>
+<option value="12012" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-1-12014-image-thumb.webp">
+Porsche 911 GT3 Cup (992) Endurance</option>
 </optgroup>
 <optgroup label="Porsche Carrera Cup Deutschland 2019">
 <option value="class-7982">
@@ -556,11 +604,17 @@ Alle Porsche Carrera Cup Deutschland 2019-Wagen</option>
 <option value="7983" data-image="https://prod.r3eassets.com/assets/content/carlivery/bwt-lechner-racing-1-7985-image-thumb.webp">
 Porsche 911 GT3 Cup</option>
 </optgroup>
+<optgroup label="Porsche Carrera Cup Deutschland 2023">
+<option value="class-12015">
+Alle Porsche Carrera Cup Deutschland 2023-Wagen</option>
+<option value="12163" data-image="https://prod.r3eassets.com/assets/content/carlivery/scherer-sport-phx-12-12224-image-thumb.webp">
+Porsche 911 GT3 Cup (992)</option>
+</optgroup>
 <optgroup label="Porsche Carrera Cup Scandinavia">
 <option value="class-8165">
 Alle Porsche Carrera Cup Scandinavia-Wagen</option>
 <option value="8166" data-image="https://prod.r3eassets.com/assets/content/carlivery/porsche-motorsport-tribute-10-8183-image-thumb.webp">
-Porsche 911 GT3 Cup</option>
+Porsche 911 GT3 Cup (991.2)</option>
 </optgroup>
 <optgroup label="Praga R1">
 <option value="class-11055">
@@ -573,12 +627,6 @@ Praga R1</option>
 Alle Procar-Wagen</option>
 <option value="2339" data-image="https://prod.r3eassets.com/assets/content/carlivery/bmw-motorsport-1-2342-image-thumb.webp">
 BMW M1 Procar</option>
-</optgroup>
-<optgroup label="Shopping Cart">
-<option value="class-8680">
-Alle Shopping Cart-Wagen</option>
-<option value="8677" data-image="https://prod.r3eassets.com/assets/content/carlivery/team-myggan-1-8679-image-thumb.webp">
-Shopping Cart</option>
 </optgroup>
 <optgroup label="Silhouette Series">
 <option value="class-1717">
@@ -620,7 +668,7 @@ BMW 635 CSI</option>
 <option value="2116" data-image="https://prod.r3eassets.com/assets/content/carlivery/mobil-43-3962-image-thumb.webp">
 BMW M3 E30 Gr.A</option>
 <option value="3964" data-image="https://prod.r3eassets.com/assets/content/carlivery/gibson-motorsport-1-3966-image-thumb.webp">
-Nissan Skyline GTR R32</option>
+Nissan Skyline GTR R32 Group N</option>
 <option value="2275" data-image="https://prod.r3eassets.com/assets/content/carlivery/three-crowns-legacy-motors-3-2277-image-thumb.webp">
 Volvo 240 Turbo</option>
 </optgroup>
@@ -792,6 +840,12 @@ Pagani Zonda R</option>
 </div>
 Strecke</div>
 <select name="track">
+<optgroup label="AVUS">
+<option value="12500" data-image="https://prod.r3eassets.com/assets/content/tracklayout/avus-1994-12500-image-thumb.webp">
+AVUS - 1994</option>
+<option value="12420" data-image="https://prod.r3eassets.com/assets/content/tracklayout/avus-1998-12420-image-thumb.webp">
+AVUS - 1998</option>
+</optgroup>
 <optgroup label="Autodrom Most">
 <option value="7112" data-image="https://prod.r3eassets.com/assets/content/tracklayout/autodrom-most-grand-prix-7112-image-thumb.webp">
 Autodrom Most - Grand Prix</option>
@@ -850,6 +904,10 @@ Circuit de Charade - Classic Racing School</option>
 <option value="10904" data-image="https://prod.r3eassets.com/assets/content/tracklayout/circuit-de-charade-grand-prix-10904-image-thumb.webp">
 Circuit de Charade - Grand Prix</option>
 </optgroup>
+<optgroup label="Circuit de Pau-Ville">
+<option value="11905" data-image="https://prod.r3eassets.com/assets/content/tracklayout/circuit-de-pau-ville-grand-prix-11905-image-thumb.webp">
+Circuit de Pau-Ville - Grand Prix</option>
+</optgroup>
 <optgroup label="DEKRA Lausitzring">
 <option value="9055" data-image="https://prod.r3eassets.com/assets/content/tracklayout/dekra-lausitzring-dtm-grand-prix-course-9055-image-thumb.webp">
 DEKRA Lausitzring - DTM Grand Prix Course</option>
@@ -890,6 +948,10 @@ Dubai Autodrome - National Circuit</option>
 <option value="6140" data-image="https://prod.r3eassets.com/assets/content/tracklayout/falkenberg-motorbana-grand-prix-6140-image-thumb.webp">
 Falkenberg Motorbana - Grand Prix</option>
 </optgroup>
+<optgroup label="Fliegerhorst Diepholz">
+<option value="12395" data-image="https://prod.r3eassets.com/assets/content/tracklayout/fliegerhorst-diepholz-full-circuit-12395-image-thumb.webp">
+Fliegerhorst Diepholz - Full Circuit</option>
+</optgroup>
 <optgroup label="Gelleråsen Arena">
 <option value="5925" data-image="https://prod.r3eassets.com/assets/content/tracklayout/gellerasen-arena-grand-prix-circuit-5925-image-thumb.webp">
 Gelleråsen Arena - Grand Prix Circuit</option>
@@ -903,6 +965,12 @@ Hockenheimring - Grand Prix</option>
 Hockenheimring - National</option>
 <option value="1764" data-image="https://prod.r3eassets.com/assets/content/tracklayout/hockenheimring-short-1764-image-thumb.webp">
 Hockenheimring - Short</option>
+</optgroup>
+<optgroup label="Hockenheimring Classic">
+<option value="12112" data-image="https://prod.r3eassets.com/assets/content/tracklayout/hockenheimring-classic-grand-prix-12112-image-thumb.webp">
+Hockenheimring Classic - Grand Prix</option>
+<option value="12236" data-image="https://prod.r3eassets.com/assets/content/tracklayout/hockenheimring-classic-short-12236-image-thumb.webp">
+Hockenheimring Classic - Short</option>
 </optgroup>
 <optgroup label="Hockenheimring DMEC">
 <option value="10274" data-image="https://prod.r3eassets.com/assets/content/tracklayout/hockenheimring-dmec-dmec-10274-image-thumb.webp">
@@ -1023,12 +1091,12 @@ Nogaro Circuit Paul Armagnac - Grand Prix Circuit</option>
 <optgroup label="Nordschleife">
 <option value="5095" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-24-hours-5095-image-thumb.webp">
 Nordschleife - 24 Hours</option>
+<option value="4975" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-nls-4975-image-thumb.webp">
+Nordschleife - NLS</option>
 <option value="2813" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-nordschleife-2813-image-thumb.webp">
 Nordschleife - Nordschleife</option>
 <option value="5093" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-tourist-5093-image-thumb.webp">
 Nordschleife - Tourist</option>
-<option value="4975" data-image="https://prod.r3eassets.com/assets/content/tracklayout/nordschleife-vln-4975-image-thumb.webp">
-Nordschleife - VLN</option>
 </optgroup>
 <optgroup label="Norisring">
 <option value="2518" data-image="https://prod.r3eassets.com/assets/content/tracklayout/norisring-grand-prix-2518-image-thumb.webp">
@@ -1059,14 +1127,14 @@ Paul Ricard - Solution 2A short</option>
 Paul Ricard - Solution 3C</option>
 </optgroup>
 <optgroup label="Portimao Circuit">
-<option value="1784" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-club-1784-image-thumb.webp">
-Portimao Circuit - Club</option>
-<option value="1785" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-club-chicane-1785-image-thumb.webp">
-Portimao Circuit - Club Chicane</option>
+<option value="1784" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-chicane-1784-image-thumb.webp">
+Portimao Circuit - Chicane</option>
 <option value="1778" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-grand-prix-1778-image-thumb.webp">
 Portimao Circuit - Grand Prix</option>
-<option value="1783" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-national-1783-image-thumb.webp">
-Portimao Circuit - National</option>
+<option value="1783" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-moto-1783-image-thumb.webp">
+Portimao Circuit - Moto</option>
+<option value="1785" data-image="https://prod.r3eassets.com/assets/content/tracklayout/portimao-circuit-short-1785-image-thumb.webp">
+Portimao Circuit - Short</option>
 </optgroup>
 <optgroup label="RaceRoom Hillclimb">
 <option value="1709" data-image="https://prod.r3eassets.com/assets/content/tracklayout/raceroom-hillclimb-full-run-1709-image-thumb.webp">
